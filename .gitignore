@@ -1,0 +1,87 @@
+# General
+*.log
+*.log.*
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build outputs
+/dist
+/build
+/out
+/bin
+/obj
+
+# Dependencies
+/node_modules
+/vendor
+/bower_components
+/.venv
+/env
+/venv
+
+# IDEs and editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+/coverage
+/test-results
+/junit.xml
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# OS-specific
+Icon\r
+._*
+
+# Python-specific
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+.pip-cache/
+.python-version
+
+# JavaScript-specific
+*.min.js.map
+*.bundle.js
+*.chunk.js
+
+# Java-specific
+*.class
+*.jar
+/target
+/.mvn
+mvnw
+mvnw.cmd
+
+# Database
+*.sql
+*.sqlite
+*.sqlite3
+
+# Documentation
+/docs/_build
+/site
+
+# Miscellaneous
+*.lock
+package-lock.json
+yarn.lock
