@@ -1,9 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/(tour-singles)/tour-single-1/[id]/page": "app/(tour-singles)/tour-single-1/[id]/page.js",
-  "/(pages)/register/page": "app/(pages)/register/page.js",
-  "/(pages)/destinations/page": "app/(pages)/destinations/page.js",
-  "/(blogs)/blog-single/[id]/page": "app/(blogs)/blog-single/[id]/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
-}

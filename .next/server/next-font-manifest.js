@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/admin/development/rapid_ease_next/rapidease/app/layout\":[\"static/media/b27868729ad8c262-s.p.woff2\",\"static/media/7e6a2e30184bb114-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
