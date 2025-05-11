@@ -14,6 +14,7 @@ Thumbs.db
 /out
 /bin
 /obj
+.next/
 
 # Dependencies
 /node_modules
