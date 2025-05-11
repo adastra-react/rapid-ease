@@ -37,7 +37,7 @@ export default function Hero1() {
   return (
     <section className='hero -type-1'>
       <div className='hero__bg'>
-        <Image width={1800} height={560} src='/img/hero/1/3.jpg' alt='image' />
+        <Image width={1800} height={560} src='/img/hero/1/2.jpg' alt='image' />
         <Image
           width='1800'
           height='40'
