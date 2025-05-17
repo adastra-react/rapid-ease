@@ -15,8 +15,8 @@ import Header2 from "@/components/layout/header/Header2";
 import React from "react";
 
 export const metadata = {
-  title: "Home-2 || ViaTour - Travel & Tour React NextJS Template",
-  description: "ViaTour - Travel & Tour React NextJS Template",
+  title: "Home-2 || Rapid Ease - Travel & Tour React NextJS Template",
+  description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
 export default function page() {
@@ -31,7 +31,7 @@ export default function page() {
         <DestinationsTwo />
         <BannerTwo />
         <TopAttractions />
-        <div className="bg-accent-1-05">
+        <div className='bg-accent-1-05'>
           <TestimonialOne />
         </div>
         <BannerFour />

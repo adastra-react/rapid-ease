@@ -3,8 +3,8 @@ import React from "react";
 
 export const metadata = {
   title:
-    "Dashboard-my-profile || ViaTour - Travel & Tour React NextJS Template",
-  description: "ViaTour - Travel & Tour React NextJS Template",
+    "Dashboard-my-profile || Rapid Ease - Travel & Tour React NextJS Template",
+  description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
 export default function page() {

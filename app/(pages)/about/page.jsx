@@ -12,8 +12,8 @@ import Team from "@/components/pages/about/Team";
 import React from "react";
 
 export const metadata = {
-  title: "About || ViaTour - Travel & Tour React NextJS Template",
-  description: "ViaTour - Travel & Tour React NextJS Template",
+  title: "About || Rapid Ease - Travel & Tour React NextJS Template",
+  description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
 export default function page() {
@@ -25,7 +25,7 @@ export default function page() {
         <Information />
         <Banner />
         <FeaturesOne />
-        <div className="mt-60">
+        <div className='mt-60'>
           <FeturesTwo />
         </div>
         <TestimonialOne />

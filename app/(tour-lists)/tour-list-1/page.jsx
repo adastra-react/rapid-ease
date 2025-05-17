@@ -5,8 +5,8 @@ import TourList1 from "@/components/tours/TourList1";
 import React from "react";
 
 export const metadata = {
-  title: "Tour-list-1 || ViaTour - Travel & Tour React NextJS Template",
-  description: "ViaTour - Travel & Tour React NextJS Template",
+  title: "Tour-list-1 || Rapid Ease - Travel & Tour React NextJS Template",
+  description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
 export default function page() {

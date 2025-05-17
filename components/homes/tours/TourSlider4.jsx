@@ -20,30 +20,28 @@ export default function TourSlider4() {
     }
   }, [travelStyle]);
   return (
-    <section className="layout-pt-xl layout-pb-xl bg-accent-1-05">
-      <div className="container">
-        <div className="tabs -pills-4 js-tabs">
-          <div className="row y-gap-10 justify-between items-end y-gap-10">
-            <div className="col-auto">
-              <h2 data-aos="fade-up" data-aos-delay="" className="text-30">
+    <section className='layout-pt-xl layout-pb-xl bg-accent-1-05'>
+      <div className='container'>
+        <div className='tabs -pills-4 js-tabs'>
+          <div className='row y-gap-10 justify-between items-end y-gap-10'>
+            <div className='col-auto'>
+              <h2 data-aos='fade-up' data-aos-delay='' className='text-30'>
                 Featured Trips
               </h2>
             </div>
 
-            <div data-aos="fade-right" data-aos-delay="" className="col-auto">
-              <div className="tabs__controls row x-gap-10 y-gap-10 js-tabs-controls">
+            <div data-aos='fade-right' data-aos-delay='' className='col-auto'>
+              <div className='tabs__controls row x-gap-10 y-gap-10 js-tabs-controls'>
                 {travelStayles.map((elm, i) => (
                   <div
                     key={i}
                     onClick={() => setTravelStyle(elm)}
-                    className="col-auto"
-                  >
+                    className='col-auto'>
                     <button
                       className={`tabs__button text-14 px-15 py-5 fw-500 rounded-200 js-tabs-button ${
                         travelStyle == elm ? "is-tab-el-active" : ""
                       }`}
-                      data-tab-target=".-tab-item-1"
-                    >
+                      data-tab-target='.-tab-item-1'>
                       {elm}
                     </button>
                   </div>
@@ -52,14 +50,13 @@ export default function TourSlider4() {
             </div>
           </div>
 
-          <div className="tabs__content pt-40 sm:pt-20 js-tabs-content">
-            <div className="tabs__pane -tab-item-1 is-tab-el-active">
-              <div className="js-section-slider">
+          <div className='tabs__content pt-40 sm:pt-20 js-tabs-content'>
+            <div className='tabs__pane -tab-item-1 is-tab-el-active'>
+              <div className='js-section-slider'>
                 <div
-                  data-aos="fade-up"
-                  data-aos-delay=""
-                  className="swiper-wrapper  overflow-visible "
-                >
+                  data-aos='fade-up'
+                  data-aos-delay=''
+                  className='swiper-wrapper  overflow-visible '>
                   <Swiper
                     spaceBetween={30}
                     navigation={{
@@ -81,63 +78,61 @@ export default function TourSlider4() {
                       1200: {
                         slidesPerView: 4,
                       },
-                    }}
-                  >
+                    }}>
                     {filtered.map((elm, i) => (
                       <SwiperSlide key={i}>
                         <Link
                           href={`/tour-single-1/${elm.id}`}
-                          className="tourCard -type-1 -rounded bg-white hover-shadow-1 overflow-hidden rounded-20 bg-white -hover-shadow"
-                        >
-                          <div className="tourCard__header">
-                            <div className="tourCard__image ratio ratio-28:20">
+                          className='tourCard -type-1 -rounded bg-white hover-shadow-1 overflow-hidden rounded-20 bg-white -hover-shadow'>
+                          <div className='tourCard__header'>
+                            <div className='tourCard__image ratio ratio-28:20'>
                               <Image
                                 width={421}
                                 height={301}
                                 src={elm.imageSrc}
-                                alt="image"
-                                className="img-ratio"
+                                alt='image'
+                                className='img-ratio'
                               />
 
-                              <div className="tourCard__shape"></div>
+                              <div className='tourCard__shape'></div>
                             </div>
 
-                            <button className="tourCard__favorite">
-                              <i className="icon-heart"></i>
+                            <button className='tourCard__favorite'>
+                              <i className='icon-heart'></i>
                             </button>
                           </div>
 
-                          <div className="tourCard__content px-20 py-10">
-                            <div className="tourCard__location d-flex items-center text-13 text-light-2">
-                              <i className="icon-pin d-flex text-16 text-light-2 mr-5"></i>
+                          <div className='tourCard__content px-20 py-10'>
+                            <div className='tourCard__location d-flex items-center text-13 text-light-2'>
+                              <i className='icon-pin d-flex text-16 text-light-2 mr-5'></i>
                               {elm.location}
                             </div>
 
-                            <h3 className="tourCard__title text-16 fw-500 mt-5">
+                            <h3 className='tourCard__title text-16 fw-500 mt-5'>
                               <span>{elm.title}</span>
                             </h3>
 
-                            <div className="tourCard__rating text-13 mt-5">
-                              <div className="d-flex items-center">
-                                <div className="d-flex x-gap-5 pr-10">
+                            <div className='tourCard__rating text-13 mt-5'>
+                              <div className='d-flex items-center'>
+                                <div className='d-flex x-gap-5 pr-10'>
                                   <Stars star={elm.rating} />
                                 </div>
 
-                                <span className="text-dark-1 text-13">
+                                <span className='text-dark-1 text-13'>
                                   {elm.rating} ({elm.ratingCount})
                                 </span>
                               </div>
                             </div>
 
-                            <div className="d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10 mt-10">
-                              <div className="d-flex items-center">
-                                <i className="icon-clock text-16 mr-5"></i>
+                            <div className='d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10 mt-10'>
+                              <div className='d-flex items-center'>
+                                <i className='icon-clock text-16 mr-5'></i>
                                 {elm.duration}
                               </div>
 
                               <div>
                                 From{" "}
-                                <span className="text-16 fw-500">
+                                <span className='text-16 fw-500'>
                                   ${elm.price}
                                 </span>
                               </div>
@@ -150,13 +145,13 @@ export default function TourSlider4() {
                 </div>
               </div>
 
-              <div className="d-flex mt-40">
-                <button className="button -dark-1 rounded-full size-72 flex-center bg-white js-slider1-prev2">
-                  <i className="icon-arrow-left text-20"></i>
+              <div className='d-flex mt-40'>
+                <button className='button -dark-1 rounded-full size-72 flex-center bg-white js-slider1-prev2'>
+                  <i className='icon-arrow-left text-20'></i>
                 </button>
 
-                <button className="button -dark-1 rounded-full size-72 flex-center bg-white ml-10 js-slider1-next2">
-                  <i className="icon-arrow-right text-20"></i>
+                <button className='button -dark-1 rounded-full size-72 flex-center bg-white ml-10 js-slider1-next2'>
+                  <i className='icon-arrow-right text-20'></i>
                 </button>
               </div>
             </div>

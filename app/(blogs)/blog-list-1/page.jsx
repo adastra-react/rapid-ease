@@ -4,8 +4,8 @@ import Hero1 from "@/components/blogs/Hero1";
 import BlogList1 from "@/components/blogs/BlogList1";
 
 export const metadata = {
-  title: "Blog-list-1 || ViaTour - Travel & Tour React NextJS Template",
-  description: "ViaTour - Travel & Tour React NextJS Template",
+  title: "Blog-list-1 || Rapid Ease - Travel & Tour React NextJS Template",
+  description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
 export default function page() {

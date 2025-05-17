@@ -33,52 +33,51 @@ export default function Hero() {
   }, []);
   return (
     <>
-      <section className="pageHeader -type-2 -secondary">
-        <div className="pageHeader__bg">
+      <section className='pageHeader -type-2 -secondary'>
+        <div className='pageHeader__bg'>
           <Image
             width={1800}
             height={350}
-            src="/img/pageHeader/2.jpg"
-            alt="image"
+            src='/img/pageHeader/2.jpg'
+            alt='image'
           />
           <Image
-            width="1800"
-            height="40"
-            src="/img/hero/1/shape.svg"
+            width='1800'
+            height='40'
+            src='/img/hero/1/shape.svg'
             style={{ height: "auto" }}
-            alt="image"
+            alt='image'
           />
         </div>
 
-        <div className="container">
-          <div className="row justify-center">
-            <div className="col-12">
-              <div className="pageHeader__content">
-                <h1 className="pageHeader__title">Phuket</h1>
+        <div className='container'>
+          <div className='row justify-center'>
+            <div className='col-12'>
+              <div className='pageHeader__content'>
+                <h1 className='pageHeader__title'>Phuket</h1>
 
-                <p className="pageHeader__text">
+                <p className='pageHeader__text'>
                   A tropical paradise made for animal lovers replete with monkey
                   caves, dog foundations, and dolphins in the wild.
                 </p>
 
-                <div className="pageHeader__search">
-                  <div className="searchForm -type-1 shadow-1">
-                    <div ref={dropDownContainer} className="searchForm__form">
-                      <div className="searchFormItem js-select-control js-form-dd">
+                <div className='pageHeader__search'>
+                  <div className='searchForm -type-1 shadow-1'>
+                    <div ref={dropDownContainer} className='searchForm__form'>
+                      <div className='searchFormItem js-select-control js-form-dd'>
                         <div
-                          className="searchFormItem__button"
+                          className='searchFormItem__button'
                           onClick={() =>
                             setCurrentActiveDD((pre) =>
-                              pre == "location" ? "" : "location",
+                              pre == "location" ? "" : "location"
                             )
-                          }
-                        >
-                          <div className="searchFormItem__icon size-50 rounded-12 border-1 flex-center">
-                            <i className="text-20 icon-pin"></i>
+                          }>
+                          <div className='searchFormItem__icon size-50 rounded-12 border-1 flex-center'>
+                            <i className='text-20 icon-pin'></i>
                           </div>
-                          <div className="searchFormItem__content">
+                          <div className='searchFormItem__content'>
                             <h5>Where</h5>
-                            <div className="js-select-control-chosen">
+                            <div className='js-select-control-chosen'>
                               {location ? location : "Search destinations"}
                             </div>
                           </div>
@@ -90,46 +89,44 @@ export default function Hero() {
                         />
                       </div>
 
-                      <div className="searchFormItem js-select-control js-form-dd js-calendar">
+                      <div className='searchFormItem js-select-control js-form-dd js-calendar'>
                         <div
-                          className="searchFormItem__button"
+                          className='searchFormItem__button'
                           onClick={() =>
                             setCurrentActiveDD((pre) =>
-                              pre == "calender" ? "" : "calender",
+                              pre == "calender" ? "" : "calender"
                             )
-                          }
-                        >
-                          <div className="searchFormItem__icon size-50 rounded-12 border-1 flex-center">
-                            <i className="text-20 icon-calendar"></i>
+                          }>
+                          <div className='searchFormItem__icon size-50 rounded-12 border-1 flex-center'>
+                            <i className='text-20 icon-calendar'></i>
                           </div>
-                          <div className="searchFormItem__content">
+                          <div className='searchFormItem__content'>
                             <h5>When</h5>
                             <div>
-                              <span className="js-first-date custom-input">
+                              <span className='js-first-date custom-input'>
                                 {" "}
                                 <Calender />
                               </span>
-                              <span className="js-last-date"></span>
+                              <span className='js-last-date'></span>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="searchFormItem js-select-control js-form-dd">
+                      <div className='searchFormItem js-select-control js-form-dd'>
                         <div
-                          className="searchFormItem__button"
+                          className='searchFormItem__button'
                           onClick={() =>
                             setCurrentActiveDD((pre) =>
-                              pre == "tourType" ? "" : "tourType",
+                              pre == "tourType" ? "" : "tourType"
                             )
-                          }
-                        >
-                          <div className="searchFormItem__icon size-50 rounded-12 border-1 flex-center">
-                            <i className="text-20 icon-flag"></i>
+                          }>
+                          <div className='searchFormItem__icon size-50 rounded-12 border-1 flex-center'>
+                            <i className='text-20 icon-flag'></i>
                           </div>
-                          <div className="searchFormItem__content">
+                          <div className='searchFormItem__content'>
                             <h5>Tour Type</h5>
-                            <div className="js-select-control-chosen">
+                            <div className='js-select-control-chosen'>
                               {tourType ? tourType : "All tour"}
                             </div>
                           </div>
@@ -142,9 +139,9 @@ export default function Hero() {
                       </div>
                     </div>
 
-                    <div className="searchForm__button">
-                      <button className="button -dark-1 bg-accent-1 text-white">
-                        <i className="icon-search text-16 mr-10"></i>
+                    <div className='searchForm__button'>
+                      <button className='button -dark-1 bg-accent-1 text-white'>
+                        <i className='icon-search text-16 mr-10'></i>
                         Search
                       </button>
                     </div>

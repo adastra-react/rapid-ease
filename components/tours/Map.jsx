@@ -199,7 +199,7 @@ export default function Map() {
   });
   const center = useMemo(
     () => ({ lat: 27.411201277163975, lng: -96.12394824867293 }),
-    [],
+    []
   );
 
   // add long & lat
@@ -221,8 +221,7 @@ export default function Map() {
           mapContainerStyle={containerStyle}
           center={center}
           zoom={4}
-          options={option}
-        >
+          options={option}>
           <MarkerClusterer>
             {(clusterer) =>
               tourDataThree.slice(0, 6).map((marker) => (
@@ -233,8 +232,7 @@ export default function Map() {
                     lng: Number(marker.long),
                   }}
                   clusterer={clusterer}
-                  onClick={() => locationHandler(marker)}
-                ></MarkerF>
+                  onClick={() => locationHandler(marker)}></MarkerF>
               ))
             }
           </MarkerClusterer>
@@ -244,57 +242,55 @@ export default function Map() {
                 lat: getLocation.lat,
                 lng: getLocation.long,
               }}
-              onCloseClick={closeCardHandler}
-            >
+              onCloseClick={closeCardHandler}>
               <Link
                 href={`/tour-single-1/${getLocation.id}`}
-                className="tourCard -type-1 py-10 px-10 border-1 rounded-12  -hover-shadow"
-              >
-                <div className="tourCard__header">
-                  <div className="tourCard__image ratio ratio-28:20">
+                className='tourCard -type-1 py-10 px-10 border-1 rounded-12  -hover-shadow'>
+                <div className='tourCard__header'>
+                  <div className='tourCard__image ratio ratio-28:20'>
                     <Image
                       width={421}
                       height={301}
                       src={getLocation.imageSrc}
-                      alt="image"
-                      className="img-ratio rounded-12"
+                      alt='image'
+                      className='img-ratio rounded-12'
                     />
                   </div>
 
-                  <button className="tourCard__favorite">
-                    <i className="icon-heart"></i>
+                  <button className='tourCard__favorite'>
+                    <i className='icon-heart'></i>
                   </button>
                 </div>
 
-                <div className="tourCard__content px-10 pt-10">
-                  <div className="tourCard__location d-flex items-center text-13 text-light-2">
-                    <i className="icon-pin d-flex text-16 text-light-2 mr-5"></i>
+                <div className='tourCard__content px-10 pt-10'>
+                  <div className='tourCard__location d-flex items-center text-13 text-light-2'>
+                    <i className='icon-pin d-flex text-16 text-light-2 mr-5'></i>
                     {getLocation.location}
                   </div>
 
-                  <h3 className="tourCard__title text-16 fw-500 mt-5">
+                  <h3 className='tourCard__title text-16 fw-500 mt-5'>
                     <span>{getLocation.title}</span>
                   </h3>
 
-                  <div className="tourCard__rating d-flex items-center text-13 mt-5">
-                    <div className="d-flex x-gap-5">
+                  <div className='tourCard__rating d-flex items-center text-13 mt-5'>
+                    <div className='d-flex x-gap-5'>
                       <Stars star={getLocation.rating} />
                     </div>
 
-                    <span className="text-dark-1 ml-10">
+                    <span className='text-dark-1 ml-10'>
                       {getLocation.rating} ({getLocation.ratingCount})
                     </span>
                   </div>
 
-                  <div className="d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10 mt-10">
-                    <div className="d-flex items-center">
-                      <i className="icon-clock text-16 mr-5"></i>
+                  <div className='d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10 mt-10'>
+                    <div className='d-flex items-center'>
+                      <i className='icon-clock text-16 mr-5'></i>
                       {getLocation.duration}
                     </div>
 
                     <div>
                       From{" "}
-                      <span className="text-16 fw-500">
+                      <span className='text-16 fw-500'>
                         ${getLocation.price}
                       </span>
                     </div>

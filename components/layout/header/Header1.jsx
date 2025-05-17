@@ -93,11 +93,11 @@ export default function Header1() {
               Log in
             </Link>
 
-            {/* <button
+            <button
               onClick={() => setMobileMenuOpen(true)}
               className='header__menuBtn ml-30 js-menu-button'>
               <i className='icon-main-menu'></i>
-            </button> */}
+            </button>
           </div>
         </div>
       </header>

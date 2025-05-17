@@ -15,8 +15,8 @@ import Header7 from "@/components/layout/header/Header7";
 import React from "react";
 
 export const metadata = {
-  title: "Home-8 || ViaTour - Travel & Tour React NextJS Template",
-  description: "ViaTour - Travel & Tour React NextJS Template",
+  title: "Home-8 || Rapid Ease - Travel & Tour React NextJS Template",
+  description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
 export default function page() {

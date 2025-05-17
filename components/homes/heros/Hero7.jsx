@@ -77,13 +77,13 @@ export default function Hero7() {
 
   return (
     <>
-      <section className="hero -type-7">
-        <div className="hero__shape"></div>
+      <section className='hero -type-7'>
+        <div className='hero__shape'></div>
 
-        <div className="hero__slider js-section-slider">
-          <div className="swiper-wrapper">
+        <div className='hero__slider js-section-slider'>
+          <div className='swiper-wrapper'>
             <Swiper
-              className="w-100"
+              className='w-100'
               modules={[Navigation]}
               navigation={{
                 prevEl: ".js-sliderHero-prev",
@@ -102,38 +102,35 @@ export default function Hero7() {
                 1200: {
                   slidesPerView: 1,
                 },
-              }}
-            >
+              }}>
               {slides.map((elm, i) => (
                 <SwiperSlide key={i}>
-                  <div className="hero__bg">
+                  <div className='hero__bg'>
                     <Image
                       width={1920}
                       height={960}
                       src={elm.imageSrc}
-                      alt="background"
+                      alt='background'
                     />
                   </div>
 
-                  <div className="container">
-                    <div className="row justify-center">
-                      <div className="col-lg-8 col-md-10">
-                        <div className="hero__content text-center">
+                  <div className='container'>
+                    <div className='row justify-center'>
+                      <div className='col-lg-8 col-md-10'>
+                        <div className='hero__content text-center'>
                           <div
-                            data-aos="fade-up"
-                            data-aos-delay="100"
-                            className="hero__subtitle text-white mb-20 md:mb-10"
-                          >
+                            data-aos='fade-up'
+                            data-aos-delay='100'
+                            className='hero__subtitle text-white mb-20 md:mb-10'>
                             {elm.subtitle}
                           </div>
 
                           <h1
-                            data-aos="fade-up"
-                            data-aos-delay="300"
-                            className="hero__title text-white"
-                          >
+                            data-aos='fade-up'
+                            data-aos-delay='300'
+                            className='hero__title text-white'>
                             {elm.title.split(",")[0]},
-                            <br className="md:d-none" />
+                            <br className='md:d-none' />
                             {elm.title.split(",")[1]}
                           </h1>
                         </div>
@@ -145,38 +142,36 @@ export default function Hero7() {
             </Swiper>
           </div>
 
-          <div className="hero__nav d-flex mt-40">
-            <button className="button -outline-white rounded-full size-72 flex-center text-white js-sliderHero-prev">
-              <i className="icon-arrow-left text-20"></i>
+          <div className='hero__nav d-flex mt-40'>
+            <button className='button -outline-white rounded-full size-72 flex-center text-white js-sliderHero-prev'>
+              <i className='icon-arrow-left text-20'></i>
             </button>
 
-            <button className="button -outline-white rounded-full size-72 flex-center text-white ml-10 js-sliderHero-next">
-              <i className="icon-arrow-right text-20"></i>
+            <button className='button -outline-white rounded-full size-72 flex-center text-white ml-10 js-sliderHero-next'>
+              <i className='icon-arrow-right text-20'></i>
             </button>
           </div>
         </div>
 
-        <div className="hero__filter">
+        <div className='hero__filter'>
           <div
             ref={dropDownContainer}
-            className="searchForm -type-1 shadow-1 rounded-200"
-          >
-            <div className="searchForm__form">
-              <div className="searchFormItem js-select-control js-form-dd">
+            className='searchForm -type-1 shadow-1 rounded-200'>
+            <div className='searchForm__form'>
+              <div className='searchFormItem js-select-control js-form-dd'>
                 <div
-                  className="searchFormItem__button"
+                  className='searchFormItem__button'
                   onClick={() =>
                     setCurrentActiveDD((pre) =>
-                      pre == "location" ? "" : "location",
+                      pre == "location" ? "" : "location"
                     )
-                  }
-                >
-                  <div className="searchFormItem__icon size-50 rounded-full border-1 flex-center">
-                    <i className="text-20 icon-pin"></i>
+                  }>
+                  <div className='searchFormItem__icon size-50 rounded-full border-1 flex-center'>
+                    <i className='text-20 icon-pin'></i>
                   </div>
-                  <div className="searchFormItem__content">
+                  <div className='searchFormItem__content'>
                     <h5>Where</h5>
-                    <div className="js-select-control-chosen">
+                    <div className='js-select-control-chosen'>
                       {location ? location : "Search destinations"}
                     </div>
                   </div>
@@ -188,45 +183,43 @@ export default function Hero7() {
                 />
               </div>
 
-              <div className="searchFormItem js-select-control js-form-dd js-calendar">
+              <div className='searchFormItem js-select-control js-form-dd js-calendar'>
                 <div
-                  className="searchFormItem__button"
+                  className='searchFormItem__button'
                   onClick={() =>
                     setCurrentActiveDD((pre) =>
-                      pre == "calender" ? "" : "calender",
+                      pre == "calender" ? "" : "calender"
                     )
-                  }
-                >
-                  <div className="searchFormItem__icon size-50 rounded-full border-1 flex-center">
-                    <i className="text-20 icon-calendar"></i>
+                  }>
+                  <div className='searchFormItem__icon size-50 rounded-full border-1 flex-center'>
+                    <i className='text-20 icon-calendar'></i>
                   </div>
-                  <div className="searchFormItem__content">
+                  <div className='searchFormItem__content'>
                     <h5>When</h5>
                     <div>
-                      <span className="js-first-date">
+                      <span className='js-first-date'>
                         <Calender active={currentActiveDD === "calender"} />
                       </span>
-                      <span className="js-last-date"></span>
+                      <span className='js-last-date'></span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="searchFormItem js-select-control js-form-dd">
+              <div className='searchFormItem js-select-control js-form-dd'>
                 <div
-                  className="searchFormItem__button"
+                  className='searchFormItem__button'
                   onClick={() =>
                     setCurrentActiveDD((pre) =>
-                      pre == "tourType" ? "" : "tourType",
+                      pre == "tourType" ? "" : "tourType"
                     )
-                  }
-                >
-                  <div className="searchFormItem__icon size-50 rounded-full border-1 flex-center">
-                    <i className="text-20 icon-flag"></i>
+                  }>
+                  <div className='searchFormItem__icon size-50 rounded-full border-1 flex-center'>
+                    <i className='text-20 icon-flag'></i>
                   </div>
-                  <div className="searchFormItem__content">
+                  <div className='searchFormItem__content'>
                     <h5>Tour Type</h5>
-                    <div className="js-select-control-chosen">
+                    <div className='js-select-control-chosen'>
                       {tourType ? tourType : "All tour"}
                     </div>
                   </div>
@@ -241,10 +234,9 @@ export default function Hero7() {
 
             <div
               onClick={() => router.push("/tour-list-5")}
-              className="searchForm__button"
-            >
-              <button className="button -dark-1 bg-accent-1 rounded-200 text-white">
-                <i className="icon-search text-16 mr-10"></i>
+              className='searchForm__button'>
+              <button className='button -dark-1 bg-accent-1 rounded-200 text-white'>
+                <i className='icon-search text-16 mr-10'></i>
                 Search
               </button>
             </div>

@@ -9,12 +9,12 @@ import React from "react";
 
 export default function BrandsTwo() {
   return (
-    <section className="layout-pt-xl">
-      <div className="container">
-        <div data-aos="fade-up" data-aos-delay="" className="">
+    <section className='layout-pt-xl'>
+      <div className='container'>
+        <div data-aos='fade-up' data-aos-delay='' className=''>
           <Swiper
             spaceBetween={30}
-            className="w-100"
+            className='w-100'
             modules={[Autoplay]}
             autoplay
             loop={true}
@@ -34,11 +34,10 @@ export default function BrandsTwo() {
               1200: {
                 slidesPerView: 6,
               },
-            }}
-          >
+            }}>
             {clients.map((elm, i) => (
               <SwiperSlide key={i}>
-                <div key={i} className=" d-flex justify-center items-center ">
+                <div key={i} className=' d-flex justify-center items-center '>
                   <Image
                     width={140}
                     height={90}
@@ -48,7 +47,7 @@ export default function BrandsTwo() {
                       objectFit: "contain",
                     }}
                     src={elm}
-                    alt="image"
+                    alt='image'
                   />
                 </div>
               </SwiperSlide>

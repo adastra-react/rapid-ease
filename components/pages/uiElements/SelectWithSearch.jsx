@@ -9,33 +9,31 @@ export default function SelectWithSearch() {
   const [ddActive, setDdActive] = useState(false);
 
   return (
-    <div className="select js-select js-liveSearch" data-select-value="">
+    <div className='select js-select js-liveSearch' data-select-value=''>
       <button
-        className="select__button js-button"
-        onClick={() => setDdActive((pre) => !pre)}
-      >
-        <span className="js-button-title">
+        className='select__button js-button'
+        onClick={() => setDdActive((pre) => !pre)}>
+        <span className='js-button-title'>
           {selectedItem ? selectedItem : `Default`}
         </span>
-        <i className="select__icon" data-feather="chevron-down"></i>
+        <i className='select__icon' data-feather='chevron-down'></i>
       </button>
 
       <div
         className={`select__dropdown js-dropdown js-form-dd ${
           ddActive ? "-is-visible" : ""
-        }`}
-      >
+        }`}>
         <input
           onChange={(e) => setSearchQuery(e.target.value)}
-          type="text"
-          placeholder="Search"
-          className="select__search js-search"
+          type='text'
+          placeholder='Search'
+          className='select__search js-search'
         />
 
-        <div className="select__options js-options">
+        <div className='select__options js-options'>
           {ddoptions
             .filter((elm) =>
-              elm.label?.toLowerCase().includes(searchQuery?.toLowerCase()),
+              elm.label?.toLowerCase().includes(searchQuery?.toLowerCase())
             )
             .map((elm, i) => (
               <div
@@ -43,9 +41,8 @@ export default function SelectWithSearch() {
                   setSelectedItem(elm.label);
                   setDdActive(false);
                 }}
-                className="select__options__button"
-                key={i}
-              >
+                className='select__options__button'
+                key={i}>
                 {elm.label}
               </div>
             ))}

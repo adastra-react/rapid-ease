@@ -17,7 +17,7 @@ if (typeof window !== "undefined") {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <head></head>
       <body className={dmsans.className}>
         <Wrapper>{children}</Wrapper>
