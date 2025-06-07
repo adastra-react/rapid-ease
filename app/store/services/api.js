@@ -1,4 +1,6 @@
 // app/store/services/api.js
+// If this file already exists, just make sure it has the correct configuration
+
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";

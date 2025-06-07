@@ -5865,6 +5865,12 @@ h6 {
   }
 }
 
+.tourCard__List__image {
+  width: 280px;
+  height: 260px;
+  overflow: hidden; /* Prevents content from spilling out if the image doesn't fit perfectly */
+}
+
 .tourCard.-type-2 .tourCard__image {
   position: relative;
   flex-shrink: 0;

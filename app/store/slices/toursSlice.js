@@ -1,127 +1,163 @@
 // app/store/slices/toursSlice.js
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Thunk for fetching a single tour
-export const fetchTourById = createAsyncThunk(
-  "tours/fetchTourById",
-  async (tourId, { rejectWithValue }) => {
+"use client";
+
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import tourService from "../services/tourService";
+
+// Async thunks
+export const fetchTours = createAsyncThunk(
+  "tours/fetchTours",
+  async (_, { getState, rejectWithValue }) => {
+    const { tours } = getState();
+    const { currentPage, filters } = tours;
+
     try {
-      const response = await fetch(`/api/tours/${tourId}`);
-      if (!response.ok) throw new Error("Failed to fetch tour");
-      return await response.json();
+      const response = await tourService.getAllTours({
+        page: currentPage,
+        ...filters,
+      });
+      return response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
-// Initial state structure based on your tour data
+export const fetchTourById = createAsyncThunk(
+  "tours/fetchTourById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await tourService.getTourById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchSingleTour = createAsyncThunk(
+  "tours/fetchSingleTour",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await tourService.getSingleTour(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchTourStats = createAsyncThunk(
+  "tours/fetchTourStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await tourService.getTourStats();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Initial state
 const initialState = {
   tours: [],
-  selectedTour: null,
+  tour: null,
+  stats: null,
+  totalTours: 0,
+  totalPages: 0,
+  currentPage: 1,
   loading: false,
   error: null,
   filters: {
+    minPrice: null,
+    maxPrice: null,
+    minDuration: null,
+    maxDuration: null,
     location: "",
-    duration: "",
-    priceRange: [0, 5000],
-    rating: 0,
-    category: "",
-  },
-  bookingInfo: {
-    selectedDate: null,
-    selectedTime: null,
-    adultCount: 0,
-    youthCount: 0,
-    childrenCount: 0,
-    addedServices: [],
-    totalPrice: 0,
+    sort: "-createdAt",
   },
 };
 
+// Create slice
 const toursSlice = createSlice({
   name: "tours",
   initialState,
   reducers: {
-    // Update filters
-    updateFilters: (state, action) => {
+    setFilters: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    // Update booking info
-    updateBookingInfo: (state, action) => {
-      state.bookingInfo = { ...state.bookingInfo, ...action.payload };
+    resetFilters: (state) => {
+      state.filters = initialState.filters;
     },
-    // Calculate total price based on counts and prices
-    calculateTotalPrice: (state) => {
-      if (!state.selectedTour) return;
-
-      const { adultPrice, youthPrice, childrenPrice } =
-        state.selectedTour.pricing;
-      const { adultCount, youthCount, childrenCount, addedServices } =
-        state.bookingInfo;
-
-      let total =
-        adultPrice * adultCount +
-        youthPrice * youthCount +
-        childrenPrice * childrenCount;
-
-      // Add any additional services
-      addedServices.forEach((service) => {
-        total += service.price;
-      });
-
-      state.bookingInfo.totalPrice = total;
-    },
-    // Toggle wishlist status for a tour
-    toggleWishlist: (state, action) => {
-      const tourId = action.payload;
-      const tour = state.tours.find((t) => t.id === tourId);
-      if (tour) {
-        tour.isWishlisted = !tour.isWishlisted;
-      }
-      if (state.selectedTour && state.selectedTour.id === tourId) {
-        state.selectedTour.isWishlisted = !state.selectedTour.isWishlisted;
-      }
-    },
-    // Add a review for a tour
-    addReview: (state, action) => {
-      const { tourId, review } = action.payload;
-      if (state.selectedTour && state.selectedTour.id === tourId) {
-        state.selectedTour.reviews.push(review);
-        // Recalculate average rating
-        const totalRating = state.selectedTour.reviews.reduce(
-          (sum, r) => sum + r.rating,
-          0
-        );
-        state.selectedTour.rating =
-          totalRating / state.selectedTour.reviews.length;
-      }
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch all tours cases
+      // Handle fetchTours
+      .addCase(fetchTours.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.tours = []; // Clear tours while fetching
+      })
+      .addCase(fetchTours.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tours = action.payload.data.tours;
+        state.totalTours = action.payload.totalTours;
+        state.totalPages = action.payload.totalPages;
+      })
+      .addCase(fetchTours.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch tours";
+      })
+
+      // Handle fetchTourById
       .addCase(fetchTourById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchTourById.fulfilled, (state, action) => {
-        state.selectedTour = action.payload;
         state.loading = false;
+        state.tour = action.payload.data.tour;
       })
       .addCase(fetchTourById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Failed to fetch tour";
+      })
+
+      // Handle fetchSingleTourContent
+      .addCase(fetchSingleTour.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.tour = null; // Clear current tour
+      })
+      .addCase(fetchSingleTour.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tour = action.payload.data.tour || action.payload.data;
+      })
+      .addCase(fetchSingleTour.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch single tour";
+      })
+
+      // Handle fetchTourStats
+      .addCase(fetchTourStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTourStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.stats = action.payload.data.stats;
+      })
+      .addCase(fetchTourStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch tour stats";
       });
   },
 });
 
-export const {
-  updateFilters,
-  updateBookingInfo,
-  calculateTotalPrice,
-  toggleWishlist,
-  addReview,
-} = toursSlice.actions;
-
+export const { setFilters, resetFilters, setCurrentPage } = toursSlice.actions;
 export default toursSlice.reducer;

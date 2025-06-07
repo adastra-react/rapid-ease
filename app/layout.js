@@ -4,13 +4,15 @@ import "../public/css/style.css";
 import { DM_Sans } from "next/font/google";
 import ScrollTopBehaviour from "@/components/common/ScrollTopBehavier";
 import Wrapper from "@/components/layout/Wrapper";
+import { ReduxProvider } from "./provider";
+
 const dmsans = DM_Sans({
   weight: ["400", "500", "700"],
   style: ["normal", "italic"],
   subsets: ["latin"],
   display: "swap",
 });
-// const inter = Inter({ subsets: ["latin"] });
+
 if (typeof window !== "undefined") {
   import("bootstrap");
 }
@@ -20,7 +22,13 @@ export default function RootLayout({ children }) {
     <html lang='en'>
       <head></head>
       <body className={dmsans.className}>
-        <Wrapper>{children}</Wrapper>
+        <ReduxProvider>
+          <Wrapper>
+            <div className='page-transition'>
+              <div className='page-transition__content'>{children}</div>
+            </div>
+          </Wrapper>
+        </ReduxProvider>
         <ScrollToTop />
         <ScrollTopBehaviour />
       </body>

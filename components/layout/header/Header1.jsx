@@ -101,10 +101,10 @@ export default function Header1() {
           </div>
         </div>
       </header>
-      {/* <MobileMenu
+      <MobileMenu
         setMobileMenuOpen={setMobileMenuOpen}
         mobileMenuOpen={mobileMenuOpen}
-      /> */}
+      />
     </>
   );
 }

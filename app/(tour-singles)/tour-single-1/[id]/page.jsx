@@ -21,7 +21,6 @@ export default function page({ params }) {
       <main>
         <Header1 />
         <PageHeader />
-
         <SingleOne tour={tour} />
         <TourSlider />
         <FooterOne />
