@@ -16,6 +16,7 @@ import Gallery1 from "../Galleries/Gallery1";
 import DateCalender from "../DateCalender";
 import RoadMap2 from "../Roadmap2";
 import CommentBox from "../CommentBox";
+import Head from "next/head";
 
 export default function SingleOne() {
   const [tour, setTour] = useState(null);

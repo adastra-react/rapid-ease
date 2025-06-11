@@ -1,4 +1,4 @@
-// app/store/services/bookingService.js
+// app/store/services/bookingService.js - Updated for WiPay Integration
 class BookingService {
   constructor() {
     this.baseURL =
@@ -31,6 +31,60 @@ class BookingService {
     }
   }
 
+  async createWiPayPayment(paymentData) {
+    try {
+      console.log("💳 Creating WiPay payment:", paymentData);
+
+      const response = await fetch(`${this.baseURL}/payments/wipay/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create WiPay payment");
+      }
+
+      console.log("✅ WiPay payment URL created:", data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error creating WiPay payment:", error);
+      throw error;
+    }
+  }
+
+  async verifyWiPayPayment(bookingId) {
+    try {
+      console.log("🔍 Verifying WiPay payment for booking:", bookingId);
+
+      const response = await fetch(
+        `${this.baseURL}/bookings/${bookingId}/verify-payment`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to verify payment");
+      }
+
+      console.log("✅ Payment verification result:", data);
+      return data;
+    } catch (error) {
+      console.error("❌ Error verifying WiPay payment:", error);
+      throw error;
+    }
+  }
+
   async getBooking(bookingId) {
     try {
       const response = await fetch(`${this.baseURL}/bookings/${bookingId}`);
@@ -43,24 +97,6 @@ class BookingService {
       return data;
     } catch (error) {
       console.error("❌ Error getting booking:", error);
-      throw error;
-    }
-  }
-
-  async verifyPayment(bookingId) {
-    try {
-      const response = await fetch(
-        `${this.baseURL}/bookings/${bookingId}/verify-payment`
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to verify payment");
-      }
-
-      return data;
-    } catch (error) {
-      console.error("❌ Error verifying payment:", error);
       throw error;
     }
   }
@@ -231,6 +267,16 @@ class BookingService {
       errors.push("At least one guest is required");
     }
 
+    // Jamaica phone validation
+    if (bookingData.customerInfo?.phone) {
+      const cleanPhone = this.formatJamaicaPhone(
+        bookingData.customerInfo.phone
+      );
+      if (!cleanPhone.startsWith("876") || cleanPhone.length !== 10) {
+        errors.push("Please provide a valid Jamaica phone number (876XXXXXXX)");
+      }
+    }
+
     return {
       isValid: errors.length === 0,
       errors,
@@ -275,6 +321,77 @@ class BookingService {
       },
       totalAmount,
       currency: "JMD",
+    };
+  }
+
+  // Create booking and return WiPay payment URL (all-in-one method)
+  async createBookingWithPayment(bookingData) {
+    try {
+      console.log("🚀 Starting booking and payment process...");
+
+      // Validate booking data
+      const validation = this.validateBookingData(bookingData);
+      if (!validation.isValid) {
+        throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
+      }
+
+      // Format phone number
+      bookingData.customerInfo.phone = this.formatJamaicaPhone(
+        bookingData.customerInfo.phone
+      );
+
+      // Create booking via your existing backend endpoint
+      // This will create the booking AND return the WiPay payment URL
+      const result = await this.createBooking(bookingData);
+
+      console.log("✅ Booking and payment URL created:", result);
+
+      return result;
+    } catch (error) {
+      console.error("❌ Error in booking and payment process:", error);
+      throw error;
+    }
+  }
+
+  // Handle payment completion (called from modal when WiPay returns)
+  async handlePaymentCompletion(paymentData) {
+    try {
+      console.log("🎯 Handling payment completion:", paymentData);
+
+      const { order_id: bookingId } = paymentData;
+
+      if (!bookingId) {
+        throw new Error("No booking ID found in payment data");
+      }
+
+      // Verify the payment status with your backend
+      const verificationResult = await this.verifyWiPayPayment(bookingId);
+
+      console.log("✅ Payment verification completed:", verificationResult);
+
+      return {
+        success: verificationResult.data.paymentStatus === "completed",
+        booking: verificationResult.data.booking,
+        paymentStatus: verificationResult.data.paymentStatus,
+        bookingStatus: verificationResult.data.bookingStatus,
+      };
+    } catch (error) {
+      console.error("❌ Error handling payment completion:", error);
+      throw error;
+    }
+  }
+
+  // Utility method to check if WiPay is available (for testing)
+  isWiPayAvailable() {
+    return process.env.WIPAY_ENVIRONMENT !== "mock";
+  }
+
+  // Get WiPay environment info
+  getWiPayInfo() {
+    return {
+      environment: process.env.WIPAY_ENVIRONMENT || "live",
+      developerId: process.env.NEXT_PUBLIC_WIPAY_DEVELOPER_ID,
+      isLive: process.env.WIPAY_ENVIRONMENT === "live",
     };
   }
 }
