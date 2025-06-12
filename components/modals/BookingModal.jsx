@@ -7,9 +7,8 @@ export default function BookingModal({
   bookingData,
   onBookingSuccess,
 }) {
-  const [currentStep, setCurrentStep] = useState("booking"); // 'booking', 'processing', 'redirecting', 'success', 'failed'
+  const [step, setStep] = useState("booking"); // 'booking', 'payment', 'processing', 'success', 'failed'
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
   const [customerInfo, setCustomerInfo] = useState({
     firstName: "",
     lastName: "",
@@ -18,232 +17,144 @@ export default function BookingModal({
     specialRequests: "",
   });
   const [errors, setErrors] = useState({});
-  const [bookingCreated, setBookingCreated] = useState(null);
-  const [paymentWindow, setPaymentWindow] = useState(null);
+  const [paypalLoaded, setPaypalLoaded] = useState(false);
 
-  // Fix tour object
-  const getFixedTour = () => {
-    if (!tour) return null;
-
-    let tourId = null;
-    if (tour.id && typeof tour.id === "number") {
-      tourId = tour.id;
-    } else if (tour.tourId && typeof tour.tourId === "number") {
-      tourId = tour.tourId;
-    } else if (
-      tour.id &&
-      typeof tour.id === "string" &&
-      !isNaN(parseInt(tour.id))
-    ) {
-      tourId = parseInt(tour.id);
-    } else {
-      const urlParams = window.location.pathname.split("/");
-      const urlTourId = urlParams[urlParams.length - 1];
-      if (urlTourId && !isNaN(parseInt(urlTourId))) {
-        tourId = parseInt(urlTourId);
-      } else {
-        tourId = 39; // Fallback
-      }
-    }
-
-    return {
-      ...tour,
-      id: tourId,
-      title: tour.title || "Tour Booking",
-      price: tour.price || tour.basePrice || 15000,
-      pricing: tour.pricing || {
-        adultPrice: tour.price || tour.basePrice || 15000,
-        youthPrice: (tour.price || tour.basePrice || 15000) * 0.8,
-        childrenPrice: (tour.price || tour.basePrice || 15000) * 0.5,
-        servicePrice: 2000,
-      },
-      duration: tour.duration || "4 hours",
-    };
+  const tourData = {
+    id: tour?.id || tour?.tourId || 39,
+    title: tour?.title || "Tour Booking",
+    price: tour?.price || tour?.basePrice || 15000,
+    duration: tour?.duration || "4 hours",
   };
 
-  // Listen for WiPay payment completion messages
+  // Load PayPal SDK
   useEffect(() => {
-    const handleMessage = (event) => {
-      console.log("🎯 Received message:", event.data);
-
-      if (event.data.type === "WIPAY_PAYMENT_COMPLETE") {
-        const { paymentData } = event.data;
-        console.log("💳 Payment data received:", paymentData);
-
-        // Close payment window if it exists
-        if (paymentWindow && !paymentWindow.closed) {
-          paymentWindow.close();
-          setPaymentWindow(null);
-        }
-
-        if (
-          paymentData.status === "success" ||
-          paymentData.response_code === "00"
-        ) {
-          setCurrentStep("success");
-          if (onBookingSuccess) {
-            onBookingSuccess({
-              booking: bookingCreated,
-              paymentStatus: "completed",
-              transactionId: paymentData.transaction_id,
-              paymentData,
-            });
-          }
-        } else {
-          setCurrentStep("failed");
-        }
-
-        setLoading(false);
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [paymentWindow, bookingCreated, onBookingSuccess]);
-
-  // Clean up payment window on unmount
-  useEffect(() => {
-    return () => {
-      if (paymentWindow && !paymentWindow.closed) {
-        paymentWindow.close();
-      }
-    };
-  }, [paymentWindow]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (typeof window !== "undefined" && !window.paypal && !paypalLoaded) {
+      const script = document.createElement("script");
+      script.src = `https://www.paypal.com/sdk/js?client-id=${
+        process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test"
+      }&currency=USD&components=buttons`;
+      script.async = true;
+      script.onload = () => setPaypalLoaded(true);
+      document.body.appendChild(script);
+    } else if (window.paypal) {
+      setPaypalLoaded(true);
     }
+  }, []);
+
+  const handleInputChange = (field, value) => {
+    setCustomerInfo((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const validateForm = () => {
+  const validateBooking = () => {
     const newErrors = {};
 
-    if (!selectedDate) newErrors.selectedDate = "Please select a date";
     if (!customerInfo.firstName.trim())
-      newErrors.firstName = "First name is required";
+      newErrors.firstName = "First name required";
     if (!customerInfo.lastName.trim())
-      newErrors.lastName = "Last name is required";
-    if (!customerInfo.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(customerInfo.email)) {
-      newErrors.email = "Email is invalid";
-    }
-    if (!customerInfo.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
-
+      newErrors.lastName = "Last name required";
     if (
-      bookingData.adults === 0 &&
-      bookingData.youth === 0 &&
-      bookingData.children === 0
+      !customerInfo.email.trim() ||
+      !/\S+@\S+\.\S+/.test(customerInfo.email)
     ) {
-      newErrors.guests = "Please select at least one guest";
+      newErrors.email = "Valid email required";
     }
+    if (!customerInfo.phone.trim()) newErrors.phone = "Phone required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCreateBookingAndPayment = async () => {
-    if (!validateForm()) return;
+  const formatJamaicaPhone = (phone) => {
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.startsWith("876") && cleanPhone.length === 10) {
+      return cleanPhone;
+    } else if (cleanPhone.startsWith("1876") && cleanPhone.length === 11) {
+      return cleanPhone.substring(1);
+    } else if (cleanPhone.length === 7) {
+      return "876" + cleanPhone;
+    }
+    return cleanPhone;
+  };
 
-    setLoading(true);
-    setCurrentStep("processing");
-
+  const createBooking = async (paymentData) => {
     try {
-      const fixedTour = getFixedTour();
+      const baseURL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 
-      // Create booking
+      // Use the selected date and time from the sidebar
+      const selectedDate = bookingData.selectedDate;
+      const selectedTime = bookingData.selectedTime;
+
+      if (!selectedDate) {
+        throw new Error("Booking date is required");
+      }
+
+      if (!selectedTime) {
+        throw new Error("Booking time is required");
+      }
+
       const bookingPayload = {
-        tour: fixedTour.id,
-        customerInfo,
-        startDate: selectedDate,
+        tour: tourData.id,
+        customerInfo: {
+          ...customerInfo,
+          phone: formatJamaicaPhone(customerInfo.phone),
+        },
+        startDate: selectedDate, // Use the sidebar date
+        startTime: selectedTime, // Use the sidebar time
         adults: bookingData.adults || 1,
         youth: bookingData.youth || 0,
         children: bookingData.children || 0,
         additionalServices:
           bookingData.isExtraService || bookingData.isServicePerPerson || false,
+        totalAmount: bookingData.totalAmount, // Use exact amount from sidebar
+        currency: "USD", // Specify currency
+        paymentData: {
+          method: "paypal",
+          transactionId: paymentData.transactionId,
+          status: "completed",
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          payerEmail: paymentData.payerEmail,
+          payerName: paymentData.payerName,
+        },
       };
 
-      console.log("📝 Creating booking...", bookingPayload);
+      console.log("🇯🇲 Creating booking via API:", bookingPayload);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/bookings`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bookingPayload),
-        }
-      );
+      const response = await fetch(`${baseURL}/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingPayload),
+      });
 
-      const result = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to create booking");
-      }
-
-      console.log("✅ Booking created:", result);
-      setBookingCreated(result.data.booking);
-
-      // Check if we have a payment URL
-      if (result.data.paymentUrl) {
-        setCurrentStep("redirecting");
-
-        // Open WiPay payment in popup window
-        const popup = window.open(
-          result.data.paymentUrl,
-          "wipay_payment",
-          "width=800,height=600,scrollbars=yes,resizable=yes,status=yes"
+        console.error("❌ API Error Response:", data);
+        throw new Error(
+          data.message || data.error || "Failed to create booking"
         );
-
-        setPaymentWindow(popup);
-
-        // Check if popup was blocked
-        if (!popup || popup.closed || typeof popup.closed === "undefined") {
-          alert(
-            "Pop-up blocked! Please allow pop-ups for this site and try again."
-          );
-          setCurrentStep("failed");
-          setLoading(false);
-          return;
-        }
-
-        // Monitor if user closes popup manually
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            if (currentStep === "redirecting") {
-              setCurrentStep("failed");
-              setLoading(false);
-            }
-          }
-        }, 1000);
-      } else {
-        throw new Error("No payment URL received from server");
       }
+
+      console.log("✅ Booking created successfully:", data);
+      return data;
     } catch (error) {
-      console.error("❌ Booking/Payment error:", error);
-      setCurrentStep("failed");
-      setLoading(false);
+      console.error("❌ Error creating booking:", error);
+      throw error;
     }
   };
 
-  const handleClose = () => {
-    // Close payment window if open
-    if (paymentWindow && !paymentWindow.closed) {
-      paymentWindow.close();
-      setPaymentWindow(null);
-    }
+  const handleContinueToPayment = () => {
+    if (!validateBooking()) return;
+    setStep("payment");
+  };
 
-    // Reset all states
-    setCurrentStep("booking");
+  const handleClose = () => {
+    setStep("booking");
     setLoading(false);
-    setSelectedDate("");
     setCustomerInfo({
       firstName: "",
       lastName: "",
@@ -252,25 +163,90 @@ export default function BookingModal({
       specialRequests: "",
     });
     setErrors({});
-    setBookingCreated(null);
     onClose();
+  };
+
+  // Format date for display
+  const formatDateForDisplay = (dateString) => {
+    if (!dateString) return "Not selected";
+    const [year, month, day] = dateString.split("-");
+    const date = new Date(year, month - 1, day); // month - 1 because JS months are 0-indexed
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   if (!isOpen) return null;
 
-  const fixedTour = getFixedTour();
+  const inputStyle = (error) => ({
+    width: "100%",
+    padding: "12px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    border: error ? "1px solid #dc3545" : "1px solid #ddd",
+  });
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case "processing":
-        return (
-          <div style={{ textAlign: "center", padding: "60px 40px" }}>
+  const buttonStyle = (primary = false, disabled = false) => ({
+    padding: "12px 24px",
+    borderRadius: "8px",
+    cursor: disabled ? "not-allowed" : "pointer",
+    backgroundColor: disabled ? "#ccc" : primary ? "#1e7e34" : "transparent",
+    color: primary ? "white" : "#333",
+    border: primary ? "none" : "1px solid #ddd",
+  });
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}>
+      <div
+        style={{
+          backgroundColor: "white",
+          borderRadius: "12px",
+          maxWidth: "600px",
+          width: "90%",
+          maxHeight: "90vh",
+          overflow: "auto",
+          position: "relative",
+          padding: "40px",
+        }}>
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          style={{
+            position: "absolute",
+            top: "15px",
+            right: "15px",
+            background: "none",
+            border: "none",
+            fontSize: "24px",
+            cursor: "pointer",
+          }}>
+          ×
+        </button>
+
+        {/* Processing State */}
+        {step === "processing" && (
+          <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "48px", marginBottom: "20px" }}>⏳</div>
-            <h3 style={{ marginBottom: "15px", color: "#333" }}>
-              Creating your booking...
+            <h3 style={{ color: "#1e7e34", marginBottom: "15px" }}>
+              Processing Your Booking...
             </h3>
             <p style={{ color: "#666", marginBottom: "20px" }}>
-              Please wait while we prepare your Jamaica tour booking.
+              Please wait while we confirm your payment and create your booking.
             </p>
             <div
               style={{
@@ -283,124 +259,83 @@ export default function BookingModal({
                 margin: "0 auto",
               }}></div>
           </div>
-        );
+        )}
 
-      case "redirecting":
-        return (
-          <div style={{ textAlign: "center", padding: "60px 40px" }}>
-            <div style={{ fontSize: "48px", marginBottom: "20px" }}>🏦</div>
-            <h3 style={{ marginBottom: "15px", color: "#1e7e34" }}>
-              Redirecting to WiPay...
+        {/* Success State */}
+        {step === "success" && (
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "20px" }}>🎉</div>
+            <h3 style={{ color: "#1e7e34", marginBottom: "15px" }}>
+              Booking Confirmed!
             </h3>
             <p style={{ color: "#666", marginBottom: "20px" }}>
-              Complete your payment securely with WiPay Jamaica.
-            </p>
-            <p
-              style={{ color: "#666", fontSize: "14px", marginBottom: "20px" }}>
-              A new window has opened for payment. If you don't see it, please
-              check if pop-ups are blocked.
+              Your Jamaica tour has been successfully booked and paid for.
             </p>
             <div
               style={{
-                width: "40px",
-                height: "40px",
-                border: "4px solid #f3f3f3",
-                borderTop: "4px solid #1e7e34",
-                borderRadius: "50%",
-                animation: "spin 1s linear infinite",
-                margin: "0 auto 20px",
-              }}></div>
-            <button
-              onClick={handleClose}
-              style={{
-                padding: "12px 24px",
-                border: "1px solid #ccc",
-                backgroundColor: "transparent",
+                backgroundColor: "#f8f9fa",
                 borderRadius: "8px",
-                cursor: "pointer",
+                padding: "20px",
+                marginBottom: "20px",
+                textAlign: "left",
               }}>
-              Cancel
-            </button>
-          </div>
-        );
-
-      case "success":
-        return (
-          <div style={{ textAlign: "center", padding: "60px 40px" }}>
-            <div style={{ fontSize: "64px", marginBottom: "20px" }}>🎉</div>
-            <h3 style={{ marginBottom: "15px", color: "#1e7e34" }}>
-              Payment Successful!
-            </h3>
-            <p style={{ color: "#666", marginBottom: "30px" }}>
-              Your Jamaica tour has been successfully booked and paid for
-              through WiPay.
-            </p>
-
-            {bookingCreated && (
-              <div
-                style={{
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: "12px",
-                  padding: "25px",
-                  marginBottom: "30px",
-                  textAlign: "left",
-                }}>
-                <h4 style={{ marginBottom: "15px", color: "#333" }}>
-                  Booking Details
-                </h4>
-                <p>
-                  <strong>Booking ID:</strong> {bookingCreated._id}
-                </p>
-                <p>
-                  <strong>Tour:</strong> {fixedTour?.title}
-                </p>
-                <p>
-                  <strong>Date:</strong> {selectedDate}
-                </p>
-                <p>
-                  <strong>Guests:</strong> {bookingData.adults} Adults,{" "}
-                  {bookingData.youth} Youth, {bookingData.children} Children
-                </p>
-                <p>
-                  <strong>Total Paid:</strong> JMD $
-                  {bookingData.totalAmount?.toLocaleString()}
-                </p>
-              </div>
-            )}
-
+              <h4>Booking Details</h4>
+              <p>
+                <strong>Tour:</strong> {tourData.title}
+              </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {formatDateForDisplay(bookingData.selectedDate)}
+              </p>
+              <p>
+                <strong>Time:</strong> {bookingData.selectedTime}
+              </p>
+              <p>
+                <strong>Total Paid:</strong> $
+                {bookingData.totalAmount?.toFixed(2)} USD
+              </p>
+            </div>
             <p
-              style={{ fontSize: "13px", color: "#666", marginBottom: "30px" }}>
+              style={{ fontSize: "13px", color: "#666", marginBottom: "20px" }}>
               A confirmation email has been sent to {customerInfo.email}
             </p>
-
-            <button
-              onClick={handleClose}
-              style={{
-                padding: "15px 30px",
-                backgroundColor: "#1e7e34",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}>
+            <button onClick={handleClose} style={buttonStyle(true)}>
               Complete
             </button>
           </div>
-        );
+        )}
 
-      case "failed":
-        return (
-          <div style={{ textAlign: "center", padding: "60px 40px" }}>
+        {/* Failed State */}
+        {step === "failed" && (
+          <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "48px", marginBottom: "20px" }}>❌</div>
-            <h3 style={{ marginBottom: "15px", color: "#dc3545" }}>
-              Payment Failed
+            <h3 style={{ color: "#dc3545", marginBottom: "15px" }}>
+              Booking Failed
             </h3>
-            <p style={{ color: "#666", marginBottom: "30px" }}>
-              Your payment could not be processed. Please try again or contact
-              support.
+            <p style={{ color: "#666", marginBottom: "20px" }}>
+              There was an issue processing your booking. Please check the
+              details and try again.
             </p>
-
+            <div
+              style={{
+                backgroundColor: "#f8d7da",
+                border: "1px solid #f5c6cb",
+                borderRadius: "8px",
+                padding: "15px",
+                marginBottom: "20px",
+                fontSize: "14px",
+                color: "#721c24",
+                textAlign: "left",
+              }}>
+              Common issues:
+              <ul style={{ margin: "5px 0", paddingLeft: "20px" }}>
+                <li>Date and time must be selected in the tour details</li>
+                <li>
+                  Phone number must be a valid Jamaica number (876XXXXXXX)
+                </li>
+                <li>All required fields must be completed</li>
+              </ul>
+            </div>
             <div
               style={{
                 display: "flex",
@@ -408,478 +343,432 @@ export default function BookingModal({
                 justifyContent: "center",
               }}>
               <button
-                onClick={() => {
-                  setCurrentStep("booking");
-                  setErrors({});
-                }}
-                style={{
-                  padding: "12px 24px",
-                  backgroundColor: "#1e7e34",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}>
-                Try Again
+                onClick={() => setStep("booking")}
+                style={buttonStyle(true)}>
+                Fix Details
               </button>
-              <button
-                onClick={handleClose}
-                style={{
-                  padding: "12px 24px",
-                  border: "1px solid #ccc",
-                  backgroundColor: "transparent",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}>
+              <button onClick={handleClose} style={buttonStyle()}>
                 Cancel
               </button>
             </div>
           </div>
-        );
+        )}
 
-      default:
-        return (
-          <div style={{ padding: "40px" }}>
-            {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: "30px" }}>
-              <h2 style={{ color: "#1e7e34", marginBottom: "10px" }}>
-                🇯🇲 Book Your Jamaica Tour
-              </h2>
-              <p style={{ color: "#666" }}>
-                Complete your booking information below
-              </p>
-            </div>
+        {/* Booking Form */}
+        {step === "booking" && (
+          <>
+            <h2
+              style={{
+                color: "#1e7e34",
+                marginBottom: "10px",
+                textAlign: "center",
+              }}>
+              🇯🇲 Book Your Jamaica Tour
+            </h2>
 
             {/* Tour Summary */}
-            {fixedTour && (
-              <div
-                style={{
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: "12px",
-                  padding: "25px",
-                  marginBottom: "30px",
-                }}>
-                <h3 style={{ marginBottom: "15px", color: "#333" }}>
-                  🎯 {fixedTour.title}
-                </h3>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                    gap: "15px",
-                    fontSize: "14px",
-                  }}>
+            <div
+              style={{
+                backgroundColor: "#f8f9fa",
+                borderRadius: "8px",
+                padding: "20px",
+                marginBottom: "30px",
+              }}>
+              <h4>{tourData.title}</h4>
+              <p>Duration: {tourData.duration}</p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {formatDateForDisplay(bookingData.selectedDate)}
+              </p>
+              <p>
+                <strong>Time:</strong>{" "}
+                {bookingData.selectedTime || "Not selected"}
+              </p>
+              <div style={{ marginBottom: "10px", fontSize: "14px" }}>
+                {bookingData.adults > 0 && (
                   <div>
-                    <strong>Adults:</strong> {bookingData.adults} × JMD $
-                    {fixedTour.pricing?.adultPrice?.toLocaleString() ||
-                      fixedTour.price?.toLocaleString()}
-                  </div>
-                  <div>
-                    <strong>Youth:</strong> {bookingData.youth} × JMD $
+                    Adults: {bookingData.adults} × $
                     {(
-                      fixedTour.pricing?.youthPrice || fixedTour.price * 0.8
-                    )?.toLocaleString()}
-                  </div>
-                  <div>
-                    <strong>Children:</strong> {bookingData.children} × JMD $
+                      bookingData.totalAmount /
+                        (bookingData.adults +
+                          bookingData.youth +
+                          bookingData.children) || 943
+                    ).toFixed(2)}{" "}
+                    = $
                     {(
-                      fixedTour.pricing?.childrenPrice || fixedTour.price * 0.5
-                    )?.toLocaleString()}
-                  </div>
-                  <div>
-                    <strong>Duration:</strong> {fixedTour.duration}
-                  </div>
-                </div>
-                {(bookingData.isExtraService ||
-                  bookingData.isServicePerPerson) && (
-                  <div style={{ marginTop: "10px", fontSize: "14px" }}>
-                    <strong>Additional Services:</strong> JMD $2,000
+                      (bookingData.totalAmount /
+                        (bookingData.adults +
+                          bookingData.youth +
+                          bookingData.children) || 943) * bookingData.adults
+                    ).toFixed(2)}
                   </div>
                 )}
-                <div
-                  style={{
-                    borderTop: "1px solid #dee2e6",
-                    paddingTop: "15px",
-                    marginTop: "15px",
-                  }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "18px",
-                      fontWeight: "700",
-                      color: "#1e7e34",
-                    }}>
-                    <span>Total Amount:</span>
-                    <span>
-                      JMD ${bookingData.totalAmount?.toLocaleString()}
-                    </span>
+                {bookingData.youth > 0 && (
+                  <div>
+                    Youth: {bookingData.youth} × ${(0).toFixed(2)} = $
+                    {(0).toFixed(2)}
                   </div>
-                </div>
+                )}
+                {bookingData.children > 0 && (
+                  <div>
+                    Children: {bookingData.children} × ${(0).toFixed(2)} = $
+                    {(0).toFixed(2)}
+                  </div>
+                )}
+                {(bookingData.isExtraService ||
+                  bookingData.isServicePerPerson) && (
+                  <div>
+                    Additional Services: $
+                    {(
+                      (bookingData.isExtraService ? 40 : 0) +
+                      (bookingData.isServicePerPerson ? 40 : 0)
+                    ).toFixed(2)}
+                  </div>
+                )}
               </div>
-            )}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontWeight: "bold",
+                  color: "#1e7e34",
+                }}>
+                <span>Total: ${bookingData.totalAmount?.toFixed(2)} USD</span>
+              </div>
+            </div>
 
-            {/* Booking Form */}
-            <div>
-              {/* Date Selection */}
-              <div style={{ marginBottom: "25px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}>
-                  Select Date *
+            {/* Customer Info */}
+            <h4 style={{ marginBottom: "15px" }}>Customer Information</h4>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "15px",
+                marginBottom: "15px",
+              }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "5px" }}>
+                  First Name *
                 </label>
                 <input
-                  type='date'
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  style={{
-                    width: "100%",
-                    padding: "15px",
-                    border: errors.selectedDate
-                      ? "1px solid #dc3545"
-                      : "1px solid #ddd",
-                    borderRadius: "12px",
-                    fontSize: "15px",
-                  }}
-                  disabled={loading}
+                  value={customerInfo.firstName}
+                  onChange={(e) =>
+                    handleInputChange("firstName", e.target.value)
+                  }
+                  style={inputStyle(errors.firstName)}
                 />
-                {errors.selectedDate && (
-                  <p
-                    style={{
-                      color: "#dc3545",
-                      fontSize: "13px",
-                      marginTop: "5px",
-                    }}>
-                    {errors.selectedDate}
+                {errors.firstName && (
+                  <p style={{ color: "#dc3545", fontSize: "12px" }}>
+                    {errors.firstName}
                   </p>
                 )}
               </div>
-
-              {/* Customer Information */}
-              <h3 style={{ marginBottom: "20px", color: "#333" }}>
-                👤 Customer Information
-              </h3>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                  gap: "20px",
-                  marginBottom: "20px",
-                }}>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontWeight: "500",
-                    }}>
-                    First Name *
-                  </label>
-                  <input
-                    type='text'
-                    name='firstName'
-                    value={customerInfo.firstName}
-                    onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "15px",
-                      border: errors.firstName
-                        ? "1px solid #dc3545"
-                        : "1px solid #ddd",
-                      borderRadius: "12px",
-                      fontSize: "15px",
-                    }}
-                    disabled={loading}
-                  />
-                  {errors.firstName && (
-                    <p
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "13px",
-                        marginTop: "5px",
-                      }}>
-                      {errors.firstName}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontWeight: "500",
-                    }}>
-                    Last Name *
-                  </label>
-                  <input
-                    type='text'
-                    name='lastName'
-                    value={customerInfo.lastName}
-                    onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "15px",
-                      border: errors.lastName
-                        ? "1px solid #dc3545"
-                        : "1px solid #ddd",
-                      borderRadius: "12px",
-                      fontSize: "15px",
-                    }}
-                    disabled={loading}
-                  />
-                  {errors.lastName && (
-                    <p
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "13px",
-                        marginTop: "5px",
-                      }}>
-                      {errors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                  gap: "20px",
-                  marginBottom: "20px",
-                }}>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontWeight: "500",
-                    }}>
-                    Email *
-                  </label>
-                  <input
-                    type='email'
-                    name='email'
-                    value={customerInfo.email}
-                    onChange={handleInputChange}
-                    style={{
-                      width: "100%",
-                      padding: "15px",
-                      border: errors.email
-                        ? "1px solid #dc3545"
-                        : "1px solid #ddd",
-                      borderRadius: "12px",
-                      fontSize: "15px",
-                    }}
-                    disabled={loading}
-                  />
-                  {errors.email && (
-                    <p
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "13px",
-                        marginTop: "5px",
-                      }}>
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "8px",
-                      fontWeight: "500",
-                    }}>
-                    Jamaica Phone Number *
-                  </label>
-                  <input
-                    type='tel'
-                    name='phone'
-                    value={customerInfo.phone}
-                    onChange={handleInputChange}
-                    placeholder='876-123-4567'
-                    style={{
-                      width: "100%",
-                      padding: "15px",
-                      border: errors.phone
-                        ? "1px solid #dc3545"
-                        : "1px solid #ddd",
-                      borderRadius: "12px",
-                      fontSize: "15px",
-                    }}
-                    disabled={loading}
-                  />
-                  {errors.phone && (
-                    <p
-                      style={{
-                        color: "#dc3545",
-                        fontSize: "13px",
-                        marginTop: "5px",
-                      }}>
-                      {errors.phone}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: "30px" }}>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "8px",
-                    fontWeight: "500",
-                  }}>
-                  Special Requests (Optional)
+              <div>
+                <label style={{ display: "block", marginBottom: "5px" }}>
+                  Last Name *
                 </label>
-                <textarea
-                  name='specialRequests'
-                  value={customerInfo.specialRequests}
-                  onChange={handleInputChange}
-                  rows='4'
-                  style={{
-                    width: "100%",
-                    padding: "15px",
-                    border: "1px solid #ddd",
-                    borderRadius: "12px",
-                    fontSize: "15px",
-                    resize: "vertical",
-                    fontFamily: "inherit",
-                  }}
-                  placeholder='Any special requirements or requests...'
-                  disabled={loading}
+                <input
+                  value={customerInfo.lastName}
+                  onChange={(e) =>
+                    handleInputChange("lastName", e.target.value)
+                  }
+                  style={inputStyle(errors.lastName)}
                 />
+                {errors.lastName && (
+                  <p style={{ color: "#dc3545", fontSize: "12px" }}>
+                    {errors.lastName}
+                  </p>
+                )}
               </div>
+            </div>
 
-              {errors.guests && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "15px",
+                marginBottom: "15px",
+              }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "5px" }}>
+                  Email *
+                </label>
+                <input
+                  type='email'
+                  value={customerInfo.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  style={inputStyle(errors.email)}
+                />
+                {errors.email && (
+                  <p style={{ color: "#dc3545", fontSize: "12px" }}>
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "5px" }}>
+                  Jamaica Phone *
+                </label>
+                <input
+                  value={customerInfo.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder='876-123-4567'
+                  style={inputStyle(errors.phone)}
+                />
+                {errors.phone && (
+                  <p style={{ color: "#dc3545", fontSize: "12px" }}>
+                    {errors.phone}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: "30px" }}>
+              <label style={{ display: "block", marginBottom: "5px" }}>
+                Special Requests
+              </label>
+              <textarea
+                value={customerInfo.specialRequests}
+                onChange={(e) =>
+                  handleInputChange("specialRequests", e.target.value)
+                }
+                rows='3'
+                style={{
+                  ...inputStyle(),
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                }}
+                placeholder='Any special requirements or requests...'
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button onClick={handleClose} style={buttonStyle()}>
+                Cancel
+              </button>
+              <button
+                onClick={handleContinueToPayment}
+                style={buttonStyle(true)}>
+                Continue to Payment
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Payment Page */}
+        {step === "payment" && (
+          <>
+            <h2
+              style={{
+                color: "#1e7e34",
+                marginBottom: "20px",
+                textAlign: "center",
+              }}>
+              🇯🇲 Secure Payment
+            </h2>
+
+            {/* Booking Summary */}
+            <div
+              style={{
+                backgroundColor: "#f8f9fa",
+                borderRadius: "8px",
+                padding: "20px",
+                marginBottom: "30px",
+              }}>
+              <h4>Booking Summary</h4>
+              <p>Tour: {tourData.title}</p>
+              <p>Date: {formatDateForDisplay(bookingData.selectedDate)}</p>
+              <p>Time: {bookingData.selectedTime}</p>
+              <p>
+                Guests: {bookingData.adults} Adults, {bookingData.youth} Youth,{" "}
+                {bookingData.children} Children
+              </p>
+              <div
+                style={{
+                  borderTop: "1px solid #dee2e6",
+                  paddingTop: "10px",
+                  marginTop: "10px",
+                }}>
                 <p
                   style={{
-                    color: "#dc3545",
-                    fontSize: "14px",
-                    marginBottom: "20px",
-                    textAlign: "center",
+                    fontWeight: "bold",
+                    color: "#1e7e34",
+                    fontSize: "18px",
                   }}>
-                  {errors.guests}
+                  Total: ${bookingData.totalAmount?.toFixed(2)} USD
                 </p>
+              </div>
+            </div>
+
+            {/* PayPal Payment */}
+            <div style={{ marginBottom: "20px" }}>
+              <h4 style={{ marginBottom: "15px" }}>Payment Method</h4>
+
+              {paypalLoaded && window.paypal ? (
+                <div id='paypal-button-container'>
+                  <PayPalButtons
+                    tourData={tourData}
+                    bookingData={bookingData}
+                    customerInfo={customerInfo}
+                    onSuccess={(paymentData) => {
+                      setStep("processing");
+                      setLoading(true);
+
+                      createBooking(paymentData)
+                        .then((booking) => {
+                          setLoading(false);
+                          setStep("success");
+                          onBookingSuccess?.({
+                            booking,
+                            paymentStatus: "completed",
+                            transactionId: paymentData.transactionId,
+                          });
+                        })
+                        .catch((error) => {
+                          console.error("Booking creation failed:", error);
+                          setLoading(false);
+                          setStep("failed");
+                        });
+                    }}
+                    onError={() => {
+                      setStep("failed");
+                    }}
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "40px",
+                    backgroundColor: "#f8f9fa",
+                    borderRadius: "8px",
+                  }}>
+                  <p>Loading PayPal...</p>
+                  <div
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      border: "3px solid #f3f3f3",
+                      borderTop: "3px solid #1e7e34",
+                      borderRadius: "50%",
+                      animation: "spin 1s linear infinite",
+                      margin: "10px auto",
+                    }}></div>
+                </div>
               )}
             </div>
 
-            {/* Action Buttons */}
             <div
               style={{
                 display: "flex",
-                gap: "15px",
                 justifyContent: "space-between",
                 marginTop: "30px",
-                paddingTop: "20px",
-                borderTop: "1px solid #ddd",
               }}>
-              <button
-                onClick={handleClose}
-                style={{
-                  minWidth: "120px",
-                  padding: "16px 30px",
-                  border: "1px solid #ddd",
-                  color: "#333",
-                  backgroundColor: "transparent",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                }}
-                disabled={loading}>
-                Cancel
-              </button>
-
-              <button
-                onClick={handleCreateBookingAndPayment}
-                style={{
-                  minWidth: "240px",
-                  padding: "16px 30px",
-                  backgroundColor: loading ? "#ccc" : "#1e7e34",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                }}
-                disabled={loading}>
-                {loading ? "Processing..." : "Book & Pay with WiPay"}
+              <button onClick={() => setStep("booking")} style={buttonStyle()}>
+                ← Back
               </button>
             </div>
-          </div>
-        );
-    }
-  };
+          </>
+        )}
 
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 1000,
-        display: isOpen ? "flex" : "none",
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-      <div
-        style={{
-          backgroundColor: "white",
-          borderRadius: "12px",
-          maxWidth: "700px",
-          width: "90%",
-          maxHeight: "90vh",
-          overflow: "auto",
-          position: "relative",
-        }}>
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            color: "#333",
-            fontSize: "24px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            zIndex: 1001,
-            background: "white",
-            border: "none",
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          }}>
-          ×
-        </button>
-
-        {/* Step Content */}
-        {renderStepContent()}
+        {/* Loading Spinner Styles */}
+        <style jsx>{`
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}</style>
       </div>
-
-      <style jsx>{`
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
+}
+
+// PayPal Buttons Component
+function PayPalButtons({
+  tourData,
+  bookingData,
+  customerInfo,
+  onSuccess,
+  onError,
+}) {
+  useEffect(() => {
+    if (window.paypal) {
+      const container = document.getElementById("paypal-button-container");
+      if (container) {
+        container.innerHTML = ""; // Clear any existing buttons
+
+        window.paypal
+          .Buttons({
+            createOrder: (data, actions) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: bookingData.totalAmount.toFixed(2), // Use exact amount from sidebar
+                      currency_code: "USD",
+                    },
+                    description: `${tourData.title} - ${formatDateForDisplay(
+                      bookingData.selectedDate
+                    )}`,
+                    custom_id: `tour_${tourData.id}_${Date.now()}`,
+                    soft_descriptor: "Jamaica Tour",
+                  },
+                ],
+              });
+            },
+            onApprove: async (data, actions) => {
+              try {
+                const order = await actions.order.capture();
+                const paymentData = {
+                  transactionId: order.id,
+                  amount: order.purchase_units[0].amount.value,
+                  currency: "USD",
+                  status: "completed",
+                  payerEmail: order.payer.email_address,
+                  payerName: `${order.payer.name.given_name} ${order.payer.name.surname}`,
+                };
+
+                onSuccess(paymentData);
+              } catch (error) {
+                console.error("PayPal payment capture failed:", error);
+                onError(error);
+              }
+            },
+            onError: (err) => {
+              console.error("PayPal error:", err);
+              onError(err);
+            },
+            onCancel: (data) => {
+              console.log("PayPal payment cancelled:", data);
+              // Don't call onError for cancellation, just log it
+            },
+            style: {
+              layout: "vertical",
+              color: "gold",
+              shape: "rect",
+              label: "paypal",
+            },
+          })
+          .render("#paypal-button-container");
+      }
+    }
+  }, [window.paypal, bookingData.totalAmount]);
+
+  return <div id='paypal-button-container'></div>;
+
+  // Helper function for date formatting (moved inside component)
+  function formatDateForDisplay(dateString) {
+    if (!dateString) return "Not selected";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
 }
