@@ -31,6 +31,20 @@ export default function TourList1() {
   const [sidebarActive, setSidebarActive] = useState(false);
   const dropDownContainer = useRef();
 
+  // Function to truncate description to 15 words with ellipses
+  const truncateDescription = (text, maxWords = 15) => {
+    if (!text) return "";
+
+    const words = text.trim().split(/\s+/);
+
+    if (words.length <= maxWords) {
+      return text;
+    }
+
+    // Take first 15 words and add ellipses
+    return words.slice(0, maxWords).join(" ") + "...";
+  };
+
   useEffect(() => {
     // Fetch tours when component mounts
     dispatch(fetchTours());
@@ -63,16 +77,6 @@ export default function TourList1() {
       })
     );
   }, [dispatch, currentPage, filters]);
-
-  // Then in the return statement, where you render the pagination:
-  <div className='d-flex justify-center flex-column mt-60'>
-    <Pagination />
-
-    <div className='text-14 text-center mt-20'>
-      Showing results {tours.length ? (currentPage - 1) * 10 + 1 : 0}-
-      {Math.min(currentPage * 10, totalTours)} of {totalTours}
-    </div>
-  </div>;
 
   // Handle sort change
   const handleSortChange = (option) => {
@@ -240,7 +244,10 @@ export default function TourList1() {
                         </div>
 
                         <p className='tourCard__text mt-5'>
-                          {tour.description}
+                          {truncateDescription(
+                            tour.description || tour.overview,
+                            15
+                          )}
                         </p>
 
                         <div className='row x-gap-20 y-gap-5 pt-30'>

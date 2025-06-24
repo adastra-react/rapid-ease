@@ -28,8 +28,10 @@ export default function FooterOne() {
 
                   <div className='col-auto'>
                     <div className='text-20 fw-500'>
-                      Speak to our expert at
-                      <span className='text-accent-1'>1-800-453-6744</span>
+                      Speak with support
+                      <span className='text-accent-1'>
+                        <span> </span>1-876-301-3546
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -54,10 +56,10 @@ export default function FooterOne() {
 
                 <div className='y-gap-10 mt-20'>
                   <a className='d-block' href='#'>
-                    328 Queensberry Street, North Melbourne VIC3051, Australia.
+                    Montego Bay, Jamaica
                   </a>
                   <a className='d-block' href='#'>
-                    hi@Rapid Eases.com
+                    rapidease876@gmail.com
                   </a>
                 </div>
               </div>

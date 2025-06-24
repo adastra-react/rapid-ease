@@ -79,15 +79,15 @@ export default function SingleOne() {
 
               <Overview tour={tour} />
 
-              <div className='line mt-60 mb-60'></div>
+              {/* <div className='line mt-60 mb-60'></div> */}
 
-              <h2 className='text-30'>What's included</h2>
+              {/* <h2 className='text-30'>What's included</h2> */}
 
               <Included tour={tour} />
 
-              <div className='line mt-60 mb-60'></div>
+              {/* <div className='line mt-60 mb-60'></div> */}
 
-              <h2 className='text-30'>Itinerary</h2>
+              {/* <h2 className='text-30'>Itinerary</h2>
 
               <RoadMap2 tour={tour} />
 
@@ -104,20 +104,20 @@ export default function SingleOne() {
                       : null
                   }
                 />
-              </div>
+              </div> */}
 
-              <div className='line mt-60 mb-60'></div>
-
+              {/* <div className='line mt-60 mb-60'></div> */}
+              {/* 
               <h2 className='text-30'>Availability Calendar</h2>
-              <DateCalender tour={tour} />
+              <DateCalender tour={tour} /> */}
 
-              <div className='line mt-60 mb-60'></div>
+              {/* <div className='line mt-60 mb-60'></div>
 
               <h2 className='text-30'>FAQ</h2>
 
               <div className='accordion -simple row y-gap-20 mt-30 js-accordion'>
                 <Faq tour={tour} />
-              </div>
+              </div> */}
 
               <div className='line mt-60 mb-60'></div>
 

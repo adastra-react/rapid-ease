@@ -10,6 +10,7 @@ import Tour1 from "@/components/homes/tours/Tour1";
 import TourSlderOne from "@/components/homes/tours/TourSlderOne";
 import FooterOne from "@/components/layout/footers/FooterOne";
 import Header1 from "@/components/layout/header/Header1";
+import Header2 from "@/components/layout/header/Header2";
 
 export default function Home() {
   return (
@@ -20,11 +21,11 @@ export default function Home() {
       {/* <DestinationsOne /> */}
       <Tour1 />
       <Banner />
-      <TourTypeOne />
+      {/* <TourTypeOne /> */}
       <TourSlderOne />
-      <TestimonialOne />
       <BannerOne />
-      <ArticlesThree />
+      <TestimonialOne />
+      {/* <ArticlesThree /> */}
       <FooterOne />
     </main>
   );
