@@ -29,9 +29,9 @@ export const metadata = {
 
   // Open Graph metadata for social sharing
   openGraph: {
-    title: "Your Site Title",
-    description: "Your site description for social sharing",
-    url: "https://yourwebsite.com",
+    title: "RapidEase876",
+    description: "",
+    url: "https://rapidease876.com",
     siteName: "Your Site Name",
     images: [
       {
@@ -57,8 +57,8 @@ export const metadata = {
   // Favicon and app icons
   icons: {
     icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "16x16", type: "image/ico" },
+      { url: "/favicon.svg", sizes: "32x32", type: "image/svg" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
