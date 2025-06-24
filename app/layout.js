@@ -19,26 +19,28 @@ if (typeof window !== "undefined") {
 
 // Add your metadata here
 export const metadata = {
-  title: "RapicEase876 - Travel & Tour",
+  title: "RapidEase876 - Travel & Tour Services",
   description:
-    "Welcome to RapidEase876, your ultimate travel and tour companion. Explore the world with ease and comfort.",
-  keywords: "your, keywords, here",
-  authors: [{ name: "Your Name" }],
+    "Welcome to RapidEase876, your ultimate travel and tour companion. Explore Jamaica with ease and comfort through our premium travel services.",
+  keywords:
+    "travel, tour, Jamaica, transportation, travel services, RapidEase876",
+  authors: [{ name: "Suneil England" }],
   creator: "Suneil England",
   publisher: "RapidEase876",
 
   // Open Graph metadata for social sharing
   openGraph: {
-    title: "RapidEase876",
-    description: "",
+    title: "RapidEase876 - Premium Travel & Tour Services",
+    description:
+      "Welcome to RapidEase876, your ultimate travel and tour companion. Explore Jamaica with ease and comfort through our premium travel services.",
     url: "https://rapidease876.com",
-    siteName: "Your Site Name",
+    siteName: "RapidEase876",
     images: [
       {
-        url: "/app/favicon.svg", // Replace with your image URL
+        url: "https://rapidease876.com/og-image.jpg", // Use full URL, not relative path
         width: 1200,
         height: 630,
-        alt: "Your site preview image",
+        alt: "RapidEase876 - Premium Travel Services",
       },
     ],
     locale: "en_US",
@@ -46,19 +48,21 @@ export const metadata = {
   },
 
   // Twitter Card metadata
-  // twitter: {
-  //   card: "summary_large_image",
-  //   title: "Your Site Title",
-  //   description: "Your site description for Twitter",
-  //   creator: "@yourtwitterhandle",
-  //   images: ["https://yourwebsite.com/og-image.jpg"], // Same image as OG
-  // },
+  twitter: {
+    card: "summary_large_image",
+    title: "RapidEase876 - Premium Travel & Tour Services",
+    description:
+      "Welcome to RapidEase876, your ultimate travel and tour companion. Explore Jamaica with ease and comfort.",
+    creator: "@rapidease876", // Update with your actual Twitter handle
+    images: ["https://rapidease876.com/og-image.jpg"],
+  },
 
   // Favicon and app icons
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "16x16", type: "image/ico" },
-      { url: "/favicon.svg", sizes: "32x32", type: "image/svg" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", sizes: "16x16", type: "any" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
@@ -67,14 +71,14 @@ export const metadata = {
       {
         rel: "mask-icon",
         url: "/safari-pinned-tab.svg",
-        color: "#000000", // Your brand color
+        color: "#FF0000", // Use your brand red color
       },
     ],
   },
 
   // Additional metadata
   manifest: "/site.webmanifest",
-  themeColor: "#ffffff", // Your brand color
+  themeColor: "#FF0000", // Your brand red color
   viewport: {
     width: "device-width",
     initialScale: 1,
@@ -85,7 +89,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <head></head>
+      <head>
+        {/* Force refresh of metadata */}
+        <meta property='og:updated_time' content={new Date().toISOString()} />
+      </head>
       <body className={dmsans.className}>
         <ReduxProvider>
           <Wrapper>
