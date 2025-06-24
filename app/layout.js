@@ -19,13 +19,13 @@ if (typeof window !== "undefined") {
 
 // Add your metadata here
 export const metadata = {
-  title: "Your Site Title",
+  title: "RapicEase876 - Travel & Tour",
   description:
-    "Your site description that will appear when shared on social media",
+    "Welcome to RapidEase876, your ultimate travel and tour companion. Explore the world with ease and comfort.",
   keywords: "your, keywords, here",
   authors: [{ name: "Your Name" }],
-  creator: "Your Name",
-  publisher: "Your Company",
+  creator: "Suneil England",
+  publisher: "RapidEase876",
 
   // Open Graph metadata for social sharing
   openGraph: {
@@ -35,7 +35,7 @@ export const metadata = {
     siteName: "Your Site Name",
     images: [
       {
-        url: "https://yourwebsite.com/og-image.jpg", // Replace with your image URL
+        url: "/app/favicon.svg", // Replace with your image URL
         width: 1200,
         height: 630,
         alt: "Your site preview image",
@@ -46,13 +46,13 @@ export const metadata = {
   },
 
   // Twitter Card metadata
-  twitter: {
-    card: "summary_large_image",
-    title: "Your Site Title",
-    description: "Your site description for Twitter",
-    creator: "@yourtwitterhandle",
-    images: ["https://yourwebsite.com/og-image.jpg"], // Same image as OG
-  },
+  // twitter: {
+  //   card: "summary_large_image",
+  //   title: "Your Site Title",
+  //   description: "Your site description for Twitter",
+  //   creator: "@yourtwitterhandle",
+  //   images: ["https://yourwebsite.com/og-image.jpg"], // Same image as OG
+  // },
 
   // Favicon and app icons
   icons: {
