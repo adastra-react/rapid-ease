@@ -37,14 +37,7 @@ const nextConfig = {
 
   // Custom webpack configuration
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Add any custom webpack configurations here
-
-    // Example: Handle CSS modules if needed
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-    });
-
+    // Add any custom webpack configurations here if needed
     return config;
   },
 
