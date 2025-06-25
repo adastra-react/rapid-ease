@@ -41,13 +41,13 @@ export default function Header1() {
       <header
         className={`header -type-1 js-header ${addClass ? "-is-sticky" : ""}`}>
         <div className='header__container container'>
-          <div className='headerMobile__left'>
+          {/* <div className='headerMobile__left'>
             <button
               onClick={() => setMobileMenuOpen(true)}
               className='header__menuBtn js-menu-button'>
               <i className='icon-main-menu'></i>
             </button>
-          </div>
+          </div> */}
 
           <div className='header__logo'>
             <Link href='/' className='header__logo'>
@@ -101,10 +101,10 @@ export default function Header1() {
           </div>
         </div>
       </header>
-      <MobileMenu
+      {/* <MobileMenu
         setMobileMenuOpen={setMobileMenuOpen}
         mobileMenuOpen={mobileMenuOpen}
-      />
+      /> */}
     </>
   );
 }
