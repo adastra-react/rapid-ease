@@ -1,59 +1,95 @@
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   images: {
+//     domains: ["res.cloudinary.com"],
+//   },
+// };
+
+// module.exports = nextConfig;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static export for Netlify
+  output: "export",
+  trailingSlash: true,
+
   // Image configuration
   images: {
     domains: ["res.cloudinary.com"],
-    // Add unoptimized: true if you're doing static export or having image optimization issues
-    // unoptimized: true,
+    unoptimized: true, // Required for static export
   },
 
   // Enable SWC minification for better performance
   swcMinify: true,
 
-  // Reduce build output noise
+  // TypeScript configuration
   typescript: {
-    // Only run type checking in development, skip in production builds
-    // This can help if TypeScript errors are causing build failures
     ignoreBuildErrors: false,
   },
 
   // ESLint configuration
   eslint: {
-    // Ignore ESLint errors during builds to allow deployment
     ignoreDuringBuilds: true,
   },
 
-  // Output configuration for different deployment types
-  // Uncomment the line below if you need static export
-  // output: 'export',
-
-  // Trailing slash configuration
-  trailingSlash: false,
-
-  // Redirect configuration
-  async redirects() {
-    return [];
+  // Add CORS headers for API routes (if using pages/api)
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Credentials",
+            value: "true",
+          },
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*",
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization",
+          },
+        ],
+      },
+    ];
   },
 
-  // Custom webpack configuration
+  // Custom webpack configuration for better mobile support
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Add any custom webpack configurations here if needed
+    // Improve mobile performance
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: "all",
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendors",
+            chunks: "all",
+          },
+        },
+      };
+    }
     return config;
   },
 
-  // Environment variables (optional - you can also use .env files)
+  // Environment variables
   env: {
-    // Add any environment variables here if needed
-    // CUSTOM_KEY: process.env.CUSTOM_KEY,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_FRONTEND_URL: process.env.NEXT_PUBLIC_FRONTEND_URL,
   },
 
-  // Experimental features (use with caution)
+  // Experimental features for better mobile support
   experimental: {
-    // Enable if you're using app directory (Next.js 13+)
-    // appDir: true,
+    optimizeCss: true,
   },
 
-  // Headers configuration
+  // Headers for security and mobile compatibility
   async headers() {
     return [
       {
@@ -67,6 +103,10 @@ const nextConfig = {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
     ];
@@ -74,21 +114,14 @@ const nextConfig = {
 
   // Compiler options
   compiler: {
-    // Remove console logs in production
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Power pack for better performance
+  // Disable powered by header
   poweredByHeader: false,
 
-  // Compression
+  // Enable compression
   compress: true,
-
-  // Generate build ID
-  generateBuildId: async () => {
-    // You can return any string here
-    return "my-build-id";
-  },
 };
 
 module.exports = nextConfig;
