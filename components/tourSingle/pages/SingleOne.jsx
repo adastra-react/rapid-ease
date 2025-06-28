@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import tourService from "../../../app/store/services/tourService";
@@ -111,13 +110,13 @@ export default function SingleOne() {
               <h2 className='text-30'>Availability Calendar</h2>
               <DateCalender tour={tour} /> */}
 
-              {/* <div className='line mt-60 mb-60'></div>
+              <div className='line mt-60 mb-60'></div>
 
               <h2 className='text-30'>FAQ</h2>
 
               <div className='accordion -simple row y-gap-20 mt-30 js-accordion'>
                 <Faq tour={tour} />
-              </div> */}
+              </div>
 
               <div className='line mt-60 mb-60'></div>
 
