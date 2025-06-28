@@ -12,6 +12,13 @@ export const metadata = {
   description: "Rapid Ease - Travel & Tour React NextJS Template",
 };
 
+// function to generate static params for all tours
+export async function generateStaticParams() {
+  return allTour.map((tour) => ({
+    id: tour.id.toString(), // Ensure the ID is a string
+  }));
+}
+
 export default function page({ params }) {
   const id = params.id;
   const tour = allTour.find((item) => item.id == id) || allTour[0];
