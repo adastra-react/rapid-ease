@@ -1,5 +1,5 @@
 // app/store/index.js
-"use client";
+// REMOVE "use client" - Redux store should work on both server and client
 
 import { configureStore } from "@reduxjs/toolkit";
 import toursReducer from "./slices/toursSlice";
@@ -13,6 +13,14 @@ export const store = configureStore({
     carRentals: carRentalsReducer,
     // Add other reducers as needed
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types if you're using redux-persist or similar
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+      },
+    }),
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 // These types are optional but helpful if using TypeScript

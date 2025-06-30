@@ -1,4 +1,3 @@
-"use client";
 import FooterOne from "@/components/layout/footers/FooterOne";
 import Header1 from "@/components/layout/header/Header1";
 import PageHeader from "@/components/tours/PageHeader";
