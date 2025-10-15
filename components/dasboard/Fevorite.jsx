@@ -8,11 +8,12 @@ import Stars from "../common/Stars";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import ProtectedRoute from "../../components/auth/ProtectedRoute";
 
 export default function Favorites() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   return (
-    <>
+    <ProtectedRoute>
       <div
         className={`dashboard ${
           sideBarOpen ? "-is-sidebar-visible" : ""
@@ -101,6 +102,6 @@ export default function Favorites() {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

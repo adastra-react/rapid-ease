@@ -6,11 +6,12 @@ import States from "./States";
 import Activities from "./Activities";
 import Statistics from "./Statistics";
 import Header from "../Header";
+import ProtectedRoute from "../../../components/auth/ProtectedRoute";
 
 export default function DBMain() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   return (
-    <>
+    <ProtectedRoute>
       <div
         className={`dashboard ${
           sideBarOpen ? "-is-sidebar-visible" : ""
@@ -53,6 +54,6 @@ export default function DBMain() {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

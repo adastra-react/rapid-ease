@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useState } from "react";
 import Image from "next/image";
+import ProtectedRoute from "../../components/auth/ProtectedRoute";
 
 export default function Profile() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
@@ -24,7 +25,7 @@ export default function Profile() {
     }
   };
   return (
-    <>
+    <ProtectedRoute>
       <div
         className={`dashboard ${
           sideBarOpen ? "-is-sidebar-visible" : ""
@@ -237,6 +238,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }
