@@ -104,7 +104,9 @@ export default function DBListing() {
                           <div className='border-1 rounded-12 px-20 py-20 h-full'>
                             <div className='row x-gap-20 y-gap-20 h-full'>
                               <div className='col-auto h-full'>
-                                <img
+                                <Image
+                                  width='250'
+                                  height='160'
                                   src={elm.imageSrc}
                                   alt={elm.title}
                                   className='rounded-12 object-cover h-full'

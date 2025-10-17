@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:ci": "node -v && npm -v && echo NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL && echo NEXT_PUBLIC_PAYPAL_CLIENT_ID=${NEXT_PUBLIC_PAYPAL_CLIENT_ID:+set} && next build"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

@@ -15,7 +15,7 @@ export const sidebarItems = [
     id: 3,
     href: "/db-listing",
     iconClass: "icon-menu text-26",
-    label: "My Listings",
+    label: "Listed Tours",
   },
   {
     id: 4,

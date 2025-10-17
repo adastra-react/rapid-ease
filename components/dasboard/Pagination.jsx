@@ -1,8 +1,6 @@
 // components/common/Pagination.js
 "use client";
 
-import { useState } from "react";
-
 export default function Pagination({
   currentPage = 1,
   totalPages = 1,
