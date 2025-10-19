@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import bookingService from "@/app/store/services/bookingService";
 
@@ -8,10 +10,6 @@ export default function BookingModal({
   bookingData,
   onBookingSuccess,
 }) {
-  if (!bookingData) {
-    return null;
-  }
-
   const [step, setStep] = useState("booking"); // 'booking', 'payment', 'processing', 'success', 'failed'
   const [loading, setLoading] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({
@@ -132,16 +130,16 @@ export default function BookingModal({
   useEffect(() => {
     if (typeof window !== "undefined" && !window.paypal && !paypalLoaded) {
       const script = document.createElement("script");
-      script.src = `https://www.paypal.com/sdk/js?client-id=${
+      script.src = `https://www/paypal.com/sdk/js?client-id=${
         process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test"
       }&currency=USD&components=buttons`;
       script.async = true;
       script.onload = () => setPaypalLoaded(true);
       document.body.appendChild(script);
-    } else if (window.paypal) {
+    } else if (typeof window !== "undefined" && window.paypal) {
       setPaypalLoaded(true);
     }
-  }, []);
+  }, [paypalLoaded]);
 
   const handleInputChange = (field, value) => {
     setCustomerInfo((prev) => ({ ...prev, [field]: value }));
@@ -270,7 +268,8 @@ export default function BookingModal({
     });
   };
 
-  if (!isOpen) return null;
+  // Ensure hooks run unconditionally; only guard rendering here
+  if (!isOpen || !bookingData) return null;
 
   const inputStyle = (error) => ({
     width: "100%",
@@ -671,8 +670,9 @@ export default function BookingModal({
               </button>
               <button
                 onClick={handleContinueToPayment}
-                style={buttonStyle(true)}>
-                Continue to Payment
+                style={buttonStyle(true, loading)}
+                disabled={loading}>
+                {loading ? "Processing…" : "Continue to Payment"}
               </button>
             </div>
           </>
@@ -740,12 +740,13 @@ export default function BookingModal({
             {/* PayPal Payment */}
             <div style={{ marginBottom: "20px" }}>
               <h4 style={{ marginBottom: "15px" }}>Payment Method</h4>
-              {paypalLoaded && window.paypal ? (
+              {paypalLoaded &&
+              typeof window !== "undefined" &&
+              window.paypal ? (
                 <div id='paypal-button-container'>
                   <PayPalButtons
                     tourData={tourData}
                     bookingData={bookingData}
-                    customerInfo={customerInfo}
                     totalAmount={pricing.totalAmount}
                     onSuccess={(paymentData) => {
                       setStep("processing");
@@ -825,71 +826,73 @@ export default function BookingModal({
 function PayPalButtons({
   tourData,
   bookingData,
-  customerInfo,
   totalAmount,
   onSuccess,
   onError,
 }) {
-  useEffect(() => {
-    if (window.paypal) {
-      const container = document.getElementById("paypal-button-container");
-      if (container) {
-        container.innerHTML = "";
+  const selectedDate = bookingData?.selectedDate;
+  const tourId = tourData?.id;
+  const tourTitle = tourData?.title;
 
-        window.paypal
-          .Buttons({
-            createOrder: (data, actions) => {
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: totalAmount.toFixed(2),
-                      currency_code: "USD",
-                    },
-                    description: `${tourData.title} - ${formatDateForDisplay(
-                      bookingData.selectedDate
-                    )}`,
-                    custom_id: `tour_${tourData.id}_${Date.now()}`,
-                    soft_descriptor: "Jamaica Tour",
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.paypal) return;
+    const container = document.getElementById("paypal-button-container");
+    if (container) {
+      container.innerHTML = "";
+
+      window.paypal
+        .Buttons({
+          createOrder: (data, actions) => {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: totalAmount.toFixed(2),
+                    currency_code: "USD",
                   },
-                ],
-              });
-            },
-            onApprove: async (data, actions) => {
-              try {
-                const order = await actions.order.capture();
-                const paymentData = {
-                  transactionId: order.id,
-                  amount: order.purchase_units[0].amount.value,
-                  currency: "USD",
-                  status: "completed",
-                  payerEmail: order.payer.email_address,
-                  payerName: `${order.payer.name.given_name} ${order.payer.name.surname}`,
-                };
-                onSuccess(paymentData);
-              } catch (error) {
-                console.error("PayPal payment capture failed:", error);
-                onError(error);
-              }
-            },
-            onError: (err) => {
-              console.error("PayPal error:", err);
-              onError(err);
-            },
-            onCancel: (data) => {
-              console.log("PayPal payment cancelled:", data);
-            },
-            style: {
-              layout: "vertical",
-              color: "gold",
-              shape: "rect",
-              label: "paypal",
-            },
-          })
-          .render("#paypal-button-container");
-      }
+                  description: `${tourTitle} - ${formatDateForDisplay(
+                    selectedDate
+                  )}`,
+                  custom_id: `tour_${tourId}_${Date.now()}`,
+                  soft_descriptor: "Jamaica Tour",
+                },
+              ],
+            });
+          },
+          onApprove: async (data, actions) => {
+            try {
+              const order = await actions.order.capture();
+              const paymentData = {
+                transactionId: order.id,
+                amount: order.purchase_units[0].amount.value,
+                currency: "USD",
+                status: "completed",
+                payerEmail: order.payer.email_address,
+                payerName: `${order.payer.name.given_name} ${order.payer.name.surname}`,
+              };
+              onSuccess(paymentData);
+            } catch (error) {
+              console.error("PayPal payment capture failed:", error);
+              onError(error);
+            }
+          },
+          onError: (err) => {
+            console.error("PayPal error:", err);
+            onError(err);
+          },
+          onCancel: (data) => {
+            console.log("PayPal payment cancelled:", data);
+          },
+          style: {
+            layout: "vertical",
+            color: "gold",
+            shape: "rect",
+            label: "paypal",
+          },
+        })
+        .render("#paypal-button-container");
     }
-  }, [window.paypal, totalAmount]);
+  }, [totalAmount, selectedDate, tourId, tourTitle, onSuccess, onError]);
 
   function formatDateForDisplay(dateString) {
     if (!dateString) return "Not selected";
