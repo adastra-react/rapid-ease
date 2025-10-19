@@ -161,7 +161,9 @@ export default function FeaturedTrips() {
 
                           <div>
                             From{" "}
-                            <span className='text-16 fw-500'>${elm.price}</span>
+                            <span className='text-16 fw-500'>
+                              ${elm?.price}
+                            </span>
                           </div>
                         </div>
                       </div>

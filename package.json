@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --no-lint || exit 0",
+    "build": "next build --no-lint || true",
     "start": "next start",
     "lint": "next lint",
     "build:ci": "node -v && npm -v && echo NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL && echo NEXT_PUBLIC_PAYPAL_CLIENT_ID=${NEXT_PUBLIC_PAYPAL_CLIENT_ID:+set} && next build"
