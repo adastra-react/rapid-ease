@@ -127,19 +127,68 @@ export default function BookingModal({
   };
 
   // Load PayPal SDK
+  // useEffect(() => {
+  //   if (typeof window !== "undefined" && !window.paypal && !paypalLoaded) {
+  //     const script = document.createElement("script");
+  //     script.src = `https://www/paypal.com/sdk/js?client-id=${
+  //       process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test"
+  //     }&currency=USD&components=buttons`;
+  //     script.async = true;
+  //     script.onload = () => setPaypalLoaded(true);
+  //     document.body.appendChild(script);
+  //   } else if (typeof window !== "undefined" && window.paypal) {
+  //     setPaypalLoaded(true);
+  //   }
+  // }, [paypalLoaded]);
+
+  // Load PayPal SDK - IMPROVED
   useEffect(() => {
-    if (typeof window !== "undefined" && !window.paypal && !paypalLoaded) {
-      const script = document.createElement("script");
-      script.src = `https://www/paypal.com/sdk/js?client-id=${
-        process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test"
-      }&currency=USD&components=buttons`;
-      script.async = true;
-      script.onload = () => setPaypalLoaded(true);
-      document.body.appendChild(script);
-    } else if (typeof window !== "undefined" && window.paypal) {
+    if (typeof window === "undefined") return;
+
+    // Check if already loaded
+    if (window.paypal) {
       setPaypalLoaded(true);
+      return;
     }
-  }, [paypalLoaded]);
+
+    // Check if already loading
+    if (document.querySelector('script[src*="paypal.com/sdk"]')) {
+      const checkPayPal = setInterval(() => {
+        if (window.paypal) {
+          setPaypalLoaded(true);
+          clearInterval(checkPayPal);
+        }
+      }, 100);
+      return () => clearInterval(checkPayPal);
+    }
+
+    // Load PayPal SDK
+    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+    if (!clientId || clientId === "test") {
+      console.error("PayPal Client ID not configured!");
+      setError("Payment system not configured. Please contact support.");
+      return;
+    }
+
+    console.log("Loading PayPal SDK...");
+
+    const script = document.createElement("script");
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&components=buttons`;
+    script.async = true;
+
+    script.onload = () => {
+      console.log("PayPal SDK loaded successfully");
+      setPaypalLoaded(true);
+    };
+
+    script.onerror = () => {
+      console.error("Failed to load PayPal SDK");
+      setError("Failed to load payment system. Please refresh the page.");
+    };
+
+    document.body.appendChild(script);
+  }, []);
 
   const handleInputChange = (field, value) => {
     setCustomerInfo((prev) => ({ ...prev, [field]: value }));
