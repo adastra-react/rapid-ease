@@ -17,7 +17,16 @@ if (typeof window !== "undefined") {
   import("bootstrap");
 }
 
-// Add your metadata here
+// FIXED: Move viewport and themeColor to separate exports
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+export const themeColor = "#FF0000";
+
+// Fixed metadata - removed viewport and themeColor
 export const metadata = {
   title: "RapidEase876 - Travel & Tour Services",
   description:
@@ -28,7 +37,6 @@ export const metadata = {
   creator: "Suneil England",
   publisher: "RapidEase876",
 
-  // Open Graph metadata for social sharing
   openGraph: {
     title: "RapidEase876 - Premium Travel & Tour Services",
     description:
@@ -37,7 +45,7 @@ export const metadata = {
     siteName: "RapidEase876",
     images: [
       {
-        url: "https://rapidease876.com/og-image.jpg", // Use full URL, not relative path
+        url: "https://rapidease876.com/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "RapidEase876 - Premium Travel Services",
@@ -47,17 +55,15 @@ export const metadata = {
     type: "website",
   },
 
-  // Twitter Card metadata
   twitter: {
     card: "summary_large_image",
     title: "RapidEase876 - Premium Travel & Tour Services",
     description:
       "Welcome to RapidEase876, your ultimate travel and tour companion. Explore Jamaica with ease and comfort.",
-    creator: "@rapidease876", // Update with your actual Twitter handle
+    creator: "@rapidease876",
     images: ["https://rapidease876.com/og-image.jpg"],
   },
 
-  // Favicon and app icons
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -71,26 +77,18 @@ export const metadata = {
       {
         rel: "mask-icon",
         url: "/safari-pinned-tab.svg",
-        color: "#FF0000", // Use your brand red color
+        color: "#FF0000",
       },
     ],
   },
 
-  // Additional metadata
   manifest: "/site.webmanifest",
-  themeColor: "#FF0000", // Your brand red color
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
       <head>
-        {/* Force refresh of metadata */}
         <meta property='og:updated_time' content={new Date().toISOString()} />
       </head>
       <body className={dmsans.className}>
