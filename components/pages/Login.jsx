@@ -4,10 +4,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
-// ✅ force runtime rendering; don't try to SSG this page
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
