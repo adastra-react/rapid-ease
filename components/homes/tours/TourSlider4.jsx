@@ -133,7 +133,7 @@ export default function TourSlider4() {
                               <div>
                                 From{" "}
                                 <span className='text-16 fw-500'>
-                                  ${elm.price}
+                                  ${elm?.price || m?.pricing?.basePrice || 0}
                                 </span>
                               </div>
                             </div>

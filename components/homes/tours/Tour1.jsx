@@ -185,7 +185,7 @@ export default function Tour1() {
                       <div>
                         From{" "}
                         <span className='text-16 fw-500'>
-                          ${formatPrice(tour.price)}
+                          ${formatPrice(tour?.price || r?.pricing?.basePrice || 0)}
                         </span>
                       </div>
                     </div>

@@ -97,7 +97,7 @@ export default function TourSlider5() {
 
                             <div className='text-right text-white'>
                               <div className='text-13 lh-14'>From</div>
-                              <div className='text-18 fw-500'>${elm.price}</div>
+                              <div className='text-18 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</div>
                             </div>
                           </div>
                         </div>

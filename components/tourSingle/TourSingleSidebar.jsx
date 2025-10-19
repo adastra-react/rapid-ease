@@ -14,8 +14,8 @@
 
 //   // Use pricing from tour data - GROUP PRICING STRUCTURE
 //   const pricing = {
-//     groupBasePrice: tour.pricing.basePrice || 85, // Base price for 1-4 people
-//     perPersonRate: tour.pricing.perPersonRate || 25, // Rate per additional person over 4
+//     groupBasePrice: tour?.pricing?.basePrice || 85 || 85, // Base price for 1-4 people
+//     perPersonRate: tour?.pricing?.perPersonRate || 25 || 25, // Rate per additional person over 4
 //     extraService: 40,
 //     servicePerPerson: 40,
 //   };
@@ -707,8 +707,8 @@ export default function TourSingleSidebar({ tour }) {
 
   // Use pricing from tour data - GROUP PRICING STRUCTURE
   const pricing = {
-    groupBasePrice: tour.pricing.basePrice || 85, // Base price for 1-4 people
-    perPersonRate: tour.pricing.perPersonRate || 25, // Rate per additional person over 4
+    groupBasePrice: tour?.pricing?.basePrice || 85 || 85, // Base price for 1-4 people
+    perPersonRate: tour?.pricing?.perPersonRate || 25 || 25, // Rate per additional person over 4
     extraService: 40,
     servicePerPerson: 40,
   };

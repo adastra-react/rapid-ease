@@ -232,7 +232,7 @@ export default function TourList7() {
                           <div className='d-flex items-center'>
                             From{" "}
                             <span className='text-20 fw-500 ml-5'>
-                              ${elm.price}
+                              ${elm?.price || m?.pricing?.basePrice || 0}
                             </span>
                           </div>
                         </div>

@@ -275,7 +275,7 @@
 //                             <div className='d-flex items-center'>
 //                               From{" "}
 //                               <span className='text-20 fw-500 ml-5'>
-//                                 ${tour.price}
+//                                 ${tour?.price || r?.pricing?.basePrice || 0}
 //                               </span>
 //                             </div>
 //                           </div>
@@ -630,7 +630,7 @@ export default function TourList1() {
                             <div className='d-flex items-center'>
                               From{" "}
                               <span className='text-20 fw-500 ml-5'>
-                                ${tour.price}
+                                ${tour?.price || r?.pricing?.basePrice || 0}
                               </span>
                             </div>
                           </div>

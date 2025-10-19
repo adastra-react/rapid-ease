@@ -181,7 +181,7 @@ export default function TourList4() {
                         </div>
 
                         <div className='tourCard__price'>
-                          <div>${elm.price}</div>
+                          <div>${elm?.price || m?.pricing?.basePrice || 0}</div>
 
                           <div className='d-flex items-center'>
                             From{" "}

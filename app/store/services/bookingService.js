@@ -236,12 +236,12 @@
 //     const children = guestDetails.children || 0;
 //     const additionalServices = guestDetails.additionalServices || false;
 
-//     const basePrice = tour.price || tour.basePrice || 15000;
-//     const adultPrice = tour.pricing?.adultPrice || basePrice;
-//     const youthPrice = tour.pricing?.youthPrice || basePrice * 0.8;
-//     const childrenPrice = tour.pricing?.childrenPrice || basePrice * 0.5;
+//     const basePrice = tour?.price || r?.pricing?.basePrice || 0 || tour.basePrice || 15000;
+//     const adultPrice = tour?.pricing?.adultPrice || basePrice;
+//     const youthPrice = tour?.pricing?.youthPrice || basePrice * 0.8;
+//     const childrenPrice = tour?.pricing?.childrenPrice || basePrice * 0.5;
 //     const servicePrice = additionalServices
-//       ? tour.pricing?.servicePrice || 2000
+//       ? tour?.pricing?.servicePrice || 2000
 //       : 0;
 
 //     const totalAmount =

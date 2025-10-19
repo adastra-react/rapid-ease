@@ -48,14 +48,14 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
         languages: tour.languages || ["English"],
         ageRange: tour.ageRange || { min: 0, max: 99 },
         adultOnly: tour.adultOnly || false,
-        price: tour.price || 0,
+        price: tour?.price || r?.pricing?.basePrice || 0 || 0,
         fromPrice: tour.fromPrice || 0,
         pricing: {
-          basePrice: tour.pricing?.basePrice || 0,
-          adultPrice: tour.pricing?.adultPrice || 0,
-          youthPrice: tour.pricing?.youthPrice || 0,
-          childrenPrice: tour.pricing?.childrenPrice || 0,
-          servicePrice: tour.pricing?.servicePrice || 0,
+          basePrice: tour?.pricing?.basePrice || 0,
+          adultPrice: tour?.pricing?.adultPrice || 0,
+          youthPrice: tour?.pricing?.youthPrice || 0,
+          childrenPrice: tour?.pricing?.childrenPrice || 0,
+          servicePrice: tour?.pricing?.servicePrice || 0,
         },
         imageSrc: tour.imageSrc || "",
         highlights: tour.highlights?.length > 0 ? tour.highlights : [""],
@@ -712,7 +712,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                     <input
                       type='number'
                       name='price'
-                      value={formData.price}
+                      value={formData?.price || a?.pricing?.basePrice || 0}
                       onChange={handleChange}
                       style={inputStyle()}
                       min='0'

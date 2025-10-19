@@ -84,7 +84,7 @@ export default function FeaturedToures() {
                     </div>
 
                     <div>
-                      From <span className='text-16 fw-500'>${elm.price}</span>
+                      From <span className='text-16 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</span>
                     </div>
                   </div>
                 </div>

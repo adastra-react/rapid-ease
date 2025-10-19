@@ -99,7 +99,7 @@ export default function PopularTourSlider() {
 
                           <div>
                             From{" "}
-                            <span className='text-16 fw-500'>${elm.price}</span>
+                            <span className='text-16 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</span>
                           </div>
                         </div>
                       </div>
