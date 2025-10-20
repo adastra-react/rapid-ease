@@ -26,13 +26,14 @@ export default function FeturesTwo() {
                 className='text-40 lh-13'>
                 We Make
                 <br className='md:d-none' />
-                World Travel Easy
+                Traveling Jamaica Easy
               </h2>
 
               <p data-aos='fade-up' data-aos-delay='' className='mt-10'>
-                Traveling under your own power and at your own pace, you'll
-                connect more meaningfully with your destination and have more
-                fun!
+                From the moment you land to the last sunset you catch, we handle
+                the logistics so you can focus on making memories. Reliable
+                pickups, epic excursions, and pure island vibes – that's the
+                RapidEase way.
               </p>
               <button
                 data-aos='fade-right'

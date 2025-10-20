@@ -1,48 +1,48 @@
 export const testimonialsOne = [
   {
     id: 1,
-    imageSrc: "/img/testimonials/1/2.png",
-    title: "Excellent Service!",
+    imageSrc: "/img/testimonials/1/3.png",
+    title: "Best Airport Pickup Ever!",
     content:
-      "I had an amazing experience with this company. The service was top-notch, and the staff was incredibly friendly. I highly recommend them!",
-    authorName: "John Smith",
-    authorRole: "Traveler",
+      "These guys made landing in Jamaica so smooth! Picked us up right on time, cold Red Stripe waiting in the van, and great vibes the whole ride. Started our vacation off perfectly. Big up RapidEase!",
+    authorName: "Sarah Mitchell",
+    authorRole: "Tourist from Miami",
   },
   {
     id: 2,
-    imageSrc: "/img/testimonials/1/2.png",
-    title: "Great Adventures!",
+    imageSrc: "/img/testimonials/1/4.png",
+    title: "Dunn's River Was Epic!",
     content:
-      "The tours in this website are great. I had been really enjoying with my family! The team is very professional and takes care of the customers. Will surely recommend it to my friends.",
-    authorName: "Alice Johnson",
-    authorRole: "Explorer",
+      "The crew at RapidEase took us to Dunn's River Falls and it was absolutely incredible! Our guide was hilarious, knew all the best spots, and made sure we had the time of our lives. These guys know Jamaica like nobody else.",
+    authorName: "Marcus Thompson",
+    authorRole: "Adventure Seeker",
   },
   {
     id: 3,
-    imageSrc: "/img/testimonials/1/2.png",
-    title: "Awesome Experience!",
+    imageSrc: "/img/testimonials/1/5.png",
+    title: "No Stress, Just Vibes!",
     content:
-      "The best travel company I've ever used. Their tours are fantastic, and the guides are very knowledgeable. I can't wait to go on another adventure with them.",
-    authorName: "David Williams",
-    authorRole: "Adventurer",
+      "Used RapidEase for our entire trip - airport transfers, Rick's Café sunset tour, and a custom beach day. Everything was on point. Super chill drivers, always punctual, and they really looked out for us. Will definitely book again!",
+    authorName: "Jennifer & Mike Rodriguez",
+    authorRole: "Honeymooners",
   },
   {
     id: 4,
     imageSrc: "/img/testimonials/1/2.png",
-    title: "Awesome Experience!",
+    title: "Felt Like Family!",
     content:
-      "The best travel company I've ever used. Their tours are fantastic, and the guides are very knowledgeable. I can't wait to go on another adventure with them.",
-    authorName: "David Williams",
-    authorRole: "Adventurer",
+      "These aren't just tour guides, they're genuinely good people. Showed us hidden gems tourists don't usually see, recommended the best local food spots, and kept us laughing the whole time. RapidEase Tours is the real deal!",
+    authorName: "David Chen",
+    authorRole: "Solo Traveler",
   },
   {
     id: 5,
-    imageSrc: "/img/testimonials/1/2.png",
-    title: "Awesome Experience!",
+    imageSrc: "/img/testimonials/1/6.png",
+    title: "Safe, Reliable, and Fun!",
     content:
-      "The best travel company I've ever used. Their tours are fantastic, and the guides are very knowledgeable. I can't wait to go on another adventure with them.",
-    authorName: "David Williams",
-    authorRole: "Adventurer",
+      "As a mom traveling with kids, safety is my top priority. RapidEase was professional, their vehicles were clean and comfortable, and they went above and beyond to make sure my family had an amazing Jamaican experience. Highly recommend!",
+    authorName: "Patricia Williams",
+    authorRole: "Family Vacation",
   },
 ];
 

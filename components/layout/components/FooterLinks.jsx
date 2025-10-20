@@ -2,16 +2,16 @@ const sections = [
   {
     title: "Company",
     links: [
-      { id: 1, text: "About Us", href: "#" },
-      { id: 3, text: "Contact Us", href: "#" },
-      { id: 5, text: "Terms", href: "#" },
+      { id: 1, text: "About Us", href: "/about" },
+      { id: 3, text: "Contact Us", href: "/contact" },
+      { id: 5, text: "Terms", href: "/terms" },
     ],
   },
   {
     title: "Support",
     links: [
       { id: 9, text: "Get in Touch", href: "#" },
-      { id: 10, text: "Help center", href: "#" },
+      { id: 10, text: "Help center", href: "/help-center" },
     ],
   },
 ];
