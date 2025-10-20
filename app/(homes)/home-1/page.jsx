@@ -14,7 +14,7 @@ import Header2 from "@/components/layout/header/Header2";
 
 export default function Home() {
   return (
-    <main>
+    <main style={{ display: "flex", flexDirection: "column", gap: "80px" }}>
       <Header1 />
       <Hero1 />
       <FeaturesOne />
