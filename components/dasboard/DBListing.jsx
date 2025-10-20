@@ -17,6 +17,9 @@ export default function DBListing() {
   const [error, setError] = useState(null);
   const [selectedTour, setSelectedTour] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [tourToDelete, setTourToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch tours from database
   const fetchTours = async () => {
@@ -42,6 +45,37 @@ export default function DBListing() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = (tour) => {
+    setTourToDelete(tour);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!tourToDelete) return;
+
+    try {
+      setDeleting(true);
+      await tourService.deleteTour(tourToDelete.id || tourToDelete._id);
+
+      // Show success message
+      setShowDeleteModal(false);
+      setTourToDelete(null);
+
+      // Refresh the list
+      fetchTours();
+    } catch (error) {
+      console.error("Error deleting tour:", error);
+      setError("Failed to delete tour");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setTourToDelete(null);
   };
 
   useEffect(() => {
@@ -158,12 +192,60 @@ export default function DBListing() {
                                     </div>
 
                                     <div className='mt-15'>
-                                      <button
-                                        onClick={() => handleEdit(elm)}
-                                        className='button -sm -outline-accent-1 text-accent-1 w-100'>
-                                        <i className='icon-edit mr-5'></i>
-                                        Edit Tour
-                                      </button>
+                                      <div className='row x-gap-10 y-gap-10'>
+                                        <div className='col-6'>
+                                          <button
+                                            onClick={() => handleEdit(elm)}
+                                            className='button -sm -outline-accent-1 text-accent-1 w-100'
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                              gap: "6px",
+                                              padding: "10px 16px",
+                                              borderRadius: "8px",
+                                              fontSize: "14px",
+                                              fontWeight: "500",
+                                              transition: "all 0.2s ease",
+                                            }}>
+                                            <i className='icon-edit text-14'></i>
+                                            <span>Edit</span>
+                                          </button>
+                                        </div>
+
+                                        <div className='col-6'>
+                                          <button
+                                            onClick={() => handleDelete(elm)}
+                                            className='button -sm -outline-red-1 text-red-1 w-100'
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                              gap: "6px",
+                                              padding: "10px 16px",
+                                              borderRadius: "8px",
+                                              fontSize: "14px",
+                                              fontWeight: "500",
+                                              transition: "all 0.2s ease",
+                                              border: "1px solid #ef4444",
+                                              color: "#ef4444",
+                                              backgroundColor: "transparent",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                              e.target.style.backgroundColor =
+                                                "#ef4444";
+                                              e.target.style.color = "white";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                              e.target.style.backgroundColor =
+                                                "transparent";
+                                              e.target.style.color = "#ef4444";
+                                            }}>
+                                            <i className='icon-delete text-14'></i>
+                                            <span>Delete</span>
+                                          </button>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -200,6 +282,232 @@ export default function DBListing() {
         onClose={handleModalClose}
         onSuccess={handleUpdateSuccess}
       />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            backdropFilter: "blur(4px)",
+          }}>
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "16px",
+              padding: "40px",
+              maxWidth: "480px",
+              width: "90%",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+              animation: "modalSlideIn 0.3s ease-out",
+            }}>
+            {/* Warning Icon */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "24px",
+              }}>
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  backgroundColor: "#fee2e2",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                <svg
+                  width='40'
+                  height='40'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M12 9V13M12 17H12.01M5.07183 19H18.9282C20.4678 19 21.4301 17.3333 20.6603 16L13.7321 4C12.9623 2.66667 11.0377 2.66667 10.2679 4L3.33978 16C2.56998 17.3333 3.53223 19 5.07183 19Z'
+                    stroke='#ef4444'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <h3
+              style={{
+                fontSize: "24px",
+                fontWeight: "600",
+                textAlign: "center",
+                marginBottom: "12px",
+                color: "#1f2937",
+              }}>
+              Delete Tour?
+            </h3>
+
+            <p
+              style={{
+                fontSize: "16px",
+                textAlign: "center",
+                marginBottom: "8px",
+                color: "#6b7280",
+                lineHeight: "1.5",
+              }}>
+              Are you sure you want to delete{" "}
+              <strong style={{ color: "#1f2937" }}>
+                "{tourToDelete?.title}"
+              </strong>
+              ?
+            </p>
+
+            <p
+              style={{
+                fontSize: "14px",
+                textAlign: "center",
+                marginBottom: "32px",
+                color: "#ef4444",
+                fontWeight: "500",
+              }}>
+              This action cannot be undone.
+            </p>
+
+            {/* Action Buttons */}
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                onClick={cancelDelete}
+                disabled={deleting}
+                style={{
+                  flex: 1,
+                  padding: "14px 24px",
+                  borderRadius: "10px",
+                  border: "2px solid #e5e7eb",
+                  backgroundColor: "white",
+                  color: "#374151",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  cursor: deleting ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  opacity: deleting ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!deleting) {
+                    e.target.style.backgroundColor = "#f9fafb";
+                    e.target.style.borderColor = "#d1d5db";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!deleting) {
+                    e.target.style.backgroundColor = "white";
+                    e.target.style.borderColor = "#e5e7eb";
+                  }
+                }}>
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                style={{
+                  flex: 1,
+                  padding: "14px 24px",
+                  borderRadius: "10px",
+                  border: "none",
+                  backgroundColor: "#ef4444",
+                  color: "white",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  cursor: deleting ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease",
+                  opacity: deleting ? 0.7 : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                }}
+                onMouseEnter={(e) => {
+                  if (!deleting) {
+                    e.target.style.backgroundColor = "#dc2626";
+                    e.target.style.transform = "translateY(-1px)";
+                    e.target.style.boxShadow =
+                      "0 4px 12px rgba(239, 68, 68, 0.4)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!deleting) {
+                    e.target.style.backgroundColor = "#ef4444";
+                    e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "none";
+                  }
+                }}>
+                {deleting ? (
+                  <>
+                    <svg
+                      style={{
+                        animation: "spin 1s linear infinite",
+                        width: "16px",
+                        height: "16px",
+                      }}
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'>
+                      <circle
+                        style={{ opacity: 0.25 }}
+                        cx='12'
+                        cy='12'
+                        r='10'
+                        stroke='currentColor'
+                        strokeWidth='4'></circle>
+                      <path
+                        style={{ opacity: 0.75 }}
+                        fill='currentColor'
+                        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <i className='icon-delete'></i>
+                    Delete Tour
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Add CSS animations */}
+          <style jsx>{`
+            @keyframes modalSlideIn {
+              from {
+                transform: scale(0.95) translateY(-20px);
+                opacity: 0;
+              }
+              to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+              }
+            }
+
+            @keyframes spin {
+              from {
+                transform: rotate(0deg);
+              }
+              to {
+                transform: rotate(360deg);
+              }
+            }
+          `}</style>
+        </div>
+      )}
     </ProtectedRoute>
   );
 }

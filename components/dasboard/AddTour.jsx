@@ -15,6 +15,17 @@ export default function AddTour() {
   const [activeTab, setActiveTab] = useState("Content");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
+  // Auto-hide success alert after 5 seconds
+  useEffect(() => {
+    if (showSuccessAlert) {
+      const timer = setTimeout(() => {
+        setShowSuccessAlert(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessAlert]);
 
   // Image states - now supports up to 10 images
   const [images, setImages] = useState(Array(10).fill(""));
@@ -332,7 +343,7 @@ export default function AddTour() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
+    setShowSuccessAlert(true);
 
     try {
       // TEMPORARILY COMMENTED OUT FOR TESTING - UNCOMMENT IN PRODUCTION
@@ -361,7 +372,9 @@ export default function AddTour() {
         setMessage("Tour created successfully!");
         // Reset form or redirect
         setTimeout(() => {
-          setMessage("");
+          setTimeout(() => {
+            resetForm();
+          }, 1000);
           // You might want to redirect to tour list or tour details page
           // router.push('/dashboard/tours');
         }, 3000);
@@ -393,6 +406,152 @@ export default function AddTour() {
   return (
     <>
       <ProtectedRoute>
+        {/* Success Alert Toast */}
+        {showSuccessAlert && (
+          <div
+            style={{
+              position: "fixed",
+              top: "20px",
+              right: "20px",
+              zIndex: 9999,
+              animation: "slideInRight 0.5s ease-out",
+            }}>
+            <div
+              style={{
+                backgroundColor: "#10b981",
+                color: "white",
+                padding: "20px 30px",
+                borderRadius: "12px",
+                boxShadow: "0 10px 40px rgba(16, 185, 129, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                gap: "15px",
+                minWidth: "350px",
+                maxWidth: "500px",
+              }}>
+              {/* Success Icon */}
+              <div
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  borderRadius: "50%",
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                <svg
+                  width='24'
+                  height='24'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z'
+                    stroke='white'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              </div>
+
+              {/* Message Content */}
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "600",
+                    marginBottom: "4px",
+                  }}>
+                  Tour Created Successfully!
+                </div>
+                <div style={{ fontSize: "14px", opacity: 0.9 }}>
+                  Your tour "{formData.title}" has been added to the system.
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setShowSuccessAlert(false)}
+                style={{
+                  backgroundColor: "transparent",
+                  border: "none",
+                  color: "white",
+                  cursor: "pointer",
+                  padding: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: 0.8,
+                  transition: "opacity 0.2s",
+                }}
+                onMouseEnter={(e) => (e.target.style.opacity = "1")}
+                onMouseLeave={(e) => (e.target.style.opacity = "0.8")}>
+                <svg
+                  width='20'
+                  height='20'
+                  viewBox='0 0 20 20'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M15 5L5 15M5 5L15 15'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Progress Bar */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: "4px",
+                backgroundColor: "rgba(255, 255, 255, 0.3)",
+                borderRadius: "0 0 12px 12px",
+                overflow: "hidden",
+              }}>
+              <div
+                style={{
+                  height: "100%",
+                  backgroundColor: "white",
+                  animation: "progressBar 5s linear",
+                  transformOrigin: "left",
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Add CSS Animations */}
+        <style jsx>{`
+          @keyframes slideInRight {
+            from {
+              transform: translateX(400px);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+            }
+          }
+
+          @keyframes progressBar {
+            from {
+              transform: scaleX(1);
+            }
+            to {
+              transform: scaleX(0);
+            }
+          }
+        `}</style>
         <div
           className={`dashboard ${
             sideBarOpen ? "-is-sidebar-visible" : ""

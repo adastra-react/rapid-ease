@@ -2,16 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const currencies = [
-  "USD",
-  "Euro",
-  "British Pound",
-  "Turkish Lira",
-  "Canadian Dollar",
-  "Australian Dollar",
-  "Swiss Franc",
-  "Singapore Dollar",
-];
+const currencies = ["USD", "Pound Sterling", "JMD"];
 
 export default function Currency({ parentClass }) {
   const [currentdd, setCurrentdd] = useState("");
@@ -36,25 +27,22 @@ export default function Currency({ parentClass }) {
   return (
     <div
       ref={dropDownContainer}
-      className={`${parentClass ? parentClass : "headerDropdown  js-form-dd"}`}
-    >
+      className={`${parentClass ? parentClass : "headerDropdown  js-form-dd"}`}>
       <div
-        className="headerDropdown__button"
+        className='headerDropdown__button'
         onClick={() =>
           setCurrentdd((pre) => (pre == "currency" ? "" : "currency"))
-        }
-      >
+        }>
         {selectedCurrency}
-        <i className="icon-chevron-down text-18"></i>
+        <i className='icon-chevron-down text-18'></i>
       </div>
 
       <div
         className={`headerDropdown__content ${
           currentdd == "currency" ? "is-active" : ""
-        } `}
-      >
-        <div className="headerDropdown">
-          <div className="headerDropdown__container">
+        } `}>
+        <div className='headerDropdown'>
+          <div className='headerDropdown__container'>
             {currencies.map((elm, i) => (
               <div
                 onClick={() => {
@@ -62,9 +50,8 @@ export default function Currency({ parentClass }) {
                   setCurrentdd("");
                 }}
                 key={i}
-                className="headerDropdown__item"
-              >
-                <button className="">{elm}</button>
+                className='headerDropdown__item'>
+                <button className=''>{elm}</button>
               </div>
             ))}
           </div>
