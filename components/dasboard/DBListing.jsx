@@ -192,8 +192,8 @@ export default function DBListing() {
                                     </div>
 
                                     <div className='mt-15'>
-                                      <div className='row x-gap-10 y-gap-10'>
-                                        <div className='col-6'>
+                                      <div className='row x-gap-1 y-gap-10'>
+                                        <div className='col-3'>
                                           <button
                                             onClick={() => handleEdit(elm)}
                                             className='button -sm -outline-accent-1 text-accent-1 w-100'
@@ -213,7 +213,7 @@ export default function DBListing() {
                                           </button>
                                         </div>
 
-                                        <div className='col-6'>
+                                        <div className='col-3'>
                                           <button
                                             onClick={() => handleDelete(elm)}
                                             className='button -sm -outline-red-1 text-red-1 w-100'
