@@ -136,7 +136,12 @@ export default function Tour1() {
               <div key={tour.id || i} className='col-lg-3 col-md-6'>
                 <Link
                   href={`/tour-single-1/${tour.id}`}
-                  className='tourCard -type-1 py-10 px-10 border-1 rounded-12  -hover-shadow'>
+                  className='tourCard -type-1 py-10 px-10 border-1 rounded-12 -hover-shadow'
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  }}>
                   <div className='tourCard__header'>
                     <div className='tourCard__image ratio ratio-28:20'>
                       <Image
@@ -156,7 +161,13 @@ export default function Tour1() {
                     </button>
                   </div>
 
-                  <div className='tourCard__content px-10 pt-10'>
+                  <div
+                    className='tourCard__content px-10 pt-10'
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      flexGrow: 1,
+                    }}>
                     <div className='tourCard__location d-flex items-center text-13 text-light-2'>
                       <i className='icon-pin d-flex text-16 text-light-2 mr-5'></i>
                       {tour.location || "Location not specified"}
@@ -176,7 +187,9 @@ export default function Tour1() {
                       </span>
                     </div>
 
-                    <div className='d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10 mt-10'>
+                    <div
+                      className='d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10'
+                      style={{ marginTop: "auto" }}>
                       <div className='d-flex items-center'>
                         <i className='icon-clock text-16 mr-5'></i>
                         {tour.duration || "Duration not specified"}
@@ -185,7 +198,10 @@ export default function Tour1() {
                       <div>
                         From{" "}
                         <span className='text-16 fw-500'>
-                          ${formatPrice(tour?.price || r?.pricing?.basePrice || 0)}
+                          $
+                          {formatPrice(
+                            tour?.price || tour?.pricing?.basePrice || 0
+                          )}
                         </span>
                       </div>
                     </div>
