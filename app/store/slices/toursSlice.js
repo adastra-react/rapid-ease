@@ -99,11 +99,10 @@ const initialState = {
     maxPrice: 100000,
     minDuration: null,
     maxDuration: null,
+    minRating: null,
+    maxRating: null,
     location: "",
     tourTypes: [],
-    languages: [],
-    specials: [],
-    ratings: [],
     sort: "-createdAt",
   },
 };

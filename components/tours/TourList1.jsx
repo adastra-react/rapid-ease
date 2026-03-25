@@ -353,6 +353,27 @@ export default function TourList1() {
   const [ddActives, setDdActives] = useState(false);
   const [sidebarActive, setSidebarActive] = useState(false);
   const dropDownContainer = useRef();
+  const hasExactRatingFilter =
+    filters.minRating !== null && filters.maxRating !== null;
+  const displayedTours = hasExactRatingFilter
+    ? tours.filter((tour) => {
+        const tourRating = Number(tour.rating);
+
+        if (Number.isNaN(tourRating)) {
+          return false;
+        }
+
+        return (
+          tourRating >= filters.minRating &&
+          (filters.maxRating === 5
+            ? tourRating <= 5
+            : tourRating < filters.maxRating)
+        );
+      })
+    : tours;
+  const displayedTotalTours = hasExactRatingFilter
+    ? displayedTours.length
+    : totalTours || 0;
 
   // Function to truncate description to 15 words with ellipses
   const truncateDescription = (text, maxWords = 15) => {
@@ -457,7 +478,7 @@ export default function TourList1() {
           <div className='col-xl-9 col-lg-8'>
             <div className='row y-gap-5 justify-between'>
               <div className='col-auto'>
-                <div>{totalTours || 0} results</div>
+                <div>{displayedTotalTours} results</div>
               </div>
 
               <div ref={dropDownContainer} className='col-auto'>
@@ -504,8 +525,8 @@ export default function TourList1() {
                     {error}
                   </div>
                 </div>
-              ) : tours && tours.length > 0 ? (
-                tours.map((tour, i) => (
+              ) : displayedTours && displayedTours.length > 0 ? (
+                displayedTours.map((tour, i) => (
                   <div
                     className='col-12'
                     key={tour.id || tour._id || `tour-${i}`}>
@@ -635,9 +656,9 @@ export default function TourList1() {
 
               <div className='text-14 text-center mt-20'>
                 Showing results{" "}
-                {tours?.length ? (currentPage - 1) * PAGE_SIZE + 1 : 0}-
-                {Math.min(currentPage * PAGE_SIZE, totalTours || 0)} of{" "}
-                {totalTours || 0}
+                {displayedTours?.length ? (currentPage - 1) * PAGE_SIZE + 1 : 0}
+                -{Math.min(currentPage * PAGE_SIZE, displayedTotalTours)} of{" "}
+                {displayedTotalTours}
               </div>
             </div>
           </div>
