@@ -10,6 +10,35 @@ export default function Profile() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   const [image1, setImage1] = useState("");
   const [image2, setImage2] = useState("/img/dashboard/addtour/1.jpg");
+  const [profileData, setProfileData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    info: "",
+  });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const getInputWrapperClass = (value) =>
+    `form-input${String(value ?? "").trim() ? " is-filled" : ""}`;
+
+  const handleProfileChange = (field, value) => {
+    setProfileData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handlePasswordChange = (field, value) => {
+    setPasswordData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const handleImageChange = (event, func) => {
     const file = event.target.files[0];
@@ -43,15 +72,31 @@ export default function Profile() {
 
               <div className='contactForm row y-gap-30'>
                 <div className='col-md-6'>
-                  <div className='form-input '>
-                    <input type='text' required />
+                  <div className={getInputWrapperClass(profileData.firstName)}>
+                    <input
+                      type='text'
+                      required
+                      placeholder=' '
+                      value={profileData.firstName}
+                      onChange={(e) =>
+                        handleProfileChange("firstName", e.target.value)
+                      }
+                    />
                     <label className='lh-1 text-16 text-light-1'>Name</label>
                   </div>
                 </div>
 
                 <div className='col-md-6'>
-                  <div className='form-input '>
-                    <input type='text' required />
+                  <div className={getInputWrapperClass(profileData.lastName)}>
+                    <input
+                      type='text'
+                      required
+                      placeholder=' '
+                      value={profileData.lastName}
+                      onChange={(e) =>
+                        handleProfileChange("lastName", e.target.value)
+                      }
+                    />
                     <label className='lh-1 text-16 text-light-1'>
                       Last Name
                     </label>
@@ -59,22 +104,45 @@ export default function Profile() {
                 </div>
 
                 <div className='col-md-6'>
-                  <div className='form-input '>
-                    <input type='text' required />
+                  <div className={getInputWrapperClass(profileData.phone)}>
+                    <input
+                      type='text'
+                      required
+                      placeholder=' '
+                      value={profileData.phone}
+                      onChange={(e) =>
+                        handleProfileChange("phone", e.target.value)
+                      }
+                    />
                     <label className='lh-1 text-16 text-light-1'>Phone</label>
                   </div>
                 </div>
 
                 <div className='col-md-6'>
-                  <div className='form-input '>
-                    <input type='text' required />
+                  <div className={getInputWrapperClass(profileData.email)}>
+                    <input
+                      type='text'
+                      required
+                      placeholder=' '
+                      value={profileData.email}
+                      onChange={(e) =>
+                        handleProfileChange("email", e.target.value)
+                      }
+                    />
                     <label className='lh-1 text-16 text-light-1'>Email</label>
                   </div>
                 </div>
 
                 <div className='col-md-6'>
-                  <div className='form-input '>
-                    <textarea required rows='8'></textarea>
+                  <div className={getInputWrapperClass(profileData.info)}>
+                    <textarea
+                      required
+                      rows='8'
+                      placeholder=' '
+                      value={profileData.info}
+                      onChange={(e) =>
+                        handleProfileChange("info", e.target.value)
+                      }></textarea>
                     <label className='lh-1 text-16 text-light-1'>Info</label>
                   </div>
                 </div>
@@ -190,8 +258,22 @@ export default function Profile() {
               <div className='contactForm y-gap-30'>
                 <div className='row y-gap-30'>
                   <div className='col-md-6'>
-                    <div className='form-input '>
-                      <input type='text' required />
+                    <div
+                      className={getInputWrapperClass(
+                        passwordData.currentPassword
+                      )}>
+                      <input
+                        type='password'
+                        required
+                        placeholder=' '
+                        value={passwordData.currentPassword}
+                        onChange={(e) =>
+                          handlePasswordChange(
+                            "currentPassword",
+                            e.target.value
+                          )
+                        }
+                      />
                       <label className='lh-1 text-16 text-light-1'>
                         Old password
                       </label>
@@ -201,8 +283,17 @@ export default function Profile() {
 
                 <div className='row'>
                   <div className='col-md-6'>
-                    <div className='form-input '>
-                      <input type='text' required />
+                    <div
+                      className={getInputWrapperClass(passwordData.newPassword)}>
+                      <input
+                        type='password'
+                        required
+                        placeholder=' '
+                        value={passwordData.newPassword}
+                        onChange={(e) =>
+                          handlePasswordChange("newPassword", e.target.value)
+                        }
+                      />
                       <label className='lh-1 text-16 text-light-1'>
                         New password
                       </label>
@@ -212,8 +303,22 @@ export default function Profile() {
 
                 <div className='row'>
                   <div className='col-md-6'>
-                    <div className='form-input '>
-                      <input type='text' required />
+                    <div
+                      className={getInputWrapperClass(
+                        passwordData.confirmPassword
+                      )}>
+                      <input
+                        type='password'
+                        required
+                        placeholder=' '
+                        value={passwordData.confirmPassword}
+                        onChange={(e) =>
+                          handlePasswordChange(
+                            "confirmPassword",
+                            e.target.value
+                          )
+                        }
+                      />
                       <label className='lh-1 text-16 text-light-1'>
                         Confirm new password
                       </label>

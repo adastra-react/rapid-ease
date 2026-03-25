@@ -8,10 +8,10 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#EB662B", // Change this color to your desired primary color
+      main: "#ea3c3c",
     },
     secondary: {
-      main: "#f50057", // Change this color to your desired secondary color
+      main: "#1f2557",
     },
   },
 });
@@ -34,7 +34,15 @@ export default function RangeSlider({
 
   return (
     <>
-      <div className="js-price-rangeSlider" style={{ padding: "20px 15px" }}>
+      <div
+        className="js-price-rangeSlider"
+        style={{
+          padding: "18px 14px 10px",
+          borderRadius: "20px",
+          backgroundColor: "#fafbfd",
+          border: "1px solid #eef2f7",
+        }}
+      >
         <div className="px-5">
           <ThemeProvider theme={theme}>
             <Slider
@@ -50,16 +58,47 @@ export default function RangeSlider({
               max={max}
               min={min}
               disableSwap
+              sx={{
+                "& .MuiSlider-rail": {
+                  backgroundColor: "#dbe3ee",
+                  opacity: 1,
+                },
+                "& .MuiSlider-track": {
+                  border: "none",
+                },
+                "& .MuiSlider-thumb": {
+                  width: 18,
+                  height: 18,
+                  backgroundColor: "#fff",
+                  border: "4px solid #ea3c3c",
+                  boxShadow: "0 8px 18px rgba(234, 60, 60, 0.18)",
+                },
+                "& .MuiSlider-valueLabel": {
+                  backgroundColor: "#1f2557",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                },
+              }}
             />
           </ThemeProvider>
         </div>
 
         <div className="d-flex justify-between mt-20">
-          <div className="">
-            <span className="">Price:</span>
-            <span className="fw-500 js-lower">{localValue[0]}</span>
+          <div
+            style={{
+              fontSize: "13px",
+              color: "#526071",
+              fontWeight: 500,
+            }}
+          >
+            <span>Price:</span>
+            <span className="fw-600 js-lower" style={{ color: "#1f2557" }}>
+              {localValue[0]}
+            </span>
             <span> - </span>
-            <span className="fw-500 js-upper">{localValue[1]}</span>
+            <span className="fw-600 js-upper" style={{ color: "#1f2557" }}>
+              {localValue[1]}
+            </span>
           </div>
         </div>
       </div>

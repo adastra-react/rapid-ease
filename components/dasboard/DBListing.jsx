@@ -7,11 +7,19 @@ import Stars from "../common/Stars";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import tourService from "@/app/store/services/tourService";
+import PriceText from "../common/PriceText";
 import EditTourModal from "../../components/modals/EditTourModal";
 import ProtectedRoute from "../../components/auth/ProtectedRoute";
 
 export default function DBListing() {
+  const PAGE_SIZE = 6;
+  const actionButtonRowStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+  };
   const [sideBarOpen, setSideBarOpen] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +28,7 @@ export default function DBListing() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tourToDelete, setTourToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch tours from database
   const fetchTours = async () => {
@@ -96,6 +105,51 @@ export default function DBListing() {
     fetchTours(); // Refresh the list
   };
 
+  const getTourImage = (tour) =>
+    tour.imageSrc ||
+    tour.images?.[0]?.url ||
+    "/img/tours/default.jpg";
+
+  const getListingReference = (tour) =>
+    tour.id
+      ? `TOUR-${String(tour.id).padStart(6, "0")}`
+      : `#${String(tour._id || "").slice(-6).toUpperCase()}`;
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredTours = tours.filter((tour) => {
+    if (!normalizedSearch) return true;
+
+    const haystack = [
+      getListingReference(tour),
+      tour.title,
+      tour.location,
+      tour.featured ? "featured" : "live",
+      `${tour.bookingCount || 0}`,
+      `${tour.duration || ""}`,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return haystack.includes(normalizedSearch);
+  });
+
+  const totalPages = Math.max(Math.ceil(filteredTours.length / PAGE_SIZE), 1);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedTours = filteredTours.slice(startIndex, startIndex + PAGE_SIZE);
+  const showingFrom = filteredTours.length ? startIndex + 1 : 0;
+  const showingTo = Math.min(startIndex + PAGE_SIZE, filteredTours.length);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   return (
     <ProtectedRoute>
       <div
@@ -105,7 +159,12 @@ export default function DBListing() {
         <Sidebar setSideBarOpen={setSideBarOpen} />
 
         <div className='dashboard__content'>
-          <Header setSideBarOpen={setSideBarOpen} />
+          <Header
+            setSideBarOpen={setSideBarOpen}
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder='Search listings by title, location, or ID'
+          />
 
           <div className='dashboard__content_content'>
             <h1 className='text-30'>My Listings</h1>
@@ -127,141 +186,221 @@ export default function DBListing() {
                     Start by adding your first tour listing
                   </p>
                 </div>
+              ) : filteredTours.length === 0 ? (
+                <div className='text-center py-60'>
+                  <h3 className='text-24 fw-600 mt-20'>
+                    No listings match your search
+                  </h3>
+                  <p className='text-16 mt-10'>
+                    Try a different title, location, or listing ID.
+                  </p>
+                </div>
               ) : (
                 <>
-                  <div className='row y-gap-30'>
-                    {tours.map((elm) => {
-                      const tourId = elm.id || elm._id;
+                  <div className='overflowAuto'>
+                    <table
+                      className='tableTest mb-30'
+                      style={{ minWidth: "1200px", width: "100%" }}>
+                      <thead className='bg-light-1 rounded-12'>
+                        <tr>
+                          <th
+                            className='py-20'
+                            style={{ width: "150px", minWidth: "150px" }}>
+                            Listing ID
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "360px", minWidth: "360px" }}>
+                            Tour
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "150px", minWidth: "150px" }}>
+                            Location
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "150px", minWidth: "150px" }}>
+                            Rating
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "120px", minWidth: "120px" }}>
+                            Duration
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "120px", minWidth: "120px" }}>
+                            Bookings
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "120px", minWidth: "120px" }}>
+                            Price
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "120px", minWidth: "120px" }}>
+                            Status
+                          </th>
+                          <th
+                            className='py-20'
+                            style={{ width: "130px", minWidth: "130px" }}>
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
 
-                      return (
-                        <div key={tourId} className='col-lg-6'>
-                          <div className='border-1 rounded-12 px-20 py-20 h-full'>
-                            <div className='row x-gap-20 y-gap-20 h-full'>
-                              <div className='col-auto h-full'>
-                                <Image
-                                  width='250'
-                                  height='160'
-                                  src={elm.imageSrc}
-                                  alt={elm.title}
-                                  className='rounded-12 object-cover h-full'
-                                  style={{ width: "250px" }}
-                                />
-                              </div>
+                      <tbody>
+                        {paginatedTours.map((tour) => {
+                          const tourId = tour.id || tour._id;
 
-                              <div className='col'>
-                                <div className='d-flex flex-column h-full justify-between'>
-                                  <div>
-                                    <div className='d-flex items-center text-14 text-light-2'>
-                                      <i className='icon-pin mr-5'></i>
-                                      {elm.location}
-                                    </div>
+                          return (
+                            <tr key={tourId} className='border-bottom-light'>
+                              <td
+                                className='py-20'
+                                style={{ width: "150px", minWidth: "150px" }}>
+                                <div className='fw-600 text-16'>
+                                  {getListingReference(tour)}
+                                </div>
+                                <div className='text-14 text-light-2 mt-5'>
+                                  {tour.createdAt
+                                    ? new Date(
+                                        tour.createdAt
+                                      ).toLocaleDateString()
+                                    : "Recently added"}
+                                </div>
+                              </td>
 
-                                    <div className='text-18 lh-15 fw-500 mt-10'>
-                                      {elm.title}
-                                    </div>
-
-                                    <div className='d-flex items-center mt-10'>
-                                      <div className='d-flex x-gap-5 text-yellow-2 mr-10'>
-                                        <Stars star={elm.rating || 0} />
-                                      </div>
-                                      <div className='text-14'>
-                                        {elm.rating || 0} (
-                                        {elm.ratingCount || 0})
-                                      </div>
-                                    </div>
+                              <td
+                                className='py-20'
+                                style={{ width: "360px", minWidth: "360px" }}>
+                                <div className='d-flex items-center'>
+                                  <div className='size-80 rounded-12 overflow-hidden mr-15'>
+                                    <Image
+                                      width={80}
+                                      height={80}
+                                      src={getTourImage(tour)}
+                                      alt={tour.title}
+                                      className='w-full h-full object-cover'
+                                      unoptimized={true}
+                                    />
                                   </div>
-
-                                  <div className='mt-20'>
-                                    <div className='d-flex items-center justify-between pt-15 border-top-1'>
-                                      <div className='d-flex items-center'>
-                                        <i className='icon-clock mr-5 text-16'></i>
-                                        <div className='text-14'>
-                                          {elm.duration}{" "}
-                                          {elm.duration === 1 ? "day" : "days"}
-                                        </div>
-                                      </div>
-
-                                      <div className='text-right'>
-                                        <div className='text-14 text-light-2'>
-                                          From
-                                        </div>
-                                        <div className='text-20 fw-500'>
-                                          ${elm.fromPrice || elm.price}
-                                        </div>
-                                      </div>
+                                  <div className='flex-1'>
+                                    <div className='fw-500 text-16 mb-5'>
+                                      {tour.title}
                                     </div>
-
-                                    <div className='mt-15'>
-                                      <div className='row x-gap-1 y-gap-10'>
-                                        <div className='col-3'>
-                                          <button
-                                            onClick={() => handleEdit(elm)}
-                                            className='button -sm -outline-accent-1 text-accent-1 w-100'
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              justifyContent: "center",
-                                              gap: "6px",
-                                              padding: "10px 16px",
-                                              borderRadius: "8px",
-                                              fontSize: "14px",
-                                              fontWeight: "500",
-                                              transition: "all 0.2s ease",
-                                            }}>
-                                            <i className='icon-edit text-14'></i>
-                                            <span>Edit</span>
-                                          </button>
-                                        </div>
-
-                                        <div className='col-3'>
-                                          <button
-                                            onClick={() => handleDelete(elm)}
-                                            className='button -sm -outline-red-1 text-red-1 w-100'
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              justifyContent: "center",
-                                              gap: "6px",
-                                              padding: "10px 16px",
-                                              borderRadius: "8px",
-                                              fontSize: "14px",
-                                              fontWeight: "500",
-                                              transition: "all 0.2s ease",
-                                              border: "1px solid #ef4444",
-                                              color: "#ef4444",
-                                              backgroundColor: "transparent",
-                                            }}
-                                            onMouseEnter={(e) => {
-                                              e.target.style.backgroundColor =
-                                                "#ef4444";
-                                              e.target.style.color = "white";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                              e.target.style.backgroundColor =
-                                                "transparent";
-                                              e.target.style.color = "#ef4444";
-                                            }}>
-                                            <i className='icon-delete text-14'></i>
-                                            <span>Delete</span>
-                                          </button>
-                                        </div>
-                                      </div>
+                                    <div className='text-12 text-light-2 mb-5 d-flex items-center'>
+                                      <i className='icon-location mr-5'></i>
+                                      {tour.location || "Jamaica"}
+                                    </div>
+                                    <div className='text-14 text-light-2'>
+                                      {tour.featured
+                                        ? "Featured listing"
+                                        : "Standard listing"}
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "150px", minWidth: "150px" }}>
+                                <div className='fw-500 text-15'>
+                                  {tour.location || "Jamaica"}
+                                </div>
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "150px", minWidth: "150px" }}>
+                                <div className='d-flex items-center x-gap-5 text-yellow-2 mb-5'>
+                                  <Stars star={tour.rating || 0} />
+                                </div>
+                                <div className='text-14 text-light-2'>
+                                  {tour.rating || 0} ({tour.ratingCount || 0})
+                                </div>
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "120px", minWidth: "120px" }}>
+                                <div className='fw-500 text-15'>
+                                  {tour.duration}{" "}
+                                  {tour.duration === 1 ? "day" : "days"}
+                                </div>
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "120px", minWidth: "120px" }}>
+                                <div className='fw-500 text-15'>
+                                  {tour.bookingCount || 0}
+                                </div>
+                                <div className='text-12 text-light-2'>
+                                  Total bookings
+                                </div>
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "120px", minWidth: "120px" }}>
+                                <PriceText
+                                  as='div'
+                                  amount={tour.fromPrice || tour.price}
+                                  className='fw-600 text-18 text-dark-1'
+                                />
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "120px", minWidth: "120px" }}>
+                                <div
+                                  className={`circle fw-500 ${
+                                    tour.featured
+                                      ? "text-accent-1"
+                                      : "text-light-2"
+                                  }`}>
+                                  {tour.featured ? "Featured" : "Live"}
+                                </div>
+                              </td>
+
+                              <td
+                                className='py-20'
+                                style={{ width: "130px", minWidth: "130px" }}>
+                                <div style={actionButtonRowStyle}>
+                                  <button
+                                    onClick={() => handleEdit(tour)}
+                                    className='button -dark-1 size-40 bg-light-1 rounded-full flex-center hover:bg-accent-1 hover:text-white transition-all'
+                                    title='Edit listing'>
+                                    <i className='icon-pencil text-16'></i>
+                                  </button>
+
+                                  <button
+                                    onClick={() => handleDelete(tour)}
+                                    className='button -dark-1 size-40 bg-light-1 rounded-full flex-center hover:bg-red-1 hover:text-white transition-all'
+                                    title='Delete listing'>
+                                    <i className='icon-delete text-16'></i>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
 
                   <div className='mt-30'>
-                    <Pagination />
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
 
                     <div className='text-14 text-center mt-20'>
-                      Showing results 1-{tours.length} of {tours.length}
+                      Showing results {showingFrom}-{showingTo} of{" "}
+                      {filteredTours.length}
                     </div>
                   </div>
                 </>

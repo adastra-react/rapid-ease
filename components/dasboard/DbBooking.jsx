@@ -19,9 +19,46 @@ const statusMapping = {
   Cancelled: "cancelled",
 };
 
+const bookingCardStyles = {
+  label: {
+    fontSize: "11px",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    color: "#9ca3af",
+    fontWeight: 600,
+  },
+  badgeBase: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: 600,
+    lineHeight: 1,
+  },
+  actionRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+  },
+  metaChip: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    padding: "6px 10px",
+    borderRadius: "999px",
+    backgroundColor: "#f8fafc",
+    color: "#526071",
+    fontSize: "12px",
+    fontWeight: 500,
+  },
+};
+
 export default function DbBooking() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   const [currentTab, setCurrentTab] = useState("Approved");
+  const [searchTerm, setSearchTerm] = useState("");
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,6 +72,9 @@ export default function DbBooking() {
   // Modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchBookings();
@@ -116,16 +156,32 @@ export default function DbBooking() {
     });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusBadgeStyle = (status) => {
     switch (status) {
       case "confirmed":
-        return "text-purple-1";
+        return {
+          ...bookingCardStyles.badgeBase,
+          backgroundColor: "rgba(99, 102, 241, 0.12)",
+          color: "#4f46e5",
+        };
       case "pending":
-        return "text-yellow-1";
+        return {
+          ...bookingCardStyles.badgeBase,
+          backgroundColor: "rgba(245, 158, 11, 0.14)",
+          color: "#b45309",
+        };
       case "cancelled":
-        return "text-red-2";
+        return {
+          ...bookingCardStyles.badgeBase,
+          backgroundColor: "rgba(239, 68, 68, 0.12)",
+          color: "#dc2626",
+        };
       default:
-        return "text-gray-1";
+        return {
+          ...bookingCardStyles.badgeBase,
+          backgroundColor: "#f3f4f6",
+          color: "#526071",
+        };
     }
   };
 
@@ -156,17 +212,63 @@ export default function DbBooking() {
     fetchBookings(pagination.currentPage);
   };
 
-  const handleDelete = async (bookingId) => {
-    if (window.confirm("Are you sure you want to delete this booking?")) {
-      try {
-        await bookingService.deleteBooking(bookingId);
-        fetchBookings(pagination.currentPage);
-      } catch (err) {
-        console.error("Error deleting booking:", err);
-        alert("Failed to delete booking");
-      }
+  const handleDelete = (booking) => {
+    setBookingToDelete(booking);
+    setShowDeleteModal(true);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setBookingToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!bookingToDelete?._id) return;
+
+    try {
+      setDeleting(true);
+      await bookingService.deleteBooking(bookingToDelete._id);
+      setShowDeleteModal(false);
+      setBookingToDelete(null);
+      fetchBookings(pagination.currentPage);
+    } catch (err) {
+      console.error("Error deleting booking:", err);
+      setError("Failed to delete booking");
+    } finally {
+      setDeleting(false);
     }
   };
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredBookings = bookings.filter((booking) => {
+    if (!normalizedSearch) return true;
+
+    const tour = tourData[booking.tour];
+    const haystack = [
+      booking.bookingReference,
+      booking._id,
+      tour?.title || booking.tourTitle,
+      tour?.location,
+      booking.customerInfo?.firstName,
+      booking.customerInfo?.lastName,
+      booking.customerInfo?.email,
+      booking.customerInfo?.specialRequests,
+      booking.tripType,
+      booking.status,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return haystack.includes(normalizedSearch);
+  });
+
+  const getGuestBreakdown = (booking) =>
+    [
+      { label: "Adults", value: booking.adults || 0 },
+      { label: "Youth", value: booking.youth || 0 },
+      { label: "Children", value: booking.children || 0 },
+    ].filter((guestGroup) => guestGroup.value > 0);
 
   return (
     <ProtectedRoute>
@@ -177,7 +279,12 @@ export default function DbBooking() {
         <Sidebar setSideBarOpen={setSideBarOpen} />
 
         <div className='dashboard__content'>
-          <Header setSideBarOpen={setSideBarOpen} />
+          <Header
+            setSideBarOpen={setSideBarOpen}
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder='Search bookings by guest, tour, email, or ID'
+          />
 
           <div className='dashboard__content_content'>
             <h1 className='text-30'>My Booking</h1>
@@ -214,6 +321,10 @@ export default function DbBooking() {
                     ) : bookings.length === 0 ? (
                       <div className='text-center py-40'>
                         No bookings found for {currentTab.toLowerCase()} status.
+                      </div>
+                    ) : filteredBookings.length === 0 ? (
+                      <div className='text-center py-40'>
+                        No bookings on this page match your search.
                       </div>
                     ) : (
                       <>
@@ -277,7 +388,7 @@ export default function DbBooking() {
                             </thead>
 
                             <tbody>
-                              {bookings.map((booking, i) => {
+                              {filteredBookings.map((booking, i) => {
                                 const tour = tourData[booking.tour];
 
                                 return (
@@ -329,21 +440,23 @@ export default function DbBooking() {
                                           )}
                                         </div>
                                         <div className='flex-1'>
-                                          <div className='fw-500 text-16 mb-5'>
+                                          <div className='fw-600 text-16 mb-5 text-dark-1'>
                                             {tour?.title || booking.tourTitle}
                                           </div>
                                           {tour?.location && (
-                                            <div className='text-12 text-light-2 mb-5 d-flex items-center'>
+                                            <div className='text-12 text-light-2 mb-10 d-flex items-center'>
                                               <i className='icon-location mr-5'></i>
                                               {tour.location}
                                             </div>
                                           )}
-                                          <div className='text-14 text-light-2 mb-5'>
-                                            Customer:{" "}
+                                          <div style={bookingCardStyles.label}>
+                                            Customer
+                                          </div>
+                                          <div className='text-14 text-dark-1 mt-4 mb-4'>
                                             {booking.customerInfo?.firstName}{" "}
                                             {booking.customerInfo?.lastName}
                                           </div>
-                                          <div className='text-12 text-light-2'>
+                                          <div className='text-13 text-light-2'>
                                             {booking.customerInfo?.email}
                                           </div>
                                         </div>
@@ -357,11 +470,17 @@ export default function DbBooking() {
                                         minWidth: "120px",
                                       }}>
                                       <div
-                                        className={`px-10 py-8 rounded-8 text-12 fw-500 d-inline-flex items-center ${
-                                          booking.tripType === "round-trip"
-                                            ? "bg-accent-1-05 text-accent-1"
-                                            : "bg-light-2 text-dark-1"
-                                        }`}>
+                                        style={{
+                                          ...bookingCardStyles.badgeBase,
+                                          backgroundColor:
+                                            booking.tripType === "round-trip"
+                                              ? "rgba(234, 60, 60, 0.1)"
+                                              : "#f3f4f6",
+                                          color:
+                                            booking.tripType === "round-trip"
+                                              ? "#ea3c3c"
+                                              : "#1f2557",
+                                        }}>
                                         <i
                                           className={`${
                                             booking.tripType === "round-trip"
@@ -380,10 +499,13 @@ export default function DbBooking() {
                                         width: "130px",
                                         minWidth: "130px",
                                       }}>
-                                      <div className='fw-500 text-15 mb-5'>
+                                      <div style={bookingCardStyles.label}>
+                                        Starts
+                                      </div>
+                                      <div className='fw-600 text-15 text-dark-1 mt-6 mb-4'>
                                         {formatDate(booking.startDate)}
                                       </div>
-                                      <div className='text-14 text-light-2 d-flex items-center'>
+                                      <div className='text-13 text-light-2 d-flex items-center'>
                                         <i className='icon-clock mr-5'></i>
                                         {booking.startTime ||
                                           booking.selectedTime}
@@ -399,18 +521,27 @@ export default function DbBooking() {
                                       {booking.tripType === "round-trip" &&
                                       booking.returnDate ? (
                                         <>
-                                          <div className='fw-500 text-15 mb-5'>
+                                          <div style={bookingCardStyles.label}>
+                                            Returns
+                                          </div>
+                                          <div className='fw-600 text-15 text-dark-1 mt-6 mb-4'>
                                             {formatDate(booking.returnDate)}
                                           </div>
-                                          <div className='text-14 text-light-2 d-flex items-center'>
+                                          <div className='text-13 text-light-2 d-flex items-center'>
                                             <i className='icon-clock mr-5'></i>
                                             {booking.returnTime}
                                           </div>
                                         </>
                                       ) : (
-                                        <span className='text-light-2 text-14'>
+                                        <div
+                                          style={{
+                                            ...bookingCardStyles.badgeBase,
+                                            backgroundColor: "#f8fafc",
+                                            color: "#64748b",
+                                            padding: "8px 10px",
+                                          }}>
                                           Same day
-                                        </span>
+                                        </div>
                                       )}
                                     </td>
 
@@ -420,17 +551,36 @@ export default function DbBooking() {
                                         width: "120px",
                                         minWidth: "120px",
                                       }}>
-                                      <div className='fw-500 text-15 mb-5'>
+                                      <div className='fw-600 text-15 text-dark-1 mb-6'>
                                         {booking.totalGuests} Guest
                                         {booking.totalGuests !== 1 ? "s" : ""}
                                       </div>
-                                      <div className='text-12 text-light-2'>
-                                        {booking.adults > 0 &&
-                                          `${booking.adults} Adults`}
-                                        {booking.youth > 0 &&
-                                          ` • ${booking.youth} Youth`}
-                                        {booking.children > 0 &&
-                                          ` • ${booking.children} Children`}
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          gap: "6px",
+                                        }}>
+                                        {getGuestBreakdown(booking).map(
+                                          (guestGroup) => (
+                                            <div
+                                              key={guestGroup.label}
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                gap: "10px",
+                                                fontSize: "12px",
+                                                lineHeight: 1.2,
+                                              }}>
+                                              <span className='text-light-2'>
+                                                {guestGroup.label}
+                                              </span>
+                                              <span className='text-dark-1 fw-500'>
+                                                {guestGroup.value}
+                                              </span>
+                                            </div>
+                                          )
+                                        )}
                                       </div>
                                     </td>
 
@@ -442,23 +592,38 @@ export default function DbBooking() {
                                       }}>
                                       {booking.customerInfo?.specialRequests ? (
                                         <div
-                                          className='text-13 text-dark-1'
                                           title={
                                             booking.customerInfo.specialRequests
                                           }
                                           style={{
-                                            display: "-webkit-box",
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: "vertical",
-                                            overflow: "hidden",
-                                            wordBreak: "break-word",
-                                            maxWidth: "160px",
+                                            border: "1px solid #e5e7eb",
+                                            backgroundColor: "#fafafa",
+                                            borderRadius: "14px",
+                                            padding: "12px 14px",
+                                            maxWidth: "170px",
                                           }}>
-                                          {booking.customerInfo.specialRequests}
+                                          <div style={bookingCardStyles.label}>
+                                            Request
+                                          </div>
+                                          <div
+                                            className='text-13 text-dark-1 mt-6'
+                                            style={{
+                                              display: "-webkit-box",
+                                              WebkitLineClamp: 2,
+                                              WebkitBoxOrient: "vertical",
+                                              overflow: "hidden",
+                                              wordBreak: "break-word",
+                                            }}>
+                                            {booking.customerInfo.specialRequests}
+                                          </div>
                                         </div>
                                       ) : (
-                                        <span className='text-light-2 text-14'>
-                                          None
+                                        <span
+                                          style={{
+                                            ...bookingCardStyles.metaChip,
+                                            backgroundColor: "#fafafa",
+                                          }}>
+                                          No requests
                                         </span>
                                       )}
                                     </td>
@@ -469,7 +634,10 @@ export default function DbBooking() {
                                         width: "100px",
                                         minWidth: "100px",
                                       }}>
-                                      <div className='fw-600 text-18 text-dark-1'>
+                                      <div style={bookingCardStyles.label}>
+                                        Total
+                                      </div>
+                                      <div className='fw-600 text-18 text-dark-1 mt-6'>
                                         ${booking.totalAmount}
                                       </div>
                                       <div className='text-12 text-light-2'>
@@ -484,13 +652,13 @@ export default function DbBooking() {
                                         minWidth: "120px",
                                       }}>
                                       <div
-                                        className={`circle fw-500 ${getStatusColor(
+                                        style={getStatusBadgeStyle(
                                           booking.status
-                                        )}`}>
+                                        )}>
                                         {getStatusLabel(booking.status)}
                                       </div>
                                       {booking.paymentInfo?.status && (
-                                        <div className='text-12 text-light-2 mt-5'>
+                                        <div className='text-12 text-light-2 mt-8'>
                                           Payment: {booking.paymentInfo.status}
                                         </div>
                                       )}
@@ -502,7 +670,7 @@ export default function DbBooking() {
                                         width: "100px",
                                         minWidth: "100px",
                                       }}>
-                                      <div className='d-flex items-center gap-10'>
+                                      <div style={bookingCardStyles.actionRow}>
                                         <button
                                           onClick={() => handleEdit(booking)}
                                           className='button -dark-1 size-40 bg-light-1 rounded-full flex-center hover:bg-accent-1 hover:text-white transition-all'
@@ -511,9 +679,7 @@ export default function DbBooking() {
                                         </button>
 
                                         <button
-                                          onClick={() =>
-                                            handleDelete(booking._id)
-                                          }
+                                          onClick={() => handleDelete(booking)}
                                           className='button -dark-1 size-40 bg-light-1 rounded-full flex-center hover:bg-red-1 hover:text-white transition-all'
                                           title='Delete booking'>
                                           <i className='icon-delete text-16'></i>
@@ -527,21 +693,33 @@ export default function DbBooking() {
                           </table>
                         </div>
 
-                        <Pagination
-                          currentPage={pagination.currentPage}
-                          totalPages={pagination.totalPages}
-                          onPageChange={fetchBookings}
-                        />
+                        {!searchTerm && (
+                          <>
+                            <Pagination
+                              currentPage={pagination.currentPage}
+                              totalPages={pagination.totalPages}
+                              onPageChange={fetchBookings}
+                            />
 
-                        <div className='text-14 text-center mt-20'>
-                          Showing results{" "}
-                          {(pagination.currentPage - 1) * 10 + 1}-
-                          {Math.min(
-                            pagination.currentPage * 10,
-                            pagination.total
-                          )}{" "}
-                          of {pagination.total}
-                        </div>
+                            <div className='text-14 text-center mt-20'>
+                              Showing results{" "}
+                              {(pagination.currentPage - 1) * 10 + 1}-
+                              {Math.min(
+                                pagination.currentPage * 10,
+                                pagination.total
+                              )}{" "}
+                              of {pagination.total}
+                            </div>
+                          </>
+                        )}
+
+                        {searchTerm && (
+                          <div className='text-14 text-center mt-20'>
+                            Showing {filteredBookings.length} matching booking
+                            {filteredBookings.length === 1 ? "" : "s"} on this
+                            page
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
@@ -562,6 +740,175 @@ export default function DbBooking() {
           booking={selectedBooking}
           onBookingUpdated={handleBookingUpdated}
         />
+
+        {showDeleteModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 9999,
+              backdropFilter: "blur(4px)",
+            }}>
+            <div
+              style={{
+                backgroundColor: "white",
+                borderRadius: "16px",
+                padding: "40px",
+                maxWidth: "480px",
+                width: "90%",
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+              }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "24px",
+                }}>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    borderRadius: "50%",
+                    backgroundColor: "#fee2e2",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                  <svg
+                    width='40'
+                    height='40'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M12 9V13M12 17H12.01M5.07183 19H18.9282C20.4678 19 21.4301 17.3333 20.6603 16L13.7321 4C12.9623 2.66667 11.0377 2.66667 10.2679 4L3.33978 16C2.56998 17.3333 3.53223 19 5.07183 19Z'
+                      stroke='#ef4444'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <h3
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "600",
+                  textAlign: "center",
+                  marginBottom: "12px",
+                  color: "#1f2937",
+                }}>
+                Delete Booking?
+              </h3>
+
+              <p
+                style={{
+                  fontSize: "16px",
+                  textAlign: "center",
+                  marginBottom: "8px",
+                  color: "#6b7280",
+                  lineHeight: "1.5",
+                }}>
+                Are you sure you want to delete booking{" "}
+                <strong style={{ color: "#1f2937" }}>
+                  "
+                  {bookingToDelete?.bookingReference ||
+                    `#${bookingToDelete?._id?.slice(-6)?.toUpperCase() || ""}`}
+                  "
+                </strong>
+                ?
+              </p>
+
+              <p
+                style={{
+                  fontSize: "14px",
+                  textAlign: "center",
+                  marginBottom: "32px",
+                  color: "#ef4444",
+                  fontWeight: "500",
+                }}>
+                This action cannot be undone.
+              </p>
+
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  onClick={cancelDelete}
+                  disabled={deleting}
+                  style={{
+                    flex: 1,
+                    padding: "14px 24px",
+                    borderRadius: "10px",
+                    border: "2px solid #e5e7eb",
+                    backgroundColor: "white",
+                    color: "#374151",
+                    fontSize: "15px",
+                    fontWeight: "600",
+                    cursor: deleting ? "not-allowed" : "pointer",
+                    opacity: deleting ? 0.6 : 1,
+                  }}>
+                  Cancel
+                </button>
+
+                <button
+                  onClick={confirmDelete}
+                  disabled={deleting}
+                  style={{
+                    flex: 1,
+                    padding: "14px 24px",
+                    borderRadius: "10px",
+                    border: "none",
+                    backgroundColor: "#ef4444",
+                    color: "white",
+                    fontSize: "15px",
+                    fontWeight: "600",
+                    cursor: deleting ? "not-allowed" : "pointer",
+                    opacity: deleting ? 0.7 : 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                  }}>
+                  {deleting ? (
+                    <>
+                      <svg
+                        style={{
+                          animation: "spin 1s linear infinite",
+                          width: "16px",
+                          height: "16px",
+                        }}
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'>
+                        <circle
+                          style={{ opacity: 0.25 }}
+                          cx='12'
+                          cy='12'
+                          r='10'
+                          stroke='currentColor'
+                          strokeWidth='4'></circle>
+                        <path
+                          style={{ opacity: 0.75 }}
+                          fill='currentColor'
+                          d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                      </svg>
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <i className='icon-delete'></i>
+                      Delete Booking
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );

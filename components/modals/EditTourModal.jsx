@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import tourService from "@/app/store/services/tourService";
 
 export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
+  const palette = {
+    navy: "#1f2557",
+    red: "#ea3c3c",
+    redDark: "#d92f2f",
+    redSoft: "rgba(234, 60, 60, 0.08)",
+    border: "#e5e7eb",
+    muted: "#666",
+    surface: "#f9fafb",
+  };
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -70,38 +79,6 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
 
       // Set existing images
       setImages(tour.images || []);
-    }
-  }, [tour]);
-
-  useEffect(() => {
-    if (tour) {
-      console.log("Tour object received:", tour); // Debug log
-      setFormData({
-        title: tour.title || "",
-        location: tour.location || "",
-        overview: tour.overview || "",
-        description: tour.description || "",
-        duration: tour.duration || 1,
-        groupSize: tour.groupSize || 0,
-        languages: tour.languages || ["English"],
-        ageRange: tour.ageRange || { min: 0, max: 99 },
-        adultOnly: tour.adultOnly || false,
-        price: tour?.price || r?.pricing?.basePrice || 0 || 0,
-        fromPrice: tour.fromPrice || 0,
-        pricing: {
-          basePrice: tour?.pricing?.basePrice || 0,
-          adultPrice: tour?.pricing?.adultPrice || 0,
-          youthPrice: tour?.pricing?.youthPrice || 0,
-          childrenPrice: tour?.pricing?.childrenPrice || 0,
-          servicePrice: tour?.pricing?.servicePrice || 0,
-        },
-        imageSrc: tour.imageSrc || "",
-        highlights: tour.highlights?.length > 0 ? tour.highlights : [""],
-        cancelPolicy: tour.cancelPolicy || "",
-        featured: tour.featured || false,
-        badgeText: tour.badgeText || "",
-        badgeClass: tour.badgeClass || "",
-      });
     }
   }, [tour]);
 
@@ -358,32 +335,75 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
 
   const inputStyle = (hasError = false) => ({
     width: "100%",
-    padding: "12px",
-    borderRadius: "8px",
+    padding: "13px 14px",
+    borderRadius: "12px",
     fontSize: "14px",
-    border: hasError ? "1px solid #dc3545" : "1px solid #ddd",
+    color: palette.navy,
+    border: hasError ? `1px solid ${palette.red}` : `1px solid ${palette.border}`,
   });
 
   const buttonStyle = (primary = false, disabled = false) => ({
     padding: "12px 24px",
-    borderRadius: "8px",
+    borderRadius: "12px",
     cursor: disabled ? "not-allowed" : "pointer",
-    backgroundColor: disabled ? "#ccc" : primary ? "#1e7e34" : "transparent",
-    color: primary ? "white" : "#333",
-    border: primary ? "none" : "1px solid #ddd",
+    backgroundColor: disabled ? "#ccc" : primary ? palette.red : "transparent",
+    color: primary ? "white" : palette.navy,
+    border: primary ? "none" : `1px solid ${palette.border}`,
     opacity: disabled ? 0.6 : 1,
+    fontWeight: 600,
   });
 
   const tabStyle = (isActive) => ({
     padding: "12px 24px",
     background: "none",
     border: "none",
-    borderBottom: isActive ? "2px solid #1e7e34" : "2px solid transparent",
+    borderBottom: isActive ? `2px solid ${palette.red}` : "2px solid transparent",
     cursor: "pointer",
     fontWeight: isActive ? "600" : "500",
-    color: isActive ? "#1e7e34" : "#666",
+    color: isActive ? palette.navy : palette.muted,
     transition: "all 0.2s",
   });
+
+  const sectionCardStyle = {
+    border: `1px solid ${palette.border}`,
+    borderRadius: "16px",
+    padding: "22px",
+    backgroundColor: "#fff",
+    marginBottom: "20px",
+  };
+
+  const sectionHeadingStyle = {
+    fontSize: "16px",
+    fontWeight: "600",
+    color: palette.navy,
+    marginBottom: "16px",
+  };
+
+  const toggleRowStyle = {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "16px",
+    marginBottom: "20px",
+  };
+
+  const toggleCardStyle = (active) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "14px",
+    border: `1px solid ${active ? palette.red : palette.border}`,
+    backgroundColor: active ? palette.redSoft : "#fff",
+    borderRadius: "14px",
+    padding: "16px 18px",
+  });
+
+  const checkboxStyle = {
+    width: "18px",
+    height: "18px",
+    accentColor: palette.red,
+    cursor: "pointer",
+    flexShrink: 0,
+  };
 
   return (
     <div
@@ -393,7 +413,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
         left: 0,
         width: "100%",
         height: "100%",
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(17,24,39,0.55)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -404,7 +424,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
       <div
         style={{
           backgroundColor: "white",
-          borderRadius: "12px",
+          borderRadius: "20px",
           maxWidth: "900px",
           width: "90%",
           maxHeight: "90vh",
@@ -417,14 +437,14 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
         <div
           style={{
             padding: "24px 30px",
-            borderBottom: "1px solid #e5e7eb",
+            borderBottom: `1px solid ${palette.border}`,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}>
           <h2
             style={{
-              color: "#1e7e34",
+              color: palette.navy,
               margin: 0,
               fontSize: "24px",
               fontWeight: "600",
@@ -453,11 +473,11 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
         {tour && (
           <div
             style={{
-              backgroundColor: "#f0fdf4",
+              backgroundColor: palette.redSoft,
               padding: "12px 30px",
-              borderBottom: "1px solid #e5e7eb",
+              borderBottom: `1px solid ${palette.border}`,
               fontSize: "14px",
-              color: "#15803d",
+              color: palette.navy,
             }}>
             Editing: <strong>{tour.title}</strong> (ID: {tour._id || tour.id})
           </div>
@@ -469,8 +489,8 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
             display: "flex",
             gap: "8px",
             padding: "0 30px",
-            borderBottom: "1px solid #e5e7eb",
-            backgroundColor: "#f9fafb",
+            borderBottom: `1px solid ${palette.border}`,
+            backgroundColor: palette.surface,
           }}>
           <button
             style={tabStyle(activeTab === "basic")}
@@ -532,7 +552,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                       marginBottom: "8px",
                       fontWeight: "500",
                     }}>
-                    Title <span style={{ color: "#dc3545" }}>*</span>
+                    Title <span style={{ color: palette.red }}>*</span>
                   </label>
                   <input
                     type='text'
@@ -551,7 +571,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                       marginBottom: "8px",
                       fontWeight: "500",
                     }}>
-                    Location <span style={{ color: "#dc3545" }}>*</span>
+                    Location <span style={{ color: palette.red }}>*</span>
                   </label>
                   <input
                     type='text'
@@ -570,7 +590,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                       marginBottom: "8px",
                       fontWeight: "500",
                     }}>
-                    Overview <span style={{ color: "#dc3545" }}>*</span>
+                    Overview <span style={{ color: palette.red }}>*</span>
                   </label>
                   <textarea
                     name='overview'
@@ -593,7 +613,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                       marginBottom: "8px",
                       fontWeight: "500",
                     }}>
-                    Description <span style={{ color: "#dc3545" }}>*</span>
+                    Description <span style={{ color: palette.red }}>*</span>
                   </label>
                   <textarea
                     name='description'
@@ -641,7 +661,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                           onClick={() => removeArrayItem(index, "highlights")}
                           style={{
                             padding: "8px 16px",
-                            backgroundColor: "#dc3545",
+                            backgroundColor: palette.red,
                             color: "white",
                             border: "none",
                             borderRadius: "8px",
@@ -659,7 +679,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                     style={{
                       marginTop: "10px",
                       padding: "8px 16px",
-                      backgroundColor: "#1e7e34",
+                      backgroundColor: palette.red,
                       color: "white",
                       border: "none",
                       borderRadius: "8px",
@@ -674,13 +694,15 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
             {/* Details Tab */}
             {activeTab === "details" && (
               <div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "15px",
-                    marginBottom: "20px",
-                  }}>
+                <div style={sectionCardStyle}>
+                  <div style={sectionHeadingStyle}>Guest Rules & Capacity</div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "15px",
+                      marginBottom: "20px",
+                    }}>
                   <div>
                     <label
                       style={{
@@ -689,7 +711,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         fontWeight: "500",
                       }}>
                       Duration (days){" "}
-                      <span style={{ color: "#dc3545" }}>*</span>
+                      <span style={{ color: palette.red }}>*</span>
                     </label>
                     <input
                       type='number'
@@ -762,43 +784,58 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                   </div>
                 </div>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      cursor: "pointer",
-                    }}>
+                <div style={toggleRowStyle}>
+                  <label style={toggleCardStyle(formData.adultOnly)}>
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          color: palette.navy,
+                          marginBottom: "4px",
+                        }}>
+                        Adult Only
+                      </div>
+                      <div style={{ fontSize: "13px", color: palette.muted }}>
+                        Hide youth and children options on the booking form.
+                      </div>
+                    </div>
                     <input
                       type='checkbox'
                       name='adultOnly'
                       checked={formData.adultOnly}
                       onChange={handleChange}
-                      style={{ marginRight: "10px" }}
+                      style={checkboxStyle}
                     />
-                    <span>Adult Only (18+)</span>
                   </label>
-                </div>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      cursor: "pointer",
-                    }}>
+                  <label style={toggleCardStyle(formData.featured)}>
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          color: palette.navy,
+                          marginBottom: "4px",
+                        }}>
+                        Featured Tour
+                      </div>
+                      <div style={{ fontSize: "13px", color: palette.muted }}>
+                        Mark this listing as highlighted across the site.
+                      </div>
+                    </div>
                     <input
                       type='checkbox'
                       name='featured'
                       checked={formData.featured}
                       onChange={handleChange}
-                      style={{ marginRight: "10px" }}
+                      style={checkboxStyle}
                     />
-                    <span>Featured Tour</span>
                   </label>
                 </div>
+                </div>
 
-                <div style={{ marginBottom: "20px" }}>
+                <div style={sectionCardStyle}>
+                  <div style={sectionHeadingStyle}>Policies & Badges</div>
+                  <div style={{ marginBottom: "20px" }}>
                   <label
                     style={{
                       display: "block",
@@ -864,6 +901,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                     />
                   </div>
                 </div>
+                </div>
               </div>
             )}
 
@@ -884,12 +922,12 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         marginBottom: "8px",
                         fontWeight: "500",
                       }}>
-                      Price <span style={{ color: "#dc3545" }}>*</span>
+                      Price <span style={{ color: palette.red }}>*</span>
                     </label>
                     <input
                       type='number'
                       name='price'
-                      value={formData?.price || a?.pricing?.basePrice || 0}
+                      value={formData.price || formData.pricing.basePrice || 0}
                       onChange={handleChange}
                       style={inputStyle()}
                       min='0'
@@ -905,7 +943,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         marginBottom: "8px",
                         fontWeight: "500",
                       }}>
-                      From Price <span style={{ color: "#dc3545" }}>*</span>
+                      From Price <span style={{ color: palette.red }}>*</span>
                     </label>
                     <input
                       type='number'
@@ -1067,15 +1105,15 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
             {/* Media Tab */}
             {activeTab === "media" && (
               <div>
-                {/* Main Image */}
-                <div style={{ marginBottom: "30px" }}>
+                <div style={sectionCardStyle}>
+                  <div style={sectionHeadingStyle}>Main Image</div>
                   <label
                     style={{
                       display: "block",
                       marginBottom: "8px",
                       fontWeight: "500",
                     }}>
-                    Main Image <span style={{ color: "#dc3545" }}>*</span>
+                    Main Image <span style={{ color: palette.red }}>*</span>
                   </label>
 
                   {/* Upload from computer button */}
@@ -1087,7 +1125,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         alignItems: "center",
                         gap: "8px",
                         padding: "10px 20px",
-                        backgroundColor: "#1e7e34",
+                        backgroundColor: palette.red,
                         color: "white",
                         borderRadius: "8px",
                         cursor: "pointer",
@@ -1096,10 +1134,10 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         transition: "background-color 0.2s",
                       }}
                       onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = "#166534";
+                        e.target.style.backgroundColor = palette.redDark;
                       }}
                       onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = "#1e7e34";
+                        e.target.style.backgroundColor = palette.red;
                       }}>
                       <svg
                         width='16'
@@ -1146,10 +1184,13 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         src={formData.imageSrc}
                         alt='Main Preview'
                         style={{
-                          maxWidth: "300px",
+                          width: "100%",
+                          maxWidth: "360px",
                           height: "auto",
-                          borderRadius: "12px",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          aspectRatio: "4 / 3",
+                          objectFit: "cover",
+                          borderRadius: "16px",
+                          boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
                         }}
                         onError={(e) => {
                           e.target.style.display = "none";
@@ -1159,16 +1200,10 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                   )}
                 </div>
 
-                {/* Gallery Images */}
-                <div>
-                  <h4
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "500",
-                      marginBottom: "15px",
-                    }}>
+                <div style={sectionCardStyle}>
+                  <div style={sectionHeadingStyle}>
                     Gallery Images ({images.length})
-                  </h4>
+                  </div>
 
                   {/* Upload Button */}
                   <div style={{ marginBottom: "20px" }}>
@@ -1179,7 +1214,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         alignItems: "center",
                         gap: "8px",
                         padding: "12px 24px",
-                        backgroundColor: "#1e7e34",
+                        backgroundColor: palette.red,
                         color: "white",
                         borderRadius: "8px",
                         cursor: "pointer",
@@ -1188,10 +1223,10 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                         transition: "background-color 0.2s",
                       }}
                       onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = "#166534";
+                        e.target.style.backgroundColor = palette.redDark;
                       }}
                       onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = "#1e7e34";
+                        e.target.style.backgroundColor = palette.red;
                       }}>
                       <svg
                         width='18'
@@ -1239,8 +1274,8 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                       style={{
                         display: "grid",
                         gridTemplateColumns:
-                          "repeat(auto-fill, minmax(200px, 1fr))",
-                        gap: "15px",
+                          "repeat(auto-fill, minmax(220px, 1fr))",
+                        gap: "18px",
                         marginBottom: "20px",
                       }}>
                       {images.map((image, index) => (
@@ -1248,16 +1283,17 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                           key={index}
                           style={{
                             position: "relative",
-                            borderRadius: "8px",
+                            borderRadius: "16px",
                             overflow: "hidden",
-                            border: "1px solid #e5e7eb",
-                            backgroundColor: "#f9fafb",
+                            border: `1px solid ${palette.border}`,
+                            backgroundColor: "#fff",
+                            boxShadow: "0 8px 24px rgba(15, 23, 42, 0.04)",
                           }}>
                           {/* Image Preview */}
                           <div
                             style={{
                               width: "100%",
-                              height: "150px",
+                              height: "180px",
                               overflow: "hidden",
                               backgroundColor: "#f3f4f6",
                               position: "relative",
@@ -1284,8 +1320,8 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                                 top: "8px",
                                 left: "8px",
                                 padding: "6px 12px",
-                                backgroundColor: "rgba(255,255,255,0.95)",
-                                borderRadius: "6px",
+                                backgroundColor: "rgba(255,255,255,0.96)",
+                                borderRadius: "999px",
                                 cursor: "pointer",
                                 fontSize: "12px",
                                 fontWeight: "500",
@@ -1323,17 +1359,17 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                           </div>
 
                           {/* Image Controls */}
-                          <div style={{ padding: "10px" }}>
+                          <div style={{ padding: "12px" }}>
                             <button
                               type='button'
                               onClick={() => handleRemoveImage(index)}
                               style={{
                                 width: "100%",
-                                padding: "8px 12px",
-                                backgroundColor: "#ef4444",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "6px",
+                                padding: "10px 14px",
+                                backgroundColor: palette.redSoft,
+                                color: palette.redDark,
+                                border: `1px solid rgba(234, 60, 60, 0.16)`,
+                                borderRadius: "12px",
                                 fontSize: "13px",
                                 cursor: "pointer",
                                 transition: "background-color 0.2s",
@@ -1344,10 +1380,10 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
                                 fontWeight: "500",
                               }}
                               onMouseEnter={(e) => {
-                                e.target.style.backgroundColor = "#dc2626";
+                                e.target.style.backgroundColor = "rgba(234, 60, 60, 0.14)";
                               }}
                               onMouseLeave={(e) => {
-                                e.target.style.backgroundColor = "#ef4444";
+                                e.target.style.backgroundColor = palette.redSoft;
                               }}>
                               <svg
                                 width='14'
@@ -1410,7 +1446,7 @@ export default function EditTourModal({ tour, isOpen, onClose, onSuccess }) {
               justifyContent: "space-between",
               gap: "12px",
               padding: "20px 30px",
-              borderTop: "1px solid #e5e7eb",
+              borderTop: `1px solid ${palette.border}`,
             }}>
             <button
               type='button'

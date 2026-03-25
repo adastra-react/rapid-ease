@@ -317,6 +317,101 @@ opacity: 1;
 .rmdp-container{
   width: 199px !important;
 }
+
+.tour-modern-calendar__container.rmdp-container{
+  width: 100% !important;
+}
+
+.tour-modern-calendar__input{
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2557;
+  padding: 0;
+}
+
+.tour-modern-calendar__input::placeholder{
+  color: #8a94a6;
+  font-weight: 500;
+}
+
+.tour-modern-calendar.rmdp-wrapper{
+  border: 1px solid #e7ebf3 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12) !important;
+  padding: 12px 12px 10px;
+}
+
+.tour-modern-calendar .rmdp-top-class{
+  justify-content: center;
+}
+
+.tour-modern-calendar .rmdp-header{
+  padding: 4px 6px 12px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.tour-modern-calendar .rmdp-header-values{
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2557;
+}
+
+.tour-modern-calendar .rmdp-arrow-container{
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-modern-calendar .rmdp-arrow-container:hover{
+  background-color: #f8fafc;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.tour-modern-calendar .rmdp-week-day{
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ea3c3c !important;
+}
+
+.tour-modern-calendar .rmdp-day,
+.tour-modern-calendar .rmdp-week-day{
+  width: 40px;
+  height: 40px;
+}
+
+.tour-modern-calendar .rmdp-day span{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #526071;
+}
+
+.tour-modern-calendar .rmdp-day:not(.rmdp-disabled,.rmdp-day-hidden) span:hover{
+  background-color: #fff1f1 !important;
+  color: #d73939;
+}
+
+.tour-modern-calendar .rmdp-day.rmdp-selected span{
+  background: linear-gradient(135deg, #ea3c3c 0%, #d73939 100%) !important;
+  box-shadow: 0 10px 20px rgba(234, 60, 60, 0.24);
+}
+
+.tour-modern-calendar .rmdp-today span{
+  background-color: #fef3c7 !important;
+  color: #b45309;
+}
+
+.tour-modern-calendar .rmdp-day.rmdp-disabled span{
+  color: #c0c6d4;
+}
    @media (max-width: 1199px) {
     .header.-type-3 .headerMobile__left,
  .header.-type-8 .headerMobile__left,

@@ -31,6 +31,51 @@ export default function TourList1() {
       document.removeEventListener("click", handleClick);
     };
   }, []);
+
+  const listStyles = {
+    featuresRow: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "10px",
+      alignItems: "flex-start",
+      alignContent: "flex-start",
+      width: "100%",
+      paddingTop: "18px",
+    },
+    featureChip: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "8px",
+      padding: "8px 12px",
+      borderRadius: "999px",
+      backgroundColor: "#f8fafc",
+      border: "1px solid #ebeff5",
+      fontSize: "12px",
+      fontWeight: 500,
+      color: "#526071",
+      minHeight: "36px",
+      width: "fit-content",
+      maxWidth: "100%",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      flex: "0 0 auto",
+      alignSelf: "flex-start",
+    },
+    buttonLink: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+      minHeight: "46px",
+      padding: "0 14px",
+      borderRadius: "14px",
+      textDecoration: "none",
+      boxSizing: "border-box",
+      whiteSpace: "nowrap",
+    },
+  };
+
   return (
     <section className='layout-pb-xl'>
       <div className='container'>
@@ -122,6 +167,12 @@ export default function TourList1() {
             <div className='row y-gap-30 pt-30'>
               {tourDataTwo.map((elm, i) => (
                 <div className='col-12' key={i}>
+                  {(() => {
+                    const visibleFeatures = (elm.features || [])
+                      .filter((feature) => feature?.name?.trim())
+                      .slice(0, 3);
+
+                    return (
                   <div className='tourCard -type-2'>
                     <div className='tourCard__image'>
                       <Image
@@ -177,13 +228,13 @@ export default function TourList1() {
 
                       <p className='tourCard__text mt-5'>{elm.description}</p>
 
-                      <div className='row x-gap-20 y-gap-5 pt-30'>
-                        {elm.features?.map((elm2, i2) => (
-                          <div key={i2} className='col-auto'>
-                            <div className='text-14 text-accent-1'>
-                              <i className={`${elm2.icon} mr-10`}></i>
-                              {elm2.name}
-                            </div>
+                      <div style={listStyles.featuresRow}>
+                        {visibleFeatures.map((elm2, i2) => (
+                          <div key={i2} style={listStyles.featureChip}>
+                            {elm2.icon ? (
+                              <i className={elm2.icon}></i>
+                            ) : null}
+                            <span>{elm2.name}</span>
                           </div>
                         ))}
                       </div>
@@ -210,13 +261,16 @@ export default function TourList1() {
                       </div>
 
                       <button className='button -outline-accent-1 text-accent-1'>
-                        <Link href={`/tour-single-1/${elm.id}`}>
+                        <Link
+                          href={`/tour-single-1/${elm.id}`}
+                          style={listStyles.buttonLink}>
                           View Details
                         </Link>
-                        <i className='icon-arrow-top-right ml-10'></i>
                       </button>
                     </div>
                   </div>
+                    );
+                  })()}
                 </div>
               ))}
             </div>

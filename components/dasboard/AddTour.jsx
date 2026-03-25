@@ -10,6 +10,57 @@ import ProtectedRoute from "../../components/auth/ProtectedRoute";
 
 const tabs = ["Content", "Location", "Pricing", "Included"];
 
+const createInitialFormData = () => ({
+  // Content tab fields
+  title: "",
+  category: "",
+  keywords: "",
+  description: "",
+  overview: "",
+  badgeText: "",
+  badgeClass: "",
+
+  // Location tab fields
+  location: "",
+  city: "",
+  state: "",
+  address: "",
+  zipCode: "",
+  mapLatitude: "",
+  mapLongitude: "",
+  mapZoom: "15",
+
+  // Pricing tab fields
+  basePrice: "",
+  extraServices: [{ name: "", description: "", price: "" }],
+
+  // Included tab fields
+  includedItems: [
+    {
+      name: "Beverages, drinking water, morning tea and buffet lunch",
+      included: false,
+    },
+    { name: "Local taxes", included: false },
+    {
+      name: "Hotel pickup and drop-off by air-conditioned minivan",
+      included: false,
+    },
+    { name: "InsuranceTransfer to a private pier", included: false },
+    { name: "Soft drinks", included: false },
+    { name: "Tour Guide", included: false },
+    { name: "Towel", included: false },
+    { name: "Tips", included: false },
+    { name: "Alcoholic Beverages", included: false },
+  ],
+
+  duration: "1",
+  groupSize: "10",
+  languages: ["English"],
+  rating: 0,
+  bookingCount: "0",
+  featured: false,
+});
+
 export default function AddTour() {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("Content");
@@ -72,55 +123,17 @@ export default function AddTour() {
   };
 
   // Form data state
-  const [formData, setFormData] = useState({
-    // Content tab fields
-    title: "",
-    category: "", // You might want to map this to a specific field in your model
-    keywords: "", // You might want to use this for highlights array
-    description: "",
-    overview: "",
+  const [formData, setFormData] = useState(createInitialFormData);
 
-    // Location tab fields
-    location: "", // This maps to the location field in your model
-    city: "",
-    state: "",
-    address: "",
-    zipCode: "",
-    mapLatitude: "",
-    mapLongitude: "",
-    mapZoom: "15",
+  const getInputWrapperClass = (value) =>
+    `form-input${String(value ?? "").trim() ? " is-filled" : ""}`;
 
-    // Pricing tab fields
-    basePrice: "",
-    extraServices: [{ name: "", description: "", price: "" }],
-
-    // Included tab fields - these map to includedItems in your model
-    includedItems: [
-      {
-        name: "Beverages, drinking water, morning tea and buffet lunch",
-        included: false,
-      },
-      { name: "Local taxes", included: false },
-      {
-        name: "Hotel pickup and drop-off by air-conditioned minivan",
-        included: false,
-      },
-      { name: "InsuranceTransfer to a private pier", included: false },
-      { name: "Soft drinks", included: false },
-      { name: "Tour Guide", included: false },
-      { name: "Towel", included: false },
-      { name: "Tips", included: false },
-      { name: "Alcoholic Beverages", included: false },
-    ],
-
-    // Additional required fields based on your model
-    duration: "1",
-    groupSize: "10",
-    languages: ["English"],
-    rating: 0,
-    bookingCount: "0",
-    featured: false,
-  });
+  const resetForm = () => {
+    setFormData(createInitialFormData());
+    setImages(Array(10).fill(""));
+    setActiveTab("Content");
+    setMessage("");
+  };
 
   // Handle input changes
   const handleInputChange = (field, value) => {
@@ -316,8 +329,8 @@ export default function AddTour() {
         zoom: parseInt(formData.mapZoom) || 15,
       },
       featured: formData.featured,
-      badgeText: "",
-      badgeClass: "",
+      badgeText: formData.badgeText.trim(),
+      badgeClass: formData.badgeClass.trim(),
       ageRange: {
         min: 0,
         max: 99,
@@ -608,10 +621,11 @@ export default function AddTour() {
                             }`}>
                             <div className='contactForm row y-gap-30'>
                               <div className='col-12'>
-                                <div className='form-input'>
+                                <div className={getInputWrapperClass(formData.title)}>
                                   <input
                                     type='text'
                                     required
+                                    placeholder=' '
                                     value={formData.title}
                                     onChange={(e) =>
                                       handleInputChange("title", e.target.value)
@@ -624,9 +638,13 @@ export default function AddTour() {
                               </div>
 
                               <div className='col-12'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.category
+                                  )}>
                                   <input
                                     type='text'
+                                    placeholder=' '
                                     value={formData.category}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -642,7 +660,10 @@ export default function AddTour() {
                               </div>
 
                               <div className='col-12'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.keywords
+                                  )}>
                                   <input
                                     type='text'
                                     value={formData.keywords}
@@ -652,19 +673,76 @@ export default function AddTour() {
                                         e.target.value
                                       )
                                     }
-                                    placeholder='Separate with commas'
+                                    placeholder=' '
                                   />
                                   <label className='lh-1 text-16 text-light-1'>
                                     Keywords/Highlights
                                   </label>
                                 </div>
+                                <div className='text-14 text-light-1 mt-10'>
+                                  Separate keywords with commas.
+                                </div>
+                              </div>
+
+                              <div className='col-md-6'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.badgeText
+                                  )}>
+                                  <input
+                                    type='text'
+                                    value={formData.badgeText}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        "badgeText",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder=' '
+                                  />
+                                  <label className='lh-1 text-16 text-light-1'>
+                                    Badge Text
+                                  </label>
+                                </div>
+                                <div className='text-14 text-light-1 mt-10'>
+                                  Optional label shown on the listing card.
+                                </div>
+                              </div>
+
+                              <div className='col-md-6'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.badgeClass
+                                  )}>
+                                  <input
+                                    type='text'
+                                    value={formData.badgeClass}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        "badgeClass",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder=' '
+                                  />
+                                  <label className='lh-1 text-16 text-light-1'>
+                                    Badge Style Class
+                                  </label>
+                                </div>
+                                <div className='text-14 text-light-1 mt-10'>
+                                  Optional class name if you want a custom badge style.
+                                </div>
                               </div>
 
                               <div className='col-12'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.overview
+                                  )}>
                                   <textarea
                                     required
                                     rows='4'
+                                    placeholder=' '
                                     value={formData.overview}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -679,10 +757,14 @@ export default function AddTour() {
                               </div>
 
                               <div className='col-12'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.description
+                                  )}>
                                   <textarea
                                     required
                                     rows='8'
+                                    placeholder=' '
                                     value={formData.description}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -698,10 +780,14 @@ export default function AddTour() {
 
                               {/* Duration and Group Size */}
                               <div className='col-md-6'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.duration
+                                  )}>
                                   <input
                                     type='number'
                                     min='1'
+                                    placeholder=' '
                                     value={formData.duration}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -717,10 +803,14 @@ export default function AddTour() {
                               </div>
 
                               <div className='col-md-6'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.groupSize
+                                  )}>
                                   <input
                                     type='number'
                                     min='1'
+                                    placeholder=' '
                                     value={formData.groupSize}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -1136,9 +1226,13 @@ export default function AddTour() {
                             }`}>
                             <div className='contactForm row y-gap-30'>
                               <div className='col-md-6'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.country
+                                  )}>
                                   <input
                                     type='text'
+                                    placeholder=' '
                                     value={formData.country}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -1154,9 +1248,10 @@ export default function AddTour() {
                               </div>
 
                               <div className='col-md-6'>
-                                <div className='form-input'>
+                                <div className={getInputWrapperClass(formData.city)}>
                                   <input
                                     type='text'
+                                    placeholder=' '
                                     value={formData.city}
                                     onChange={(e) =>
                                       handleInputChange("city", e.target.value)
@@ -1177,12 +1272,16 @@ export default function AddTour() {
                             }`}>
                             <div className='contactForm row y-gap-30'>
                               <div className='col-12'>
-                                <div className='form-input'>
+                                <div
+                                  className={getInputWrapperClass(
+                                    formData.basePrice
+                                  )}>
                                   <input
                                     type='number'
                                     step='0.01'
                                     min='0'
                                     required
+                                    placeholder=' '
                                     value={formData.basePrice}
                                     onChange={(e) =>
                                       handleInputChange(
@@ -1208,9 +1307,13 @@ export default function AddTour() {
                                   key={index}
                                   className='contactForm row y-gap-30 items-center mb-20'>
                                   <div className='col-lg-4'>
-                                    <div className='form-input'>
+                                    <div
+                                      className={getInputWrapperClass(
+                                        service.name
+                                      )}>
                                       <input
                                         type='text'
+                                        placeholder=' '
                                         value={service.name}
                                         onChange={(e) =>
                                           handleExtraServiceChange(
@@ -1227,9 +1330,13 @@ export default function AddTour() {
                                   </div>
 
                                   <div className='col-lg-4'>
-                                    <div className='form-input'>
+                                    <div
+                                      className={getInputWrapperClass(
+                                        service.description
+                                      )}>
                                       <input
                                         type='text'
+                                        placeholder=' '
                                         value={service.description}
                                         onChange={(e) =>
                                           handleExtraServiceChange(
@@ -1247,11 +1354,15 @@ export default function AddTour() {
 
                                   <div className='col-lg-4'>
                                     <div className='d-flex items-center'>
-                                      <div className='form-input'>
+                                      <div
+                                        className={getInputWrapperClass(
+                                          service.price
+                                        )}>
                                         <input
                                           type='number'
                                           step='0.01'
                                           min='0'
+                                          placeholder=' '
                                           value={service.price}
                                           onChange={(e) =>
                                             handleExtraServiceChange(

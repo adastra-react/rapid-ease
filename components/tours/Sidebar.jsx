@@ -17,6 +17,46 @@ const durationMappings = {
 };
 
 export default function Sidebar() {
+  const sidebarStyles = {
+    card: {
+      border: "1px solid #e8edf5",
+      borderRadius: "24px",
+      overflow: "hidden",
+      backgroundColor: "#ffffff",
+      boxShadow: "0 16px 40px rgba(15, 23, 42, 0.05)",
+    },
+    header: {
+      background: "linear-gradient(135deg, #ea3c3c 0%, #d92f2f 100%)",
+      padding: "20px 22px",
+    },
+    content: {
+      padding: "8px 18px 18px",
+    },
+    clearButton: {
+      minHeight: "44px",
+      borderRadius: "14px",
+      fontWeight: 600,
+      backgroundColor: "#fff5f5",
+      borderColor: "rgba(234, 60, 60, 0.28)",
+    },
+    sectionButton: {
+      padding: "14px 4px",
+    },
+    sectionTitle: {
+      fontSize: "16px",
+      fontWeight: 700,
+      color: "#1f2557",
+    },
+    optionLabel: {
+      display: "flex",
+      alignItems: "center",
+      minHeight: "36px",
+      padding: "4px 0",
+      color: "#526071",
+      fontSize: "14px",
+      fontWeight: 500,
+    },
+  };
   const dispatch = useAppDispatch();
   const { filters } = useAppSelector((state) => state.tours);
   const [ddActives, setDdActives] = useState([
@@ -74,15 +114,16 @@ export default function Sidebar() {
   };
 
   return (
-    <div className='sidebar -type-1 rounded-12'>
-      <div className='sidebar__header bg-accent-1'>
+    <div className='sidebar -type-1 rounded-12' style={sidebarStyles.card}>
+      <div className='sidebar__header bg-accent-1' style={sidebarStyles.header}>
         <div className='text-15 text-white fw-500'>Filter Tours</div>
       </div>
 
-      <div className='sidebar__content'>
+      <div className='sidebar__content' style={sidebarStyles.content}>
         <div className='sidebar__item'>
           <button
             className='button -sm -outline-accent-1 text-accent-1 w-100'
+            style={sidebarStyles.clearButton}
             onClick={() => dispatch(resetFilters())}>
             Clear All Filters
           </button>
@@ -96,8 +137,11 @@ export default function Sidebar() {
               }`}>
               <div
                 className='accordion__button d-flex items-center justify-between'
+                style={sidebarStyles.sectionButton}
                 onClick={() => toggleSection("tourtype")}>
-                <h5 className='text-18 fw-500'>Tour Type</h5>
+                <h5 className='text-18 fw-500' style={sidebarStyles.sectionTitle}>
+                  Tour Type
+                </h5>
 
                 <div className='accordion__icon flex-center'>
                   <i className='icon-chevron-down'></i>
@@ -111,7 +155,10 @@ export default function Sidebar() {
                 <div className='pt-15'>
                   <div className='d-flex flex-column y-gap-15'>
                     {toursTypes.map((item) => (
-                      <label key={item} className='d-flex items-center'>
+                      <label
+                        key={item}
+                        className='d-flex items-center'
+                        style={sidebarStyles.optionLabel}>
                         <div className='form-checkbox'>
                           <input
                             type='checkbox'
@@ -149,8 +196,11 @@ export default function Sidebar() {
               }`}>
               <div
                 className='accordion__button mb-10 d-flex items-center justify-between'
+                style={sidebarStyles.sectionButton}
                 onClick={() => toggleSection("pricerange")}>
-                <h5 className='text-18 fw-500'>Filter Price</h5>
+                <h5 className='text-18 fw-500' style={sidebarStyles.sectionTitle}>
+                  Filter Price
+                </h5>
 
                 <div className='accordion__icon flex-center'>
                   <i className='icon-chevron-down'></i>
@@ -191,8 +241,11 @@ export default function Sidebar() {
               }`}>
               <div
                 className='accordion__button d-flex items-center justify-between'
+                style={sidebarStyles.sectionButton}
                 onClick={() => toggleSection("duration")}>
-                <h5 className='text-18 fw-500'>Duration</h5>
+                <h5 className='text-18 fw-500' style={sidebarStyles.sectionTitle}>
+                  Duration
+                </h5>
 
                 <div className='accordion__icon flex-center'>
                   <i className='icon-chevron-down'></i>
@@ -206,7 +259,10 @@ export default function Sidebar() {
                 <div className='pt-15'>
                   <div className='d-flex flex-column y-gap-15'>
                     {durations.map((item) => (
-                      <label key={item} className='d-flex items-center'>
+                      <label
+                        key={item}
+                        className='d-flex items-center'
+                        style={sidebarStyles.optionLabel}>
                         <div className='form-checkbox'>
                           <input
                             type='checkbox'
@@ -244,8 +300,11 @@ export default function Sidebar() {
               }`}>
               <div
                 className='accordion__button d-flex items-center justify-between'
+                style={sidebarStyles.sectionButton}
                 onClick={() => toggleSection("rating")}>
-                <h5 className='text-18 fw-500'>Rating</h5>
+                <h5 className='text-18 fw-500' style={sidebarStyles.sectionTitle}>
+                  Rating
+                </h5>
 
                 <div className='accordion__icon flex-center'>
                   <i className='icon-chevron-down'></i>
@@ -259,7 +318,10 @@ export default function Sidebar() {
                 <div className='pt-15'>
                   <div className='d-flex flex-column y-gap-15'>
                     {rating.map((item) => (
-                      <label key={item} className='d-flex items-center'>
+                      <label
+                        key={item}
+                        className='d-flex items-center'
+                        style={sidebarStyles.optionLabel}>
                         <div className='form-checkbox'>
                           <input
                             type='checkbox'

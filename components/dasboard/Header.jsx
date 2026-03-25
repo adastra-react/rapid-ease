@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 
-export default function Header({ setSideBarOpen }) {
+export default function Header({
+  setSideBarOpen,
+  searchValue = "",
+  onSearchChange,
+  searchPlaceholder = "Search",
+}) {
   return (
     <div className="dashboard__content_header">
       <div className="d-flex items-center">
@@ -17,7 +22,12 @@ export default function Header({ setSideBarOpen }) {
 
         <div className="dashboard__content_header_search d-flex items-center py-5 px-20 rounded-200 border-1 md:d-none">
           <i className="icon-search text-18 mr-10"></i>
-          <input type="text" placeholder="Search" />
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onChange={(event) => onSearchChange?.(event.target.value)}
+          />
         </div>
       </div>
 
