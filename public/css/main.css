@@ -1293,8 +1293,40 @@ button:focus {
 }
 
 .contactForm .form-input textarea:focus + label,
-.contactForm .form-input input:focus + label {
+.contactForm .form-input input:focus + label,
+.contactForm .form-input.is-filled textarea + label,
+.contactForm .form-input.is-filled input + label {
   transform: translateY(-29px);
+}
+
+.loginPasswordInput {
+  padding-right: 52px !important;
+}
+
+.loginPasswordToggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #5e6282;
+  cursor: pointer;
+}
+
+.loginPasswordToggle:hover {
+  color: #05073c;
+}
+
+.loginPasswordToggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 input.text-white::-moz-placeholder {
