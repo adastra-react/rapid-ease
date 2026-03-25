@@ -4,18 +4,46 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import { setCurrentPage } from "../../app/store/slices/toursSlice";
 
-export default function Pagination() {
+export default function Pagination({
+  currentPage: currentPageProp,
+  totalPages: totalPagesProp,
+  onPageChange,
+}) {
   const dispatch = useAppDispatch();
-  const { currentPage, totalPages } = useAppSelector((state) => state.tours);
+  const { currentPage: storeCurrentPage, totalPages: storeTotalPages } =
+    useAppSelector((state) => state.tours);
 
-  // Calculate the range based on totalPages
-  const range = totalPages || 1;
+  const currentPage = currentPageProp ?? storeCurrentPage;
+  const totalPages = totalPagesProp ?? storeTotalPages;
 
-  // Handle page change
+  const range = Math.max(totalPages || 1, 1);
+
+  const pages = [];
+  const pushPage = (page) => {
+    if (page >= 1 && page <= range && !pages.includes(page)) {
+      pages.push(page);
+    }
+  };
+
+  pushPage(1);
+
+  for (let page = currentPage - 1; page <= currentPage + 1; page += 1) {
+    pushPage(page);
+  }
+
+  pushPage(range);
+
+  pages.sort((a, b) => a - b);
+
   const handlePageChange = (page) => {
+    if (page < 1 || page > range || page === currentPage) return;
+
+    if (onPageChange) {
+      onPageChange(page);
+      return;
+    }
+
     dispatch(setCurrentPage(page));
-    // If you have a fetchTours action that should be called when page changes
-    // you can dispatch it here, or leave it in the parent component's useEffect
   };
 
   return (
@@ -31,65 +59,22 @@ export default function Pagination() {
       </button>
 
       <div className='pagination__count'>
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => handlePageChange(1)}
-          className={currentPage === 1 ? `is-active` : ""}>
-          1
-        </div>
+        {pages.map((page, index) => {
+          const previousPage = pages[index - 1];
+          const showGap = previousPage && page - previousPage > 1;
 
-        {range > 1 && (
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => handlePageChange(2)}
-            className={currentPage === 2 ? `is-active` : ""}>
-            2
-          </div>
-        )}
-
-        {range > 2 && (
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => handlePageChange(3)}
-            className={currentPage === 3 ? `is-active` : ""}>
-            3
-          </div>
-        )}
-
-        {range > 3 && (
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => handlePageChange(4)}
-            className={currentPage === 4 ? `is-active` : ""}>
-            4
-          </div>
-        )}
-
-        {currentPage === 5 && range !== 5 && (
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => handlePageChange(5)}
-            className='is-active'>
-            5
-          </div>
-        )}
-
-        {range > 5 && <div>...</div>}
-
-        {currentPage > 5 && currentPage < range && (
-          <div style={{ cursor: "pointer" }} className='is-active'>
-            {currentPage}
-          </div>
-        )}
-
-        {range > 4 && (
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => handlePageChange(range)}
-            className={currentPage === range ? `is-active` : ""}>
-            {range}
-          </div>
-        )}
+          return (
+            <React.Fragment key={page}>
+              {showGap && <div>...</div>}
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => handlePageChange(page)}
+                className={currentPage === page ? "is-active" : ""}>
+                {page}
+              </div>
+            </React.Fragment>
+          );
+        })}
       </div>
 
       <button

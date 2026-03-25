@@ -12,16 +12,62 @@ import {
 import RangeSlider from "../common/RangeSlider";
 import Stars from "../common/Stars";
 import Image from "next/image";
+import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
+import { resetFilters, setFilters } from "../../app/store/slices/toursSlice";
+
+const durationMappings = {
+  "0-3 hours": { minDuration: 0, maxDuration: 3 },
+  "3-5 hours": { minDuration: 3, maxDuration: 5 },
+  "5-7 hours": { minDuration: 5, maxDuration: 7 },
+  "Full day (7+ hours)": { minDuration: 7, maxDuration: 24 },
+  "Multi-day": { minDuration: 24, maxDuration: null },
+};
 
 export default function Sidebar() {
+  const dispatch = useAppDispatch();
+  const { filters } = useAppSelector((state) => state.tours);
   const [ddActives, setDdActives] = useState(["tourtype"]);
+  const selectedDurationLabel =
+    Object.entries(durationMappings).find(
+      ([, range]) =>
+        filters.minDuration === range.minDuration &&
+        filters.maxDuration === range.maxDuration
+    )?.[0] || "";
+
+  const toggleMultiValue = (key, value) => {
+    const currentValues = filters[key] || [];
+    const nextValues = currentValues.includes(value)
+      ? currentValues.filter((item) => item !== value)
+      : [...currentValues, value];
+
+    dispatch(setFilters({ [key]: nextValues }));
+  };
+
+  const toggleDuration = (label) => {
+    if (selectedDurationLabel === label) {
+      dispatch(setFilters({ minDuration: null, maxDuration: null }));
+      return;
+    }
+
+    dispatch(setFilters(durationMappings[label]));
+  };
+
+  const updateRating = (value) => {
+    const currentRatings = filters.ratings || [];
+    const nextRatings = currentRatings.includes(value)
+      ? currentRatings.filter((item) => item !== value)
+      : [...currentRatings, value];
+
+    dispatch(setFilters({ ratings: nextRatings }));
+  };
+
   return (
     <div className='sidebar -type-1 rounded-12'>
       <div className='sidebar__header bg-accent-1'>
         <div className='text-15 text-white fw-500'>When are you traveling?</div>
 
         <div className='mt-10'>
-          <div className='searchForm -type-1 -col-1 -narrow'>
+            <div className='searchForm -type-1 -col-1 -narrow'>
             <div className='searchForm__form'>
               <div className='searchFormItem js-select-control js-form-dd js-calendar'>
                 <div className='searchFormItem__button' data-x-click='calendar'>
@@ -39,9 +85,21 @@ export default function Sidebar() {
             </div>
           </div>
         </div>
+
+        <div className='text-12 text-white mt-10 opacity-75'>
+          Date filtering is not available yet for this tour dataset.
+        </div>
       </div>
 
       <div className='sidebar__content'>
+        <div className='sidebar__item'>
+          <button
+            className='button -sm -outline-accent-1 text-accent-1 w-100'
+            onClick={() => dispatch(resetFilters())}>
+            Clear All Filters
+          </button>
+        </div>
+
         <div className='sidebar__item'>
           <div className='accordion -simple-2 js-accordion'>
             <div
@@ -76,7 +134,12 @@ export default function Sidebar() {
                       <div key={i}>
                         <div className='d-flex items-center'>
                           <div className='form-checkbox '>
-                            <input type='checkbox' name='name' />
+                            <input
+                              type='checkbox'
+                              checked={(filters.tourTypes || []).includes(elm)}
+                              onChange={() => toggleMultiValue("tourTypes", elm)}
+                              name='tourType'
+                            />
                             <div className='form-checkbox__mark'>
                               <div className='form-checkbox__icon'>
                                 <Image
@@ -97,6 +160,7 @@ export default function Sidebar() {
 
                   <a
                     href='#'
+                    onClick={(event) => event.preventDefault()}
                     className='d-flex text-15 fw-500 text-accent-2 mt-15'>
                     See More
                   </a>
@@ -135,7 +199,19 @@ export default function Sidebar() {
                   ddActives.includes("pricerange") ? { maxHeight: "300px" } : {}
                 }>
                 <div className='pt-15'>
-                  <RangeSlider />
+                  <RangeSlider
+                    value={[filters.minPrice ?? 0, filters.maxPrice ?? 100000]}
+                    min={0}
+                    max={100000}
+                    onChangeCommitted={(value) =>
+                      dispatch(
+                        setFilters({
+                          minPrice: value[0],
+                          maxPrice: value[1],
+                        })
+                      )
+                    }
+                  />
                 </div>
               </div>
             </div>
@@ -176,7 +252,12 @@ export default function Sidebar() {
                       <div key={i}>
                         <div className='d-flex items-center'>
                           <div className='form-checkbox '>
-                            <input type='checkbox' name='name' />
+                            <input
+                              type='checkbox'
+                              checked={selectedDurationLabel === elm}
+                              onChange={() => toggleDuration(elm)}
+                              name='duration'
+                            />
                             <div className='form-checkbox__mark'>
                               <div className='form-checkbox__icon'>
                                 <Image
@@ -234,7 +315,12 @@ export default function Sidebar() {
                       <div key={i}>
                         <div className='d-flex items-center'>
                           <div className='form-checkbox '>
-                            <input type='checkbox' name='name' />
+                            <input
+                              type='checkbox'
+                              checked={(filters.languages || []).includes(elm)}
+                              onChange={() => toggleMultiValue("languages", elm)}
+                              name='language'
+                            />
                             <div className='form-checkbox__mark'>
                               <div className='form-checkbox__icon'>
                                 <Image
@@ -291,7 +377,12 @@ export default function Sidebar() {
                     {rating.map((elm, i) => (
                       <div key={i} className='d-flex'>
                         <div className='form-checkbox'>
-                          <input type='checkbox' name='rating' />
+                          <input
+                            type='checkbox'
+                            name='rating'
+                            checked={(filters.ratings || []).includes(elm)}
+                            onChange={() => updateRating(elm)}
+                          />
                           <div className='form-checkbox__mark'>
                             <div className='form-checkbox__icon'>
                               <Image
@@ -349,7 +440,12 @@ export default function Sidebar() {
                       <div key={i}>
                         <div className='d-flex items-center'>
                           <div className='form-checkbox '>
-                            <input type='checkbox' name='name' />
+                            <input
+                              type='checkbox'
+                              checked={(filters.specials || []).includes(elm)}
+                              onChange={() => toggleMultiValue("specials", elm)}
+                              name='special'
+                            />
                             <div className='form-checkbox__mark'>
                               <div className='form-checkbox__icon'>
                                 <Image

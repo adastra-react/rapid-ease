@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Slider from "@mui/material/Slider";
 import { ThemeProvider } from "@mui/material/styles";
 
@@ -16,11 +16,22 @@ const theme = createTheme({
   },
 });
 
-export default function RangeSlider() {
-  const [value, setValue] = useState([200, 60000]);
+export default function RangeSlider({
+  value = [0, 100000],
+  onChangeCommitted,
+  min = 0,
+  max = 100000,
+}) {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setLocalValue(newValue);
   };
+
   return (
     <>
       <div className="js-price-rangeSlider" style={{ padding: "20px 15px" }}>
@@ -28,11 +39,16 @@ export default function RangeSlider() {
           <ThemeProvider theme={theme}>
             <Slider
               getAriaLabel={() => "Minimum distance"}
-              value={value}
+              value={localValue}
               onChange={handleChange}
+              onChangeCommitted={(event, newValue) => {
+                if (onChangeCommitted) {
+                  onChangeCommitted(newValue);
+                }
+              }}
               valueLabelDisplay="auto"
-              max={100000}
-              min={0}
+              max={max}
+              min={min}
               disableSwap
             />
           </ThemeProvider>
@@ -41,9 +57,9 @@ export default function RangeSlider() {
         <div className="d-flex justify-between mt-20">
           <div className="">
             <span className="">Price:</span>
-            <span className="fw-500 js-lower">{value[0]}</span>
+            <span className="fw-500 js-lower">{localValue[0]}</span>
             <span> - </span>
-            <span className="fw-500 js-upper">{value[1]}</span>
+            <span className="fw-500 js-upper">{localValue[1]}</span>
           </div>
         </div>
       </div>

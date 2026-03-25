@@ -335,6 +335,8 @@ import {
   setCurrentPage,
 } from "../../app/store/slices/toursSlice";
 
+const PAGE_SIZE = 10;
+
 export default function TourList1() {
   const dispatch = useAppDispatch();
   const {
@@ -350,7 +352,6 @@ export default function TourList1() {
   const [sortOption, setSortOption] = useState("");
   const [ddActives, setDdActives] = useState(false);
   const [sidebarActive, setSidebarActive] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const dropDownContainer = useRef();
 
   // Function to truncate description to 15 words with ellipses
@@ -367,21 +368,7 @@ export default function TourList1() {
     return words.slice(0, maxWords).join(" ") + "...";
   };
 
-  // Set mounted flag to prevent hydration issues
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    // Only fetch tours when component is mounted on client-side
-    if (mounted) {
-      dispatch(fetchTours());
-    }
-  }, [dispatch, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return; // Prevent server-side event listener attachment
-
     const handleClick = (event) => {
       if (
         dropDownContainer.current &&
@@ -396,20 +383,17 @@ export default function TourList1() {
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [mounted]);
+  }, []);
 
   useEffect(() => {
-    // Fetch tours when page/filters change, but only after mounting
-    if (mounted) {
-      dispatch(
-        fetchTours({
-          page: currentPage,
-          limit: 10,
-          ...filters,
-        })
-      );
-    }
-  }, [dispatch, currentPage, filters, mounted]);
+    dispatch(
+      fetchTours({
+        page: currentPage,
+        limit: PAGE_SIZE,
+        ...filters,
+      })
+    );
+  }, [dispatch, currentPage, filters]);
 
   // Handle sort change
   const handleSortChange = (option) => {
@@ -437,23 +421,6 @@ export default function TourList1() {
   const handlePageChange = (page) => {
     dispatch(setCurrentPage(page));
   };
-
-  // Show loading state during hydration
-  if (!mounted) {
-    return (
-      <section className='layout-pb-xl'>
-        <div className='container'>
-          <div className='row'>
-            <div className='col-12 text-center'>
-              <div className='spinner-border' role='status'>
-                <span className='visually-hidden'>Loading...</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className='layout-pb-xl'>
@@ -630,7 +597,11 @@ export default function TourList1() {
                             <div className='d-flex items-center'>
                               From{" "}
                               <span className='text-20 fw-500 ml-5'>
-                                ${tour?.price || r?.pricing?.basePrice || 0}
+                                $
+                                {tour?.price ??
+                                  tour?.pricing?.basePrice ??
+                                  tour?.fromPrice ??
+                                  0}
                               </span>
                             </div>
                           </div>
@@ -663,8 +634,9 @@ export default function TourList1() {
               />
 
               <div className='text-14 text-center mt-20'>
-                Showing results {tours?.length ? (currentPage - 1) * 10 + 1 : 0}
-                -{Math.min(currentPage * 10, totalTours || 0)} of{" "}
+                Showing results{" "}
+                {tours?.length ? (currentPage - 1) * PAGE_SIZE + 1 : 0}-
+                {Math.min(currentPage * PAGE_SIZE, totalTours || 0)} of{" "}
                 {totalTours || 0}
               </div>
             </div>

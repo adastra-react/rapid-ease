@@ -8,14 +8,38 @@ import tourService from "../services/tourService";
 // Async thunks
 export const fetchTours = createAsyncThunk(
   "tours/fetchTours",
-  async (_, { getState, rejectWithValue }) => {
+  async (params = {}, { getState, rejectWithValue }) => {
     const { tours } = getState();
     const { currentPage, filters } = tours;
 
     try {
-      const response = await tourService.getAllTours({
+      const requestParams = {
         page: currentPage,
         ...filters,
+        ...params,
+      };
+
+      const normalizedParams = Object.fromEntries(
+        Object.entries(requestParams).flatMap(([key, value]) => {
+          if (
+            value === null ||
+            value === undefined ||
+            value === "" ||
+            (Array.isArray(value) && value.length === 0)
+          ) {
+            return [];
+          }
+
+          if (Array.isArray(value)) {
+            return [[key, value.join(",")]];
+          }
+
+          return [[key, value]];
+        })
+      );
+
+      const response = await tourService.getAllTours({
+        ...normalizedParams,
       });
       return response;
     } catch (error) {
@@ -71,11 +95,15 @@ const initialState = {
   loading: false,
   error: null,
   filters: {
-    minPrice: null,
-    maxPrice: null,
+    minPrice: 0,
+    maxPrice: 100000,
     minDuration: null,
     maxDuration: null,
     location: "",
+    tourTypes: [],
+    languages: [],
+    specials: [],
+    ratings: [],
     sort: "-createdAt",
   },
 };
@@ -87,9 +115,11 @@ const toursSlice = createSlice({
   reducers: {
     setFilters: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };
+      state.currentPage = 1;
     },
     resetFilters: (state) => {
       state.filters = initialState.filters;
+      state.currentPage = 1;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;

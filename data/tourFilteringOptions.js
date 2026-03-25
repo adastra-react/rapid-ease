@@ -15,16 +15,30 @@ export const durations = [
   "Multi-day",
 ];
 
-export const languages = ["English", "Dutch", "German", "French", "Italian"];
+export const languages = [
+  "English",
+  "Spanish",
+  "Patois",
+  "French",
+  "German",
+];
 
 export const rating = [5, 4, 3, 2, 1];
 
 export const features = [
+  "Featured",
   "Deals & Discounts",
   "Free Cancellation",
   "Likely to Sell Out",
-  "Skip-The-Line",
   "Private Tour",
+  "Adult Only",
 ];
 
-export const speedFeatures = ["Fast", "Steady", "Speedy", "Furious", "Grind"];
+export const speedFeatures = [
+  "Featured",
+  "Price Low to High",
+  "Price High to Low",
+  "Most Popular",
+  "Top Rated",
+  "Newest",
+];
