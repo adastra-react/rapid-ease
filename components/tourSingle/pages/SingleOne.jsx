@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { allTour } from "@/data/tours";
 import { useParams } from "next/navigation";
 import tourService from "../../../app/store/services/tourService";
 import MainInformation from "../MainInformation";
@@ -17,8 +18,8 @@ import RoadMap2 from "../Roadmap2";
 import CommentBox from "../CommentBox";
 import Head from "next/head";
 
-export default function SingleOne() {
-  const [tour, setTour] = useState(null);
+export default function SingleOne({ tour: initialTour = null }) {
+  const [tour, setTour] = useState(initialTour);
   const [loading, setLoading] = useState(true);
   const params = useParams();
 
@@ -28,11 +29,23 @@ export default function SingleOne() {
         setLoading(true);
         const tourId = params.id;
         const response = await tourService.getSingleTour(tourId);
-        // Extract tour from the nested data structure
-        setTour(response.data.tour);
-        console.log("Tour data:", response.data.tour);
+        const apiTour = response?.data?.tour;
+
+        if (apiTour) {
+          setTour(apiTour);
+          return;
+        }
+
+        setTour(
+          initialTour || allTour.find((item) => String(item.id) === String(tourId)) || null
+        );
       } catch (error) {
         console.error("Error fetching tour data:", error);
+        setTour(
+          initialTour ||
+            allTour.find((item) => String(item.id) === String(params.id)) ||
+            null
+        );
       } finally {
         setLoading(false);
       }
@@ -41,7 +54,7 @@ export default function SingleOne() {
     if (params.id) {
       fetchTourData();
     }
-  }, [params.id]);
+  }, [initialTour, params.id]);
 
   if (loading) {
     return (
