@@ -338,10 +338,15 @@ opacity: 1;
 }
 
 .tour-modern-calendar.rmdp-wrapper{
-  border: 1px solid #e7ebf3 !important;
-  border-radius: 20px !important;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12) !important;
-  padding: 12px 12px 10px;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%);
+  box-shadow:
+    0 22px 44px rgba(15, 23, 42, 0.14),
+    0 6px 16px rgba(15, 23, 42, 0.06) !important;
+  backdrop-filter: blur(10px);
+  padding: 14px 14px 12px;
 }
 
 .tour-modern-calendar .rmdp-top-class{
@@ -349,68 +354,95 @@ opacity: 1;
 }
 
 .tour-modern-calendar .rmdp-header{
-  padding: 4px 6px 12px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid #eef2f7;
+  padding: 8px 10px 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #edf2f7;
 }
 
 .tour-modern-calendar .rmdp-header-values{
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: #1f2557;
+  letter-spacing: -0.01em;
 }
 
 .tour-modern-calendar .rmdp-arrow-container{
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #edf2f7;
+  background-color: #ffffff;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .tour-modern-calendar .rmdp-arrow-container:hover{
-  background-color: #f8fafc;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  background-color: #fff5f5;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.tour-modern-calendar .rmdp-arrow{
+  border-color: #ea3c3c !important;
 }
 
 .tour-modern-calendar .rmdp-week-day{
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #ea3c3c !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9aa4b2 !important;
 }
 
 .tour-modern-calendar .rmdp-day,
 .tour-modern-calendar .rmdp-week-day{
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
 }
 
 .tour-modern-calendar .rmdp-day span{
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 600;
-  color: #526071;
+  color: #445065;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .tour-modern-calendar .rmdp-day:not(.rmdp-disabled,.rmdp-day-hidden) span:hover{
-  background-color: #fff1f1 !important;
+  background-color: #fff3f3 !important;
   color: #d73939;
+  transform: translateY(-1px);
+}
+
+.tour-modern-calendar .rmdp-day.rmdp-deactive span{
+  color: #b6bfcb;
 }
 
 .tour-modern-calendar .rmdp-day.rmdp-selected span{
   background: linear-gradient(135deg, #ea3c3c 0%, #d73939 100%) !important;
-  box-shadow: 0 10px 20px rgba(234, 60, 60, 0.24);
+  color: #ffffff !important;
+  box-shadow: 0 12px 24px rgba(234, 60, 60, 0.28);
 }
 
 .tour-modern-calendar .rmdp-today span{
-  background-color: #fef3c7 !important;
-  color: #b45309;
+  background-color: #fff7ed !important;
+  color: #ea3c3c;
+  border: 1px solid rgba(234, 60, 60, 0.18);
 }
 
 .tour-modern-calendar .rmdp-day.rmdp-disabled span{
   color: #c0c6d4;
+}
+
+.tour-modern-calendar .rmdp-day-picker,
+.tour-modern-calendar .rmdp-month-picker,
+.tour-modern-calendar .rmdp-year-picker{
+  padding: 2px 4px 4px;
 }
    @media (max-width: 1199px) {
     .header.-type-3 .headerMobile__left,

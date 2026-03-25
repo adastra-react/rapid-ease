@@ -320,106 +320,273 @@ export default function BookingModal({
   // Ensure hooks run unconditionally; only guard rendering here
   if (!isOpen || !bookingData) return null;
 
+  const palette = {
+    navy: "#1f2557",
+    navySoft: "#445065",
+    red: "#ea3c3c",
+    redDark: "#cf3434",
+    redSoft: "rgba(234, 60, 60, 0.08)",
+    border: "#e7ebf3",
+    borderStrong: "#dbe3ee",
+    surface: "#ffffff",
+    surfaceSoft: "#f8fafc",
+    textMuted: "#7b8497",
+    success: "#2f7d4a",
+    warningBg: "#fff7e1",
+    warningBorder: "#f6deb1",
+    warningText: "#9a6a00",
+  };
+
+  const styles = {
+    overlay: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background:
+        "linear-gradient(180deg, rgba(15, 23, 42, 0.52) 0%, rgba(15, 23, 42, 0.64) 100%)",
+      backdropFilter: "blur(8px)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+      zIndex: 1000,
+    },
+    modal: {
+      background:
+        "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(250,251,255,0.98) 100%)",
+      borderRadius: "28px",
+      maxWidth: "760px",
+      width: "100%",
+      maxHeight: "90vh",
+      overflow: "auto",
+      position: "relative",
+      padding: "32px",
+      border: `1px solid ${palette.border}`,
+      boxShadow:
+        "0 28px 80px rgba(15, 23, 42, 0.18), 0 10px 24px rgba(15, 23, 42, 0.08)",
+    },
+    closeButton: {
+      position: "absolute",
+      top: "18px",
+      right: "18px",
+      width: "40px",
+      height: "40px",
+      borderRadius: "999px",
+      border: `1px solid ${palette.border}`,
+      backgroundColor: "#ffffff",
+      color: palette.navy,
+      fontSize: "22px",
+      cursor: "pointer",
+      boxShadow: "0 8px 18px rgba(15, 23, 42, 0.08)",
+    },
+    heading: {
+      color: palette.navy,
+      marginBottom: "8px",
+      textAlign: "center",
+      fontSize: "34px",
+      fontWeight: 800,
+      letterSpacing: "-0.02em",
+    },
+    subheading: {
+      textAlign: "center",
+      color: palette.textMuted,
+      fontSize: "15px",
+      marginBottom: "26px",
+    },
+    summaryCard: {
+      background:
+        "linear-gradient(135deg, rgba(31, 37, 87, 0.03) 0%, rgba(234, 60, 60, 0.06) 100%)",
+      borderRadius: "22px",
+      padding: "22px",
+      marginBottom: "28px",
+      border: `1px solid ${palette.border}`,
+      boxShadow: "0 14px 30px rgba(15, 23, 42, 0.05)",
+    },
+    summaryTitle: {
+      fontSize: "26px",
+      fontWeight: 800,
+      lineHeight: 1.15,
+      color: palette.navy,
+      marginBottom: "16px",
+    },
+    summaryGrid: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "12px 18px",
+      marginBottom: "18px",
+    },
+    summaryItem: {
+      padding: "10px 12px",
+      borderRadius: "14px",
+      backgroundColor: "rgba(255,255,255,0.75)",
+      border: `1px solid ${palette.border}`,
+    },
+    summaryLabel: {
+      display: "block",
+      fontSize: "11px",
+      fontWeight: 700,
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+      color: palette.textMuted,
+      marginBottom: "5px",
+    },
+    summaryValue: {
+      fontSize: "14px",
+      fontWeight: 600,
+      color: palette.navy,
+      lineHeight: 1.45,
+    },
+    callout: {
+      backgroundColor: palette.warningBg,
+      border: `1px solid ${palette.warningBorder}`,
+      borderRadius: "14px",
+      padding: "12px 14px",
+      marginBottom: "14px",
+      fontSize: "13px",
+      color: palette.warningText,
+      fontWeight: 600,
+    },
+    breakdownWrap: {
+      borderRadius: "16px",
+      backgroundColor: "rgba(255,255,255,0.72)",
+      border: `1px solid ${palette.border}`,
+      overflow: "hidden",
+    },
+    breakdownRow: {
+      display: "flex",
+      justifyContent: "space-between",
+      gap: "12px",
+      padding: "12px 14px",
+      fontSize: "14px",
+      color: palette.navySoft,
+      borderBottom: `1px solid ${palette.border}`,
+    },
+    totalRow: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "14px 16px",
+      fontWeight: 800,
+      color: palette.navy,
+      background:
+        "linear-gradient(135deg, rgba(234, 60, 60, 0.06) 0%, rgba(31, 37, 87, 0.04) 100%)",
+    },
+    sectionTitle: {
+      marginBottom: "16px",
+      color: palette.navy,
+      fontSize: "26px",
+      fontWeight: 800,
+      letterSpacing: "-0.02em",
+    },
+    formGrid: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "16px",
+      marginBottom: "16px",
+    },
+    label: {
+      display: "block",
+      marginBottom: "7px",
+      fontSize: "13px",
+      fontWeight: 700,
+      color: palette.navy,
+    },
+    footerActions: {
+      display: "flex",
+      justifyContent: "space-between",
+      gap: "14px",
+      marginTop: "28px",
+    },
+    loadingBox: {
+      textAlign: "center",
+      padding: "28px 12px",
+    },
+    stateTitle: {
+      color: palette.navy,
+      marginBottom: "12px",
+      fontSize: "30px",
+      fontWeight: 800,
+    },
+    stateText: {
+      color: palette.textMuted,
+      marginBottom: "20px",
+      fontSize: "15px",
+    },
+    spinner: {
+      width: "42px",
+      height: "42px",
+      border: "4px solid #f1f5f9",
+      borderTop: `4px solid ${palette.red}`,
+      borderRadius: "50%",
+      animation: "spin 1s linear infinite",
+      margin: "0 auto",
+    },
+  };
+
   const inputStyle = (error) => ({
     width: "100%",
-    padding: "12px",
-    borderRadius: "8px",
+    padding: "13px 14px",
+    borderRadius: "14px",
     fontSize: "14px",
-    border: error ? "1px solid #dc3545" : "1px solid #ddd",
+    color: palette.navy,
+    backgroundColor: "#ffffff",
+    border: error
+      ? `1px solid ${palette.red}`
+      : `1px solid ${palette.borderStrong}`,
+    boxShadow: "0 6px 16px rgba(15, 23, 42, 0.03)",
   });
 
   const buttonStyle = (primary = false, disabled = false) => ({
-    padding: "12px 24px",
-    borderRadius: "8px",
+    padding: "13px 22px",
+    borderRadius: "14px",
     cursor: disabled ? "not-allowed" : "pointer",
-    backgroundColor: disabled ? "#ccc" : primary ? "#1e7e34" : "transparent",
-    color: primary ? "white" : "#333",
-    border: primary ? "none" : "1px solid #ddd",
+    background: disabled
+      ? "#d5dbe5"
+      : primary
+      ? `linear-gradient(135deg, ${palette.red} 0%, ${palette.redDark} 100%)`
+      : "#ffffff",
+    color: primary ? "white" : palette.navy,
+    border: primary ? "none" : `1px solid ${palette.borderStrong}`,
+    fontWeight: 700,
+    minWidth: "140px",
+    boxShadow: primary
+      ? "0 14px 28px rgba(234, 60, 60, 0.22)"
+      : "0 8px 18px rgba(15, 23, 42, 0.05)",
   });
 
   const pricing = calculatePricing();
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}>
-      <div
-        style={{
-          backgroundColor: "white",
-          borderRadius: "12px",
-          maxWidth: "600px",
-          width: "90%",
-          maxHeight: "90vh",
-          overflow: "auto",
-          position: "relative",
-          padding: "40px",
-        }}>
+    <div style={styles.overlay}>
+      <div style={styles.modal}>
         {/* Close Button */}
-        <button
-          onClick={handleClose}
-          style={{
-            position: "absolute",
-            top: "15px",
-            right: "15px",
-            background: "none",
-            border: "none",
-            fontSize: "24px",
-            cursor: "pointer",
-          }}>
+        <button onClick={handleClose} style={styles.closeButton}>
           ×
         </button>
 
         {/* Processing State */}
         {step === "processing" && (
-          <div style={{ textAlign: "center" }}>
+          <div style={styles.loadingBox}>
             <div style={{ fontSize: "48px", marginBottom: "20px" }}>⏳</div>
-            <h3 style={{ color: "#1e7e34", marginBottom: "15px" }}>
-              Processing Your Booking...
-            </h3>
-            <p style={{ color: "#666", marginBottom: "20px" }}>
+            <h3 style={styles.stateTitle}>Processing Your Booking...</h3>
+            <p style={styles.stateText}>
               Please wait while we confirm your payment and create your booking.
             </p>
-            <div
-              style={{
-                width: "40px",
-                height: "40px",
-                border: "4px solid #f3f3f3",
-                borderTop: "4px solid #1e7e34",
-                borderRadius: "50%",
-                animation: "spin 1s linear infinite",
-                margin: "0 auto",
-              }}></div>
+            <div style={styles.spinner}></div>
           </div>
         )}
 
         {/* Success State */}
         {step === "success" && (
-          <div style={{ textAlign: "center" }}>
+          <div style={styles.loadingBox}>
             <div style={{ fontSize: "48px", marginBottom: "20px" }}>🎉</div>
-            <h3 style={{ color: "#1e7e34", marginBottom: "15px" }}>
-              Booking Confirmed!
-            </h3>
-            <p style={{ color: "#666", marginBottom: "20px" }}>
+            <h3 style={styles.stateTitle}>Booking Confirmed!</h3>
+            <p style={styles.stateText}>
               Your Jamaica tour has been successfully booked and paid for.
             </p>
-            <div
-              style={{
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px",
-                padding: "20px",
-                marginBottom: "20px",
-                textAlign: "left",
-              }}>
+            <div style={{ ...styles.summaryCard, textAlign: "left" }}>
               <h4>Booking Details</h4>
               <p>
                 <strong>Tour:</strong> {tourData.title}
@@ -456,7 +623,11 @@ export default function BookingModal({
               </p>
             </div>
             <p
-              style={{ fontSize: "13px", color: "#666", marginBottom: "20px" }}>
+              style={{
+                fontSize: "13px",
+                color: palette.textMuted,
+                marginBottom: "20px",
+              }}>
               A confirmation email has been sent to {customerInfo.email}
             </p>
             <button onClick={handleClose} style={buttonStyle(true)}>
@@ -467,12 +638,10 @@ export default function BookingModal({
 
         {/* Failed State */}
         {step === "failed" && (
-          <div style={{ textAlign: "center" }}>
+          <div style={styles.loadingBox}>
             <div style={{ fontSize: "48px", marginBottom: "20px" }}>❌</div>
-            <h3 style={{ color: "#dc3545", marginBottom: "15px" }}>
-              Booking Failed
-            </h3>
-            <p style={{ color: "#666", marginBottom: "20px" }}>
+            <h3 style={styles.stateTitle}>Booking Failed</h3>
+            <p style={styles.stateText}>
               There was an issue processing your booking. Please check the
               details and try again.
             </p>
@@ -497,128 +666,119 @@ export default function BookingModal({
         {/* Booking Form */}
         {step === "booking" && (
           <>
-            <h2
-              style={{
-                color: "#1e7e34",
-                marginBottom: "10px",
-                textAlign: "center",
-              }}>
-              Book Your Jamaica Tour
-            </h2>
+            <h2 style={styles.heading}>Book Your Jamaica Tour</h2>
+            <div style={styles.subheading}>
+              Finalize your transfer details and continue to secure payment.
+            </div>
 
             {/* Tour Summary with Round Trip Support */}
-            <div
-              style={{
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px",
-                padding: "20px",
-                marginBottom: "30px",
-              }}>
-              <h4>{tourData.title}</h4>
-              <p>Duration: {tourData.duration}</p>
-              <p>
-                <strong>Trip Type:</strong>{" "}
-                {bookingData.tripType === "round-trip"
-                  ? "Round Trip"
-                  : "One Way"}
-              </p>
-              <p>
-                <strong>
-                  {bookingData.tripType === "round-trip"
-                    ? "Pick Up Date:"
-                    : "Pick Up:"}
-                </strong>{" "}
-                {formatDateForDisplay(bookingData.selectedDate)}
-              </p>
-              {bookingData.tripType === "round-trip" &&
-                bookingData.returnDate && (
-                  <p>
-                    <strong>Return Date:</strong>{" "}
-                    {formatDateForDisplay(bookingData.returnDate)}
-                  </p>
-                )}
-              <p>
-                <strong>
-                  {bookingData.tripType === "round-trip"
-                    ? "Pick Up Time:"
-                    : "Time:"}
-                </strong>{" "}
-                {bookingData.selectedTime || "Not selected"}
-              </p>
-              {bookingData.tripType === "round-trip" &&
-                bookingData.returnTime && (
-                  <p>
-                    <strong>Return Time:</strong> {bookingData.returnTime}
-                  </p>
-                )}
+            <div style={styles.summaryCard}>
+              <div style={styles.summaryTitle}>{tourData.title}</div>
+              <div style={styles.summaryGrid}>
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>Duration</span>
+                  <span style={styles.summaryValue}>{tourData.duration}</span>
+                </div>
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>Trip Type</span>
+                  <span style={styles.summaryValue}>
+                    {bookingData.tripType === "round-trip"
+                      ? "Round Trip"
+                      : "One Way"}
+                  </span>
+                </div>
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>
+                    {bookingData.tripType === "round-trip"
+                      ? "Pick Up Date"
+                      : "Pick Up"}
+                  </span>
+                  <span style={styles.summaryValue}>
+                    {formatDateForDisplay(bookingData.selectedDate)}
+                  </span>
+                </div>
+                {bookingData.tripType === "round-trip" &&
+                  bookingData.returnDate && (
+                    <div style={styles.summaryItem}>
+                      <span style={styles.summaryLabel}>Return Date</span>
+                      <span style={styles.summaryValue}>
+                        {formatDateForDisplay(bookingData.returnDate)}
+                      </span>
+                    </div>
+                  )}
+                <div style={styles.summaryItem}>
+                  <span style={styles.summaryLabel}>
+                    {bookingData.tripType === "round-trip"
+                      ? "Pick Up Time"
+                      : "Time"}
+                  </span>
+                  <span style={styles.summaryValue}>
+                    {bookingData.selectedTime || "Not selected"}
+                  </span>
+                </div>
+                {bookingData.tripType === "round-trip" &&
+                  bookingData.returnTime && (
+                    <div style={styles.summaryItem}>
+                      <span style={styles.summaryLabel}>Return Time</span>
+                      <span style={styles.summaryValue}>
+                        {bookingData.returnTime}
+                      </span>
+                    </div>
+                  )}
+              </div>
 
               {/* Price Breakdown with Round Trip Logic */}
               <div style={{ marginBottom: "10px", fontSize: "14px" }}>
-                <div style={{ marginBottom: "8px", fontWeight: "500" }}>
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    fontWeight: "700",
+                    color: palette.navy,
+                  }}>
                   Total People: {pricing.totalPeople} ({bookingData.adults || 0}{" "}
                   Adults, {bookingData.youth || 0} Youth,{" "}
                   {bookingData.children || 0} Children)
                 </div>
 
                 {bookingData.tripType === "round-trip" && (
-                  <div
-                    style={{
-                      backgroundColor: "#fff3cd",
-                      border: "1px solid #ffeaa7",
-                      borderRadius: "6px",
-                      padding: "10px",
-                      marginBottom: "10px",
-                      fontSize: "13px",
-                      color: "#856404",
-                    }}>
+                  <div style={styles.callout}>
                     Round Trip - Prices doubled for return journey
                   </div>
                 )}
 
-                {pricing.priceBreakdown.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "4px",
-                    }}>
-                    <span>{item.description}</span>
-                    <span>
-                      {item.quantity > 1
-                        ? `${item.quantity} × ${item.rate.toFixed(2)} = `
-                        : ""}
-                      ${item.amount.toFixed(2)}
-                    </span>
+                <div style={styles.breakdownWrap}>
+                  {pricing.priceBreakdown.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        ...styles.breakdownRow,
+                        borderBottom:
+                          index === pricing.priceBreakdown.length - 1
+                            ? "none"
+                            : styles.breakdownRow.borderBottom,
+                      }}>
+                      <span>{item.description}</span>
+                      <span style={{ fontWeight: 700, color: palette.navy }}>
+                        {item.quantity > 1
+                          ? `${item.quantity} × ${item.rate.toFixed(2)} = `
+                          : ""}
+                        ${item.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                  <div style={styles.totalRow}>
+                    <span>Total</span>
+                    <span>${pricing.totalAmount?.toFixed(2)} USD</span>
                   </div>
-                ))}
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontWeight: "bold",
-                  color: "#1e7e34",
-                  borderTop: "1px solid #dee2e6",
-                  paddingTop: "8px",
-                  marginTop: "8px",
-                }}>
-                <span>Total: ${pricing.totalAmount?.toFixed(2)} USD</span>
+                </div>
               </div>
             </div>
 
             {/* Customer Info Form */}
-            <h4 style={{ marginBottom: "15px" }}>Customer Information</h4>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "15px",
-                marginBottom: "15px",
-              }}>
+            <h4 style={styles.sectionTitle}>Customer Information</h4>
+            <div style={styles.formGrid}>
               <div>
-                <label style={{ display: "block", marginBottom: "5px" }}>
+                <label style={styles.label}>
                   First Name *
                 </label>
                 <input
@@ -635,7 +795,7 @@ export default function BookingModal({
                 )}
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "5px" }}>
+                <label style={styles.label}>
                   Last Name *
                 </label>
                 <input
@@ -653,15 +813,9 @@ export default function BookingModal({
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "15px",
-                marginBottom: "15px",
-              }}>
+            <div style={styles.formGrid}>
               <div>
-                <label style={{ display: "block", marginBottom: "5px" }}>
+                <label style={styles.label}>
                   Email *
                 </label>
                 <input
@@ -677,7 +831,7 @@ export default function BookingModal({
                 )}
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "5px" }}>
+                <label style={styles.label}>
                   Jamaica Phone *
                 </label>
                 <input
@@ -695,7 +849,7 @@ export default function BookingModal({
             </div>
 
             <div style={{ marginBottom: "30px" }}>
-              <label style={{ display: "block", marginBottom: "5px" }}>
+              <label style={styles.label}>
                 Special Requests
               </label>
               <textarea
@@ -713,7 +867,7 @@ export default function BookingModal({
               />
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div style={styles.footerActions}>
               <button onClick={handleClose} style={buttonStyle()}>
                 Cancel
               </button>
@@ -730,23 +884,13 @@ export default function BookingModal({
         {/* Payment Page */}
         {step === "payment" && (
           <>
-            <h2
-              style={{
-                color: "#1e7e34",
-                marginBottom: "20px",
-                textAlign: "center",
-              }}>
-              Secure Payment
-            </h2>
+            <h2 style={styles.heading}>Secure Payment</h2>
+            <div style={styles.subheading}>
+              Review your booking and complete checkout with PayPal.
+            </div>
 
             {/* Booking Summary */}
-            <div
-              style={{
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px",
-                padding: "20px",
-                marginBottom: "30px",
-              }}>
+            <div style={styles.summaryCard}>
               <h4>Booking Summary</h4>
               <p>Tour: {tourData.title}</p>
               <p>
@@ -771,15 +915,15 @@ export default function BookingModal({
               </p>
               <div
                 style={{
-                  borderTop: "1px solid #dee2e6",
-                  paddingTop: "10px",
-                  marginTop: "10px",
+                  borderTop: `1px solid ${palette.border}`,
+                  paddingTop: "12px",
+                  marginTop: "12px",
                 }}>
                 <p
                   style={{
-                    fontWeight: "bold",
-                    color: "#1e7e34",
-                    fontSize: "18px",
+                    fontWeight: "800",
+                    color: palette.navy,
+                    fontSize: "20px",
                   }}>
                   Total: ${pricing.totalAmount?.toFixed(2)} USD
                 </p>
@@ -824,20 +968,12 @@ export default function BookingModal({
                   style={{
                     textAlign: "center",
                     padding: "40px",
-                    backgroundColor: "#f8f9fa",
-                    borderRadius: "8px",
+                    backgroundColor: palette.surfaceSoft,
+                    borderRadius: "18px",
+                    border: `1px solid ${palette.border}`,
                   }}>
                   <p>Loading PayPal...</p>
-                  <div
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      border: "3px solid #f3f3f3",
-                      borderTop: "3px solid #1e7e34",
-                      borderRadius: "50%",
-                      animation: "spin 1s linear infinite",
-                      margin: "10px auto",
-                    }}></div>
+                  <div style={styles.spinner}></div>
                 </div>
               )}
             </div>

@@ -871,6 +871,78 @@ export default function TourSingleSidebar({ tour }) {
       backgroundColor: "#f4f7fb",
       color: "#1f2557",
     },
+    inputHeading: {
+      fontSize: "13px",
+      fontWeight: 700,
+      color: "#1f2557",
+      marginBottom: "4px",
+    },
+    inputValue: {
+      fontSize: "15px",
+      fontWeight: 600,
+      color: "#3f4b63",
+      letterSpacing: "-0.01em",
+    },
+    inputPlaceholder: {
+      fontSize: "15px",
+      fontWeight: 500,
+      color: "#97a1b2",
+    },
+    timeDropdown: {
+      marginTop: "10px",
+      border: "1px solid #e7ebf3",
+      borderRadius: "20px",
+      background:
+        "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)",
+      boxShadow: "0 18px 36px rgba(15, 23, 42, 0.12)",
+      overflow: "hidden",
+    },
+    timeDropdownHeader: {
+      padding: "14px 16px 10px",
+      borderBottom: "1px solid #eef2f7",
+      background:
+        "linear-gradient(180deg, rgba(250,251,255,1) 0%, rgba(255,255,255,1) 100%)",
+    },
+    timeDropdownEyebrow: {
+      fontSize: "11px",
+      fontWeight: 700,
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+      color: "#9aa4b2",
+      marginBottom: "4px",
+    },
+    timeDropdownTitle: {
+      fontSize: "15px",
+      fontWeight: 700,
+      color: "#1f2557",
+    },
+    timeDropdownList: {
+      maxHeight: "240px",
+      overflowY: "auto",
+      padding: "10px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+    },
+    timeOptionButton: {
+      width: "100%",
+      minHeight: "46px",
+      padding: "0 14px",
+      border: "1px solid #edf2f7",
+      borderRadius: "14px",
+      backgroundColor: "#ffffff",
+      color: "#445065",
+      fontSize: "14px",
+      fontWeight: 600,
+      textAlign: "left",
+      transition: "all 0.2s ease",
+    },
+    timeOptionButtonActive: {
+      border: "1px solid rgba(234, 60, 60, 0.2)",
+      background: "linear-gradient(135deg, #fff1f1 0%, #fff7f7 100%)",
+      color: "#d73939",
+      boxShadow: "0 10px 18px rgba(234, 60, 60, 0.12)",
+    },
     pricingCard: {
       padding: "14px 16px",
       borderRadius: "18px",
@@ -1079,13 +1151,13 @@ export default function TourSingleSidebar({ tour }) {
                 className='searchFormItem__button'
                 style={sidebarStyles.inputButton}
                 data-x-click='calendar'>
-                <div
-                  className='searchFormItem__icon flex-center'
-                  style={sidebarStyles.inputIcon}>
+                  <div
+                    className='searchFormItem__icon flex-center'
+                    style={sidebarStyles.inputIcon}>
                   <i className='text-20 icon-calendar'></i>
                 </div>
                 <div className='searchFormItem__content'>
-                  <h5>
+                  <h5 style={sidebarStyles.inputHeading}>
                     {tripType === "round-trip" ? "Pick Up Date" : "Pick Up"}
                   </h5>
                   <div>
@@ -1124,7 +1196,7 @@ export default function TourSingleSidebar({ tour }) {
                     <i className='text-20 icon-calendar'></i>
                   </div>
                   <div className='searchFormItem__content'>
-                    <h5>Return Date</h5>
+                    <h5 style={sidebarStyles.inputHeading}>Return Date</h5>
                     <div>
                       <span className='js-first-date'>
                         <Calender
@@ -1163,8 +1235,16 @@ export default function TourSingleSidebar({ tour }) {
                   <i className='text-20 icon-clock'></i>
                 </div>
                 <div className='searchFormItem__content'>
-                  <h5>{tripType === "round-trip" ? "Pick Up Time" : "Time"}</h5>
-                  <div className='js-select-control-chosen'>
+                  <h5 style={sidebarStyles.inputHeading}>
+                    {tripType === "round-trip" ? "Pick Up Time" : "Time"}
+                  </h5>
+                  <div
+                    className='js-select-control-chosen'
+                    style={
+                      selectedTime
+                        ? sidebarStyles.inputValue
+                        : sidebarStyles.inputPlaceholder
+                    }>
                     {selectedTime ? selectedTime : "Choose time"}
                   </div>
                 </div>
@@ -1177,10 +1257,21 @@ export default function TourSingleSidebar({ tour }) {
                 className={`searchFormItemDropdown -tour-type ${
                   activePanel === "pickup-time" ? "is-active" : ""
                 }`}
+                style={sidebarStyles.timeDropdown}
                 data-x='time'
                 data-x-toggle='is-active'>
                 <div className='searchFormItemDropdown__container'>
-                  <div className='searchFormItemDropdown__list sroll-bar-1'>
+                  <div style={sidebarStyles.timeDropdownHeader}>
+                    <div style={sidebarStyles.timeDropdownEyebrow}>
+                      Available slots
+                    </div>
+                    <div style={sidebarStyles.timeDropdownTitle}>
+                      Select pick up time
+                    </div>
+                  </div>
+                  <div
+                    className='searchFormItemDropdown__list sroll-bar-1'
+                    style={sidebarStyles.timeDropdownList}>
                     {times.map((elm, i) => (
                       <div
                         key={i}
@@ -1189,7 +1280,14 @@ export default function TourSingleSidebar({ tour }) {
                           setActivePanel(null);
                         }}
                         className='searchFormItemDropdown__item'>
-                        <button className='js-select-control-button'>
+                        <button
+                          className='js-select-control-button'
+                          style={{
+                            ...sidebarStyles.timeOptionButton,
+                            ...(selectedTime === elm
+                              ? sidebarStyles.timeOptionButtonActive
+                              : {}),
+                          }}>
                           <span className='js-select-control-choice'>
                             {elm}
                           </span>
@@ -1215,8 +1313,14 @@ export default function TourSingleSidebar({ tour }) {
                     <i className='text-20 icon-clock'></i>
                   </div>
                   <div className='searchFormItem__content'>
-                    <h5>Return Time</h5>
-                    <div className='js-select-control-chosen'>
+                    <h5 style={sidebarStyles.inputHeading}>Return Time</h5>
+                    <div
+                      className='js-select-control-chosen'
+                      style={
+                        returnTime
+                          ? sidebarStyles.inputValue
+                          : sidebarStyles.inputPlaceholder
+                      }>
                       {returnTime ? returnTime : "Choose return time"}
                     </div>
                   </div>
@@ -1229,10 +1333,21 @@ export default function TourSingleSidebar({ tour }) {
                   className={`searchFormItemDropdown -tour-type ${
                     activePanel === "return-time" ? "is-active" : ""
                   }`}
+                  style={sidebarStyles.timeDropdown}
                   data-x='return-time'
                   data-x-toggle='is-active'>
                   <div className='searchFormItemDropdown__container'>
-                    <div className='searchFormItemDropdown__list sroll-bar-1'>
+                    <div style={sidebarStyles.timeDropdownHeader}>
+                      <div style={sidebarStyles.timeDropdownEyebrow}>
+                        Return slot
+                      </div>
+                      <div style={sidebarStyles.timeDropdownTitle}>
+                        Select return time
+                      </div>
+                    </div>
+                    <div
+                      className='searchFormItemDropdown__list sroll-bar-1'
+                      style={sidebarStyles.timeDropdownList}>
                       {times.map((elm, i) => (
                         <div
                           key={i}
@@ -1241,7 +1356,14 @@ export default function TourSingleSidebar({ tour }) {
                             setActivePanel(null);
                           }}
                           className='searchFormItemDropdown__item'>
-                          <button className='js-select-control-button'>
+                          <button
+                            className='js-select-control-button'
+                            style={{
+                              ...sidebarStyles.timeOptionButton,
+                              ...(returnTime === elm
+                                ? sidebarStyles.timeOptionButtonActive
+                                : {}),
+                            }}>
                             <span className='js-select-control-choice'>
                               {elm}
                             </span>
