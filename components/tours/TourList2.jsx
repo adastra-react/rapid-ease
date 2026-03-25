@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import { speedFeatures } from "@/data/tourFilteringOptions";
 import { tourDataThree, tourDataTwo } from "@/data/tours";
 import Stars from "../common/Stars";
+import PriceText from "../common/PriceText";
 import Pagination from "../common/Pagination";
 import Image from "next/image";
 import Link from "next/link";
@@ -152,7 +153,10 @@ export default function TourList2() {
 
                         <div>
                           From{" "}
-                          <span className='text-16 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</span>
+                          <PriceText
+                            className='text-16 fw-500'
+                            amount={elm?.price || 0}
+                          />
                         </div>
                       </div>
                     </div>

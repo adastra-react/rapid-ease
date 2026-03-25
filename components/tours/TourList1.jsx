@@ -325,11 +325,13 @@ import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
 import { speedFeatures } from "@/data/tourFilteringOptions";
 import Stars from "../common/Stars";
+import PriceText from "../common/PriceText";
 import Pagination from "../common/Pagination";
 import Image from "next/image";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import {
+  defaultTourFilters,
   fetchTours,
   setFilters,
   setCurrentPage,
@@ -337,7 +339,7 @@ import {
 
 const PAGE_SIZE = 10;
 
-export default function TourList1() {
+export default function TourList1({ searchParams = {} }) {
   const dispatch = useAppDispatch();
   const {
     tours,
@@ -353,6 +355,10 @@ export default function TourList1() {
   const [ddActives, setDdActives] = useState(false);
   const [sidebarActive, setSidebarActive] = useState(false);
   const dropDownContainer = useRef();
+  const appliedSearchRef = useRef("");
+  const travelDate = searchParams.date || "";
+  const searchLocation = searchParams.location || "";
+  const searchTourType = searchParams.tourType || "";
   const hasExactRatingFilter =
     filters.minRating !== null && filters.maxRating !== null;
   const displayedTours = hasExactRatingFilter
@@ -405,6 +411,26 @@ export default function TourList1() {
       document.removeEventListener("click", handleClick);
     };
   }, []);
+
+  useEffect(() => {
+    const searchSource = searchParams.search;
+    const searchSignature = JSON.stringify(searchParams);
+
+    if (searchSource !== "hero" || appliedSearchRef.current === searchSignature) {
+      return;
+    }
+
+    appliedSearchRef.current = searchSignature;
+
+    dispatch(
+      setFilters({
+        ...defaultTourFilters,
+        location: searchLocation || "",
+        tourTypes: searchTourType ? [searchTourType] : [],
+      })
+    );
+    dispatch(setCurrentPage(1));
+  }, [dispatch, searchLocation, searchParams, searchTourType]);
 
   useEffect(() => {
     dispatch(
@@ -512,6 +538,26 @@ export default function TourList1() {
               </div>
             </div>
 
+            {(searchLocation || searchTourType || travelDate) && (
+              <div className='d-flex flex-wrap gap-10 pt-20'>
+                {searchLocation && (
+                  <div className='rounded-200 border-1 px-15 py-8 text-14'>
+                    Location: {searchLocation}
+                  </div>
+                )}
+                {searchTourType && (
+                  <div className='rounded-200 border-1 px-15 py-8 text-14'>
+                    Tour Type: {searchTourType}
+                  </div>
+                )}
+                {travelDate && (
+                  <div className='rounded-200 border-1 px-15 py-8 text-14'>
+                    Travel Date: {travelDate}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className='row y-gap-30 pt-30'>
               {loading ? (
                 <div className='col-12 text-center'>
@@ -613,17 +659,19 @@ export default function TourList1() {
                           </div>
 
                           <div className='tourCard__price'>
-                            <div>${tour.fromPrice}</div>
+                            <PriceText as='div' amount={tour.fromPrice} />
 
                             <div className='d-flex items-center'>
                               From{" "}
-                              <span className='text-20 fw-500 ml-5'>
-                                $
-                                {tour?.price ??
+                              <PriceText
+                                className='text-20 fw-500 ml-5'
+                                amount={
+                                  tour?.price ??
                                   tour?.pricing?.basePrice ??
                                   tour?.fromPrice ??
-                                  0}
-                              </span>
+                                  0
+                                }
+                              />
                             </div>
                           </div>
                         </div>

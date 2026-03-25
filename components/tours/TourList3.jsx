@@ -4,6 +4,7 @@ import { speedFeatures, toursTypes } from "@/data/tourFilteringOptions";
 import Pagination from "../common/Pagination";
 import { tourDataThree } from "@/data/tours";
 import Stars from "../common/Stars";
+import PriceText from "../common/PriceText";
 import Calender from "../common/dropdownSearch/Calender";
 import ToggleSidebar from "./ToggleSidebar";
 import { useState, useEffect, useRef } from "react";
@@ -214,7 +215,10 @@ export default function TourList3() {
 
                       <div>
                         From{" "}
-                        <span className='text-16 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</span>
+                        <PriceText
+                          className='text-16 fw-500'
+                          amount={elm?.price || 0}
+                        />
                       </div>
                     </div>
                   </div>

@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { speedFeatures } from "@/data/tourFilteringOptions";
 import { tourDataTwo } from "@/data/tours";
+import PriceText from "@/components/common/PriceText";
 import Stars from "@/components/common/Stars";
 import Pagination from "@/components/common/Pagination";
 import Image from "next/image";
@@ -195,16 +196,17 @@ export default function TourList1() {
                           {elm.duration}
                         </div>
 
-                        <div className='tourCard__price'>
-                          <div>${elm.fromPrice}</div>
+                      <div className='tourCard__price'>
+                        <PriceText as='div' amount={elm.fromPrice} />
 
-                          <div className='d-flex items-center'>
-                            From{" "}
-                            <span className='text-20 fw-500 ml-5'>
-                              ${elm?.price || m?.pricing?.basePrice || 0}
-                            </span>
-                          </div>
+                        <div className='d-flex items-center'>
+                          From{" "}
+                          <PriceText
+                            className='text-20 fw-500 ml-5'
+                            amount={elm?.price || 0}
+                          />
                         </div>
+                      </div>
                       </div>
 
                       <button className='button -outline-accent-1 text-accent-1'>

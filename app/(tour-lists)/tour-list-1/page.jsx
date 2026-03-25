@@ -4,13 +4,13 @@ import PageHeader from "@/components/tours/PageHeader";
 import TourList1 from "@/components/tours/TourList1";
 import React from "react";
 
-export default function page() {
+export default function page({ searchParams }) {
   return (
     <>
       <main>
         <Header1 />
         <PageHeader />
-        <TourList1 />
+        <TourList1 searchParams={searchParams} />
         <FooterOne />
       </main>
     </>

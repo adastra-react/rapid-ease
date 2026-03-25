@@ -1,13 +1,7 @@
 "use client";
 import React from "react";
-const options = [
-  "City Tour",
-  "Hiking",
-  "Food Tour",
-  "Cultural Tours",
-  "Museums Tours",
-  "Beach Tours",
-];
+import { toursTypes } from "@/data/tourFilteringOptions";
+
 export default function TourType({ active, setTourType }) {
   return (
     <div
@@ -19,7 +13,7 @@ export default function TourType({ active, setTourType }) {
     >
       <div className="searchFormItemDropdown__container">
         <div className="searchFormItemDropdown__list sroll-bar-1">
-          {options.map((elm, i) => (
+          {toursTypes.map((elm, i) => (
             <div
               onClick={() => setTourType((pre) => (pre == elm ? "" : elm))}
               key={i}

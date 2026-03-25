@@ -5,6 +5,7 @@ import Calender from "../common/dropdownSearch/Calender";
 import RangeSlider from "../common/RangeSlider";
 import { tourDataThree, tourDataTwo } from "@/data/tours";
 import Stars from "../common/Stars";
+import PriceText from "../common/PriceText";
 import Pagination from "../common/Pagination";
 import Map from "./Map";
 import { speedFeatures } from "@/data/tourFilteringOptions";
@@ -226,16 +227,17 @@ export default function TourList7() {
                           {elm.duration}
                         </div>
 
-                        <div className='tourCard__price'>
-                          <div>${elm.fromPrice}</div>
+                    <div className='tourCard__price'>
+                      <PriceText as='div' amount={elm.fromPrice} />
 
-                          <div className='d-flex items-center'>
-                            From{" "}
-                            <span className='text-20 fw-500 ml-5'>
-                              ${elm?.price || m?.pricing?.basePrice || 0}
-                            </span>
-                          </div>
-                        </div>
+                      <div className='d-flex items-center'>
+                        From{" "}
+                        <PriceText
+                          className='text-20 fw-500 ml-5'
+                          amount={elm?.price || 0}
+                        />
+                      </div>
+                    </div>
                       </div>
 
                       <button className='button -outline-accent-1 text-accent-1'>

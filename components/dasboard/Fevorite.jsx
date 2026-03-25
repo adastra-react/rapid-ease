@@ -1,6 +1,7 @@
 "use client";
 
 import Pagination from "../common/Pagination";
+import PriceText from "../common/PriceText";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { tourDataThree } from "@/data/tours";
@@ -78,7 +79,10 @@ export default function Favorites() {
 
                           <div>
                             From{" "}
-                            <span className='text-16 fw-500'>${elm.price}</span>
+                            <PriceText
+                              className='text-16 fw-500'
+                              amount={elm.price}
+                            />
                           </div>
                         </div>
                       </div>

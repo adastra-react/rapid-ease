@@ -1,6 +1,7 @@
 "use client";
 
 import Stars from "@/components/common/Stars";
+import PriceText from "@/components/common/PriceText";
 import tourService from "../../../app/store/services/tourService";
 import Image from "next/image";
 import Link from "next/link";
@@ -65,13 +66,6 @@ export default function Tour1() {
 
     // Fallback to a placeholder image
     return "/img/placeholder-tour.jpg";
-  };
-
-  // Helper function to format price
-  const formatPrice = (price) => {
-    if (typeof price === "number") return price;
-    if (typeof price === "string") return parseFloat(price) || 0;
-    return 0;
   };
 
   if (loading) {
@@ -197,12 +191,10 @@ export default function Tour1() {
 
                       <div>
                         From{" "}
-                        <span className='text-16 fw-500'>
-                          $
-                          {formatPrice(
-                            tour?.price || tour?.pricing?.basePrice || 0
-                          )}
-                        </span>
+                        <PriceText
+                          className='text-16 fw-500'
+                          amount={tour?.price || tour?.pricing?.basePrice || 0}
+                        />
                       </div>
                     </div>
                   </div>

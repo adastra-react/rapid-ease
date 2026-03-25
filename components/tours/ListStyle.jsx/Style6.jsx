@@ -1,4 +1,5 @@
 import Stars from "@/components/common/Stars";
+import PriceText from "@/components/common/PriceText";
 import { tourDataTwo } from "@/data/tours";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,13 +85,14 @@ export default function Style6() {
                     </div>
 
                     <div className='tourCard__price'>
-                      <div>${elm.fromPrice}</div>
+                      <PriceText as='div' amount={elm.fromPrice} />
 
                       <div className='d-flex items-center'>
                         From{" "}
-                        <span className='text-20 fw-500 ml-5'>
-                          ${elm?.price || m?.pricing?.basePrice || 0}
-                        </span>
+                        <PriceText
+                          className='text-20 fw-500 ml-5'
+                          amount={elm?.price || 0}
+                        />
                       </div>
                     </div>
                   </div>

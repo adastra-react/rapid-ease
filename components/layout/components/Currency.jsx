@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-
-const currencies = ["USD", "Pound Sterling", "JMD"];
+import { useCurrency } from "@/components/providers/CurrencyProvider";
 
 export default function Currency({ parentClass }) {
   const [currentdd, setCurrentdd] = useState("");
-  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const { currencies, selectedCurrency, setSelectedCurrency } = useCurrency();
   const dropDownContainer = useRef();
   useEffect(() => {
     const handleClick = (event) => {
@@ -43,15 +42,15 @@ export default function Currency({ parentClass }) {
         } `}>
         <div className='headerDropdown'>
           <div className='headerDropdown__container'>
-            {currencies.map((elm, i) => (
+            {currencies.map((currency, i) => (
               <div
                 onClick={() => {
-                  setSelectedCurrency(elm);
+                  setSelectedCurrency(currency.code);
                   setCurrentdd("");
                 }}
                 key={i}
                 className='headerDropdown__item'>
-                <button className=''>{elm}</button>
+                <button className=''>{currency.label}</button>
               </div>
             ))}
           </div>

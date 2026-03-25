@@ -6,6 +6,7 @@ import TourType from "@/components/common/dropdownSearch/TourType";
 import Image from "next/image";
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+
 export default function Hero1() {
   const router = useRouter();
   const [currentActiveDD, setCurrentActiveDD] = useState("");
@@ -33,6 +34,26 @@ export default function Hero1() {
       document.removeEventListener("click", handleClick);
     };
   }, []);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+
+    params.set("search", "hero");
+
+    if (location) {
+      params.set("location", location);
+    }
+
+    if (tourType) {
+      params.set("tourType", tourType);
+    }
+
+    if (calender) {
+      params.set("date", calender);
+    }
+
+    router.push(`/tour-list-1?${params.toString()}`);
+  };
 
   return (
     <section className='hero -type-1'>
@@ -114,6 +135,7 @@ export default function Hero1() {
                           <div>
                             <span className='js-first-date'>
                               <Calender
+                                onDateChange={setCalender}
                                 active={currentActiveDD === "calender"}
                               />
                             </span>
@@ -151,10 +173,10 @@ export default function Hero1() {
 
                   <div className='searchForm__button'>
                     <button
-                      onClick={() => router.push("/tour-list-1")}
+                      onClick={handleSearch}
                       className='button -dark-1 bg-accent-1 text-white'>
                       <i className='icon-search text-16 mr-10'></i>
-                      Search
+                      Search Tours
                     </button>
                   </div>
                 </div>

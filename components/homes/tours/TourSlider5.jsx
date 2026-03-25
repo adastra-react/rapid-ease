@@ -4,6 +4,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { tourData } from "@/data/tours";
+import PriceText from "@/components/common/PriceText";
 import Stars from "@/components/common/Stars";
 import Image from "next/image";
 import Link from "next/link";
@@ -97,7 +98,11 @@ export default function TourSlider5() {
 
                             <div className='text-right text-white'>
                               <div className='text-13 lh-14'>From</div>
-                              <div className='text-18 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</div>
+                              <PriceText
+                                as='div'
+                                className='text-18 fw-500'
+                                amount={elm?.price || 0}
+                              />
                             </div>
                           </div>
                         </div>

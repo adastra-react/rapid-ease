@@ -1,10 +1,10 @@
 export const locations = [
-  { id: 1, choice: "Europe", type: "Continent" },
-  { id: 2, choice: "France", type: "Country" },
-  { id: 3, choice: "London", type: "Destinations" },
-  { id: 4, choice: "Asia", type: "Continent" },
-  { id: 5, choice: "United States", type: "Country" },
-  { id: 6, choice: "Tokio", type: "Destinations" },
-  { id: 7, choice: "Africa", type: "Continent" },
-  { id: 8, choice: "New Zealand", type: "Country" },
+  { id: 1, choice: "Montego Bay", type: "Popular destination" },
+  { id: 2, choice: "Negril", type: "Popular destination" },
+  { id: 3, choice: "Ocho Rios", type: "Popular destination" },
+  { id: 4, choice: "Kingston", type: "City" },
+  { id: 5, choice: "St. James", type: "Parish" },
+  { id: 6, choice: "Discovery Bay", type: "North coast" },
+  { id: 7, choice: "Hopewell", type: "Westmoreland area" },
+  { id: 8, choice: "Rose Hall", type: "Montego Bay area" },
 ];

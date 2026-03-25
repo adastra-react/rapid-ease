@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { speedFeatures } from "@/data/tourFilteringOptions";
 import { tourDataTwo } from "@/data/tours";
 import Stars from "../common/Stars";
+import PriceText from "../common/PriceText";
 import Pagination from "../common/Pagination";
 import Sidebar2 from "./Sidebar2";
 import Image from "next/image";
@@ -181,13 +182,14 @@ export default function TourList4() {
                         </div>
 
                         <div className='tourCard__price'>
-                          <div>${elm?.price || m?.pricing?.basePrice || 0}</div>
+                          <PriceText as='div' amount={elm?.price || 0} />
 
                           <div className='d-flex items-center'>
                             From{" "}
-                            <span className='text-20 fw-500 ml-5'>
-                              ${elm.fromPrice}
-                            </span>
+                            <PriceText
+                              className='text-20 fw-500 ml-5'
+                              amount={elm.fromPrice}
+                            />
                           </div>
                         </div>
                       </div>

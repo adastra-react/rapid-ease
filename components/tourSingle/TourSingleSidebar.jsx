@@ -694,14 +694,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useCurrency } from "@/components/providers/CurrencyProvider";
 import Calender from "../common/dropdownSearch/Calender";
-import Image from "next/image";
 import { times } from "@/data/tourSingleContent";
+import Image from "next/image";
 
 // Import the BookingModal component
 import BookingModal from "../../components/modals/BookingModal";
 
 export default function TourSingleSidebar({ tour }) {
+  const { formatPrice } = useCurrency();
   // Trip type state
   const [tripType, setTripType] = useState("one-way"); // 'one-way' or 'round-trip'
 
@@ -872,7 +874,9 @@ export default function TourSingleSidebar({ tour }) {
       <div className='tourSingleSidebar'>
         <div className='d-flex items-center'>
           <div>From</div>
-          <div className='text-20 fw-500 ml-10'>${pricing.groupBasePrice}</div>
+          <div className='text-20 fw-500 ml-10'>
+            {formatPrice(pricing.groupBasePrice)}
+          </div>
           <div className='text-14 text-light-2 ml-5'>(1-4 people)</div>
         </div>
 
@@ -1064,10 +1068,11 @@ export default function TourSingleSidebar({ tour }) {
         <div className='bg-light-1 rounded-8 p-15 mb-20'>
           <div className='text-14 fw-500 mb-5'>Pricing Structure:</div>
           <div className='text-13 text-light-2'>
-            • 1-4 people: ${pricing.groupBasePrice} (group rate)
+            • 1-4 people: {formatPrice(pricing.groupBasePrice)} (group rate)
             {totalPeople > 4 && (
               <div className='text-13 text-light-2 mt-5'>
-                • 5+ people: +${pricing.perPersonRate} per additional person
+                • 5+ people: +{formatPrice(pricing.perPersonRate)} per
+                additional person
               </div>
             )}
           </div>
@@ -1085,7 +1090,7 @@ export default function TourSingleSidebar({ tour }) {
                 <span className='fw-500 ml-5'>
                   {adultNumber <= 4
                     ? "Included"
-                    : `+$${(
+                    : `+${formatPrice(
                         (adultNumber -
                           Math.min(
                             4,
@@ -1093,7 +1098,7 @@ export default function TourSingleSidebar({ tour }) {
                           )) *
                         pricing.perPersonRate *
                         (tripType === "round-trip" ? 2 : 1)
-                      ).toFixed(2)}`}
+                      )}`}
                 </span>
               ) : null}
             </div>
@@ -1132,7 +1137,7 @@ export default function TourSingleSidebar({ tour }) {
                 <span className='fw-500 ml-5'>
                   {youthNumber <= 4
                     ? "Included"
-                    : `+$${(
+                    : `+${formatPrice(
                         (youthNumber -
                           Math.min(
                             4,
@@ -1140,7 +1145,7 @@ export default function TourSingleSidebar({ tour }) {
                           )) *
                         pricing.perPersonRate *
                         (tripType === "round-trip" ? 2 : 1)
-                      ).toFixed(2)}`}
+                      )}`}
                 </span>
               ) : null}
             </div>
@@ -1179,7 +1184,7 @@ export default function TourSingleSidebar({ tour }) {
                 <span className='fw-500 ml-5'>
                   {childrenNumber <= 4
                     ? "Included"
-                    : `+$${(
+                    : `+${formatPrice(
                         (childrenNumber -
                           Math.min(
                             4,
@@ -1187,7 +1192,7 @@ export default function TourSingleSidebar({ tour }) {
                           )) *
                         pricing.perPersonRate *
                         (tripType === "round-trip" ? 2 : 1)
-                      ).toFixed(2)}`}
+                      )}`}
                 </span>
               ) : null}
             </div>
@@ -1226,9 +1231,9 @@ export default function TourSingleSidebar({ tour }) {
           </div>
           {totalPeople > 4 && (
             <div className='text-12 text-light-2 mt-5'>
-              First 4 people: ${pricing.groupBasePrice} | Extra{" "}
-              {totalPeople - 4}: +$
-              {((totalPeople - 4) * pricing.perPersonRate).toFixed(2)}
+              First 4 people: {formatPrice(pricing.groupBasePrice)} | Extra{" "}
+              {totalPeople - 4}: +
+              {formatPrice((totalPeople - 4) * pricing.perPersonRate)}
             </div>
           )}
         </div>
@@ -1267,7 +1272,7 @@ export default function TourSingleSidebar({ tour }) {
             <div className='ml-10'>Add Service per booking</div>
           </div>
 
-          <div className='text-14'>${pricing.extraService}</div>
+          <div className='text-14'>{formatPrice(pricing.extraService)}</div>
         </div>
 
         <div className='d-flex justify-between mt-20'>
@@ -1293,20 +1298,22 @@ export default function TourSingleSidebar({ tour }) {
             <div className='ml-10'>
               Add Service per person
               <div className='lh-16'>
-                Adult: <span className='fw-500'>$17.00</span> - Youth:{" "}
-                <span className='fw-500'>$14.00</span>
+                Adult: <span className='fw-500'>{formatPrice(17)}</span> -
+                Youth: <span className='fw-500'>{formatPrice(14)}</span>
               </div>
             </div>
           </div>
 
-          <div className='text-14'>${pricing.servicePerPerson}</div>
+          <div className='text-14'>{formatPrice(pricing.servicePerPerson)}</div>
         </div>
 
         <div className='line mt-20 mb-20'></div>
 
         <div className='d-flex items-center justify-between'>
           <div className='text-18 fw-500'>Total:</div>
-          <div className='text-18 fw-500'>${totalAmount.toFixed(2)}</div>
+          <div className='text-18 fw-500'>
+            {formatPrice(totalAmount.toFixed(2))}
+          </div>
         </div>
 
         <button

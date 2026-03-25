@@ -3,6 +3,7 @@ import "../public/css/style.css";
 
 import { DM_Sans } from "next/font/google";
 import ScrollTopBehaviour from "@/components/common/ScrollTopBehavier";
+import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
 import Wrapper from "@/components/layout/Wrapper";
 import { ReduxProvider } from "./provider";
 
@@ -22,9 +23,8 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#FF0000",
 };
-
-export const themeColor = "#FF0000";
 
 // Fixed metadata - removed viewport and themeColor
 export const metadata = {
@@ -93,11 +93,13 @@ export default function RootLayout({ children }) {
       </head>
       <body className={dmsans.className}>
         <ReduxProvider>
-          <Wrapper>
-            <div className='page-transition'>
-              <div className='page-transition__content'>{children}</div>
-            </div>
-          </Wrapper>
+          <CurrencyProvider>
+            <Wrapper>
+              <div className='page-transition'>
+                <div className='page-transition__content'>{children}</div>
+              </div>
+            </Wrapper>
+          </CurrencyProvider>
         </ReduxProvider>
         <ScrollToTop />
         <ScrollTopBehaviour />

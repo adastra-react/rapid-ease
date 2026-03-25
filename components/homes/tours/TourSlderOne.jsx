@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { useEffect, useState } from "react";
 import Stars from "@/components/common/Stars";
+import PriceText from "@/components/common/PriceText";
 import tourService from "../../../app/store/services/tourService";
 import Image from "next/image";
 import Link from "next/link";
@@ -71,13 +72,6 @@ export default function TourSliderOne() {
 
     // Fallback to a placeholder image
     return "/img/placeholder-tour.jpg";
-  };
-
-  // Helper function to format price
-  const formatPrice = (price) => {
-    if (typeof price === "number") return price;
-    if (typeof price === "string") return parseFloat(price) || 0;
-    return 0;
   };
 
   if (loading) {
@@ -222,9 +216,10 @@ export default function TourSliderOne() {
 
                             <div>
                               From{" "}
-                              <span className='text-16 fw-500'>
-                                ${formatPrice(tour.price)}
-                              </span>
+                              <PriceText
+                                className='text-16 fw-500'
+                                amount={tour.price}
+                              />
                             </div>
                           </div>
                         </div>

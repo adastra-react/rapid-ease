@@ -84,6 +84,18 @@ export const fetchTourStats = createAsyncThunk(
   }
 );
 
+export const defaultTourFilters = {
+  minPrice: 0,
+  maxPrice: 100000,
+  minDuration: null,
+  maxDuration: null,
+  minRating: null,
+  maxRating: null,
+  location: "",
+  tourTypes: [],
+  sort: "-createdAt",
+};
+
 // Initial state
 const initialState = {
   tours: [],
@@ -94,17 +106,7 @@ const initialState = {
   currentPage: 1,
   loading: false,
   error: null,
-  filters: {
-    minPrice: 0,
-    maxPrice: 100000,
-    minDuration: null,
-    maxDuration: null,
-    minRating: null,
-    maxRating: null,
-    location: "",
-    tourTypes: [],
-    sort: "-createdAt",
-  },
+  filters: defaultTourFilters,
 };
 
 // Create slice

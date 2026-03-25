@@ -1,4 +1,5 @@
 import Stars from "@/components/common/Stars";
+import PriceText from "@/components/common/PriceText";
 import { tourData } from "@/data/tours";
 import Image from "next/image";
 import Link from "next/link";
@@ -66,7 +67,11 @@ export default function Style3() {
 
                     <div className='text-right text-white'>
                       <div className='text-13 lh-14'>From</div>
-                      <div className='text-18 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</div>
+                      <PriceText
+                        as='div'
+                        className='text-18 fw-500'
+                        amount={elm?.price || 0}
+                      />
                     </div>
                   </div>
                 </div>

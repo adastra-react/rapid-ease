@@ -3,6 +3,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+import PriceText from "@/components/common/PriceText";
 import Stars from "@/components/common/Stars";
 import { tourData } from "@/data/tours";
 import Image from "next/image";
@@ -113,7 +114,10 @@ export default function CruiseTour() {
 
                           <div>
                             From{" "}
-                            <span className='text-16 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</span>
+                            <PriceText
+                              className='text-16 fw-500'
+                              amount={elm?.price || 0}
+                            />
                           </div>
                         </div>
                       </div>

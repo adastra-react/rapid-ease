@@ -5,6 +5,7 @@ import Calender from "../common/dropdownSearch/Calender";
 import RangeSlider from "../common/RangeSlider";
 import { tourDataThree } from "@/data/tours";
 import Stars from "../common/Stars";
+import PriceText from "../common/PriceText";
 import Pagination from "../common/Pagination";
 import Map from "./Map";
 import { speedFeatures } from "@/data/tourFilteringOptions";
@@ -200,7 +201,10 @@ export default function TourList6() {
 
                         <div>
                           From{" "}
-                          <span className='text-16 fw-500'>${elm?.price || m?.pricing?.basePrice || 0}</span>
+                          <PriceText
+                            className='text-16 fw-500'
+                            amount={elm?.price || 0}
+                          />
                         </div>
                       </div>
                     </div>
