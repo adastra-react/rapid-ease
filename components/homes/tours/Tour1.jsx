@@ -2,7 +2,6 @@
 
 import Stars from "@/components/common/Stars";
 import PriceText from "@/components/common/PriceText";
-import { tourData } from "@/data/tours";
 import tourService from "../../../app/store/services/tourService";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,8 +42,7 @@ export default function Tour1() {
         setError(null);
       } catch (err) {
         console.error("Failed to fetch tours:", err);
-        setTours(tourData.slice(0, 8));
-        setError(null);
+        setError("Failed to load tours");
       } finally {
         setLoading(false);
       }

@@ -1,7 +1,11 @@
 // app/lib/auth.js
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://rapid-ease-server.vercel.app/api"
+    : "http://localhost:5000/api");
 
 // Check if user is logged in
 export const isAuthenticated = () => {

@@ -281,7 +281,10 @@ class BookingService {
     // this.baseURL =
     //   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
     this.baseURL =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://rapid-ease-server.vercel.app/api"
+        : "http://localhost:5000/api");
   }
 
   async createBooking(bookingData) {

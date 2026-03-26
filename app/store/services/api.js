@@ -63,9 +63,14 @@
 
 import axios from "axios";
 
+const DEFAULT_API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://rapid-ease-server.vercel.app/api"
+    : "http://localhost:5000/api";
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -77,14 +82,14 @@ api.interceptors.request.use(
   (config) => {
     // Just log the request for debugging
     console.log(
-      `Making ${config.method?.toUpperCase()} request to: ${config.url}`
+      `Making ${config.method?.toUpperCase()} request to: ${config.url}`,
     );
     return config;
   },
   (error) => {
     console.error("Request error:", error);
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor for error handling
@@ -121,7 +126,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
