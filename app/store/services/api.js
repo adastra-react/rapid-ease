@@ -68,9 +68,11 @@ const DEFAULT_API_URL =
     ? "https://rapid-ease-server.vercel.app/api"
     : "http://localhost:5000/api";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -80,9 +82,11 @@ const api = axios.create({
 // Request interceptor - REMOVED AUTHENTICATION
 api.interceptors.request.use(
   (config) => {
-    // Just log the request for debugging
+    const resolvedUrl = `${config.baseURL || API_BASE_URL}${config.url || ""}`;
+
+    // Log the fully resolved endpoint so runtime env issues are visible.
     console.log(
-      `Making ${config.method?.toUpperCase()} request to: ${config.url}`,
+      `Making ${config.method?.toUpperCase()} request to: ${resolvedUrl}`,
     );
     return config;
   },
