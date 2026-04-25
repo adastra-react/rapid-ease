@@ -1,7 +1,7 @@
 "use client";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { useState, useEffect } from "react"; // Add useEffect
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Map from "../pages/contact/Map";
 import api from "../../app/store/services/api";
@@ -67,16 +67,8 @@ export default function AddTour() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-
-  // Auto-hide success alert after 5 seconds
-  useEffect(() => {
-    if (showSuccessAlert) {
-      const timer = setTimeout(() => {
-        setShowSuccessAlert(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccessAlert]);
+  const [lastCreatedTourTitle, setLastCreatedTourTitle] = useState("");
+  const titleInputRef = useRef(null);
 
   // Image states - now supports up to 10 images
   const [images, setImages] = useState(Array(10).fill(""));
@@ -128,6 +120,15 @@ export default function AddTour() {
   const getInputWrapperClass = (value) =>
     `form-input${String(value ?? "").trim() ? " is-filled" : ""}`;
 
+  const focusTitleField = () => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.setTimeout(() => {
+        titleInputRef.current?.focus();
+      }, 150);
+    }
+  };
+
   const resetForm = () => {
     setFormData(createInitialFormData());
     setImages(Array(10).fill(""));
@@ -137,6 +138,10 @@ export default function AddTour() {
 
   // Handle input changes
   const handleInputChange = (field, value) => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -145,6 +150,10 @@ export default function AddTour() {
 
   // Handle nested object changes (like mapLocation)
   const handleNestedChange = (parent, field, value) => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setFormData((prev) => ({
       ...prev,
       [parent]: {
@@ -156,6 +165,10 @@ export default function AddTour() {
 
   // Handle extra services changes
   const handleExtraServiceChange = (index, field, value) => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setFormData((prev) => ({
       ...prev,
       extraServices: prev.extraServices.map((service, i) =>
@@ -166,6 +179,10 @@ export default function AddTour() {
 
   // Add new extra service
   const addExtraService = () => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setFormData((prev) => ({
       ...prev,
       extraServices: [
@@ -177,6 +194,10 @@ export default function AddTour() {
 
   // Remove extra service
   const removeExtraService = (index) => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setFormData((prev) => ({
       ...prev,
       extraServices: prev.extraServices.filter((_, i) => i !== index),
@@ -185,6 +206,10 @@ export default function AddTour() {
 
   // Handle included items checkbox changes
   const handleIncludedItemChange = (index, included) => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setFormData((prev) => ({
       ...prev,
       includedItems: prev.includedItems.map((item, i) =>
@@ -198,6 +223,10 @@ export default function AddTour() {
     const files = Array.from(event.target.files);
 
     if (files.length === 0) return;
+
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
 
     // Find available slots
     const currentImageCount = images.filter((img) => img).length;
@@ -245,6 +274,10 @@ export default function AddTour() {
     const file = event.target.files[0];
 
     if (file) {
+      if (showSuccessAlert) {
+        setShowSuccessAlert(false);
+      }
+
       const reader = new FileReader();
 
       reader.onloadend = () => {
@@ -261,6 +294,10 @@ export default function AddTour() {
 
   // Remove image at specific index
   const removeImage = (index) => {
+    if (showSuccessAlert) {
+      setShowSuccessAlert(false);
+    }
+
     setImages((prev) => {
       const newImages = [...prev];
       newImages[index] = "";
@@ -356,7 +393,8 @@ export default function AddTour() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setShowSuccessAlert(true);
+    setMessage("");
+    setShowSuccessAlert(false);
 
     try {
       // TEMPORARILY COMMENTED OUT FOR TESTING - UNCOMMENT IN PRODUCTION
@@ -382,15 +420,11 @@ export default function AddTour() {
       const response = await api.post("/tours", tourData);
 
       if (response.data.status === "success") {
-        setMessage("Tour created successfully!");
-        // Reset form or redirect
-        setTimeout(() => {
-          setTimeout(() => {
-            resetForm();
-          }, 1000);
-          // You might want to redirect to tour list or tour details page
-          // router.push('/dashboard/tours');
-        }, 3000);
+        const createdTourTitle = formData.title.trim();
+        setLastCreatedTourTitle(createdTourTitle);
+        resetForm();
+        setShowSuccessAlert(true);
+        focusTitleField();
       }
     } catch (error) {
       console.error("Error creating tour:", error);
@@ -422,6 +456,8 @@ export default function AddTour() {
         {/* Success Alert Toast */}
         {showSuccessAlert && (
           <div
+            role='status'
+            aria-live='polite'
             style={{
               position: "fixed",
               top: "20px",
@@ -440,7 +476,7 @@ export default function AddTour() {
                 alignItems: "center",
                 gap: "15px",
                 minWidth: "350px",
-                maxWidth: "500px",
+                maxWidth: "560px",
               }}>
               {/* Success Icon */}
               <div
@@ -478,15 +514,34 @@ export default function AddTour() {
                     fontWeight: "600",
                     marginBottom: "4px",
                   }}>
-                  Tour Created Successfully!
+                  Tour saved. Ready for the next one.
                 </div>
                 <div style={{ fontSize: "14px", opacity: 0.9 }}>
-                  Your tour "{formData.title}" has been added to the system.
+                  "{lastCreatedTourTitle || "Your new tour"}" was added
+                  successfully. The form has been cleared and the cursor is
+                  back in Tour Title.
                 </div>
+                <button
+                  type='button'
+                  onClick={focusTitleField}
+                  style={{
+                    marginTop: "12px",
+                    backgroundColor: "white",
+                    color: "#047857",
+                    border: "none",
+                    borderRadius: "999px",
+                    padding: "10px 16px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                  }}>
+                  Add another tour
+                </button>
               </div>
 
               {/* Close Button */}
               <button
+                type='button'
                 onClick={() => setShowSuccessAlert(false)}
                 style={{
                   backgroundColor: "transparent",
@@ -519,27 +574,6 @@ export default function AddTour() {
               </button>
             </div>
 
-            {/* Progress Bar */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: "4px",
-                backgroundColor: "rgba(255, 255, 255, 0.3)",
-                borderRadius: "0 0 12px 12px",
-                overflow: "hidden",
-              }}>
-              <div
-                style={{
-                  height: "100%",
-                  backgroundColor: "white",
-                  animation: "progressBar 5s linear",
-                  transformOrigin: "left",
-                }}
-              />
-            </div>
           </div>
         )}
 
@@ -556,17 +590,28 @@ export default function AddTour() {
             }
           }
 
-          @keyframes progressBar {
-            from {
-              transform: scaleX(1);
-            }
-            to {
-              transform: scaleX(0);
-            }
+          .add-tour-page {
+            color: #1f2937;
+          }
+
+          .add-tour-page :global(.contactForm .form-input label) {
+            color: #334155 !important;
+          }
+
+          .add-tour-helper-text {
+            color: #64748b !important;
+          }
+
+          .add-tour-page :global(.tabs__button) {
+            color: #475569;
+          }
+
+          .add-tour-page :global(.tabs__button.is-tab-el-active) {
+            color: #0f172a;
           }
         `}</style>
         <div
-          className={`dashboard ${
+          className={`add-tour-page dashboard ${
             sideBarOpen ? "-is-sidebar-visible" : ""
           } js-dashboard`}>
           <Sidebar setSideBarOpen={setSideBarOpen} />
@@ -579,14 +624,15 @@ export default function AddTour() {
               <p className=''>
                 Create a new tour experience for your customers.
               </p>
+              <p className='text-14 add-tour-helper-text mt-10'>
+                After each successful save, this form clears and brings you
+                back to the first field so you can add the next tour right
+                away.
+              </p>
 
               {message && (
                 <div
-                  className={`alert mt-20 p-20 rounded-12 ${
-                    message.includes("success")
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}>
+                  className='alert mt-20 p-20 rounded-12 bg-red-100 text-red-800'>
                   {message}
                 </div>
               )}
@@ -623,6 +669,7 @@ export default function AddTour() {
                               <div className='col-12'>
                                 <div className={getInputWrapperClass(formData.title)}>
                                   <input
+                                    ref={titleInputRef}
                                     type='text'
                                     required
                                     placeholder=' '
@@ -679,7 +726,7 @@ export default function AddTour() {
                                     Keywords/Highlights
                                   </label>
                                 </div>
-                                <div className='text-14 text-light-1 mt-10'>
+                                <div className='text-14 add-tour-helper-text mt-10'>
                                   Separate keywords with commas.
                                 </div>
                               </div>
@@ -704,7 +751,7 @@ export default function AddTour() {
                                     Badge Text
                                   </label>
                                 </div>
-                                <div className='text-14 text-light-1 mt-10'>
+                                <div className='text-14 add-tour-helper-text mt-10'>
                                   Optional label shown on the listing card.
                                 </div>
                               </div>
@@ -729,7 +776,7 @@ export default function AddTour() {
                                     Badge Style Class
                                   </label>
                                 </div>
-                                <div className='text-14 text-light-1 mt-10'>
+                                <div className='text-14 add-tour-helper-text mt-10'>
                                   Optional class name if you want a custom badge style.
                                 </div>
                               </div>
@@ -1008,7 +1055,7 @@ export default function AddTour() {
                                 {/* Upload Info and Actions */}
                                 <div className='row items-center justify-between mt-20'>
                                   <div className='col-auto'>
-                                    <div className='text-14 text-light-1'>
+                                    <div className='text-14 add-tour-helper-text'>
                                       PNG or JPG no bigger than 800px wide and
                                       tall.
                                     </div>
@@ -1069,7 +1116,7 @@ export default function AddTour() {
                                     <div className='text-16 fw-500 text-dark-1 mb-10'>
                                       No images uploaded yet
                                     </div>
-                                    <div className='text-14 text-light-1 mb-20'>
+                                    <div className='text-14 add-tour-helper-text mb-20'>
                                       Click "Select Multiple Images" to add up
                                       to 10 images at once
                                     </div>
@@ -1543,6 +1590,10 @@ export default function AddTour() {
 
                 {/* Submit Button */}
                 <div className='text-center mt-30'>
+                  <div className='text-14 add-tour-helper-text mb-15'>
+                    Click once to save this tour. As soon as it is saved, the
+                    form will reset so you can enter the next one.
+                  </div>
                   <button
                     type='submit'
                     disabled={loading}
