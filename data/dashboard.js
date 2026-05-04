@@ -17,12 +17,6 @@ export const sidebarItems = [
     iconClass: "icon-menu text-26",
     label: "Listed Tours",
   },
-  {
-    id: 4,
-    href: "/db-add-tour",
-    iconClass: "icon-clipboard text-26",
-    label: "Add Tour",
-  },
   // {
   //   id: 5,
   //   href: "/db-favorites",

@@ -598,74 +598,136 @@ export default function AddTour() {
           </div>
         )}
 
-        {/* Add CSS Animations */}
         <style jsx>{`
           @keyframes slideInRight {
-            from {
-              transform: translateX(400px);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
+            from { transform: translateX(400px); opacity: 0; }
+            to   { transform: translateX(0);     opacity: 1; }
+          }
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
           }
 
-          .add-tour-page {
-            color: #1f2937;
+          .add-tour-page { color: #1f2937; }
+          .add-tour-page :global(.contactForm .form-input label) { color: #334155 !important; }
+          .add-tour-helper-text { color: #64748b !important; }
+
+          /* ── Tab pill nav ── */
+          .at-tab-nav {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            border-radius: 14px;
+            padding: 5px;
+            width: fit-content;
+          }
+          .at-tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 20px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: background .18s, color .18s, box-shadow .18s;
+            white-space: nowrap;
+          }
+          .at-tab-btn:hover { color: #1f2557; background: rgba(255,255,255,.6); }
+          .at-tab-btn.active {
+            background: #ffffff;
+            color: #1f2557;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(15,23,42,.1);
+          }
+          .at-tab-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #e2e8f0;
+            color: #64748b;
+            transition: background .18s, color .18s;
+          }
+          .at-tab-btn.active .at-tab-num {
+            background: #ea3c3c;
+            color: #fff;
           }
 
-          .add-tour-page :global(.contactForm .form-input label) {
-            color: #334155 !important;
+          /* ── Section labels inside form card ── */
+          .at-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
           }
 
-          .add-tour-helper-text {
-            color: #64748b !important;
-          }
-
-          .add-tour-page :global(.tabs__button) {
-            color: #475569;
-          }
-
-          .add-tour-page :global(.tabs__button.is-tab-el-active) {
-            color: #0f172a;
-          }
-
+          /* ── Rating chips ── */
           .rating-chip {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            min-height: 44px;
+            min-height: 40px;
             padding: 0 16px;
-            border: 1px solid #d7deea;
+            border: 1.5px solid #e2e8f0;
             border-radius: 999px;
             background: #ffffff;
-            color: #334155;
-            transition:
-              border-color 0.2s ease,
-              background-color 0.2s ease,
-              color 0.2s ease,
-              transform 0.2s ease;
-          }
-
-          .rating-chip:hover {
-            border-color: #f87171;
-            color: #dc2626;
-            transform: translateY(-1px);
-          }
-
-          .rating-chip.is-active {
-            border-color: #ef4444;
-            background: #fff1f2;
-            color: #b91c1c;
-          }
-
-          .rating-chip.is-clear:hover,
-          .rating-chip.is-clear.is-active {
-            border-color: #cbd5e1;
-            background: #f8fafc;
             color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color .18s, background .18s, color .18s, transform .18s;
           }
+          .rating-chip:hover { border-color: #fca5a5; color: #dc2626; transform: translateY(-1px); }
+          .rating-chip.is-active { border-color: #ef4444; background: #fff1f2; color: #b91c1c; font-weight: 600; }
+          .rating-chip.is-clear:hover, .rating-chip.is-clear.is-active {
+            border-color: #cbd5e1; background: #f8fafc; color: #475569;
+          }
+
+          /* ── Submit footer ── */
+          .at-submit-footer {
+            position: sticky;
+            bottom: 0;
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid #e9edf5;
+            padding: 16px 40px;
+            margin: 0 -40px -30px;
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            z-index: 10;
+          }
+          .at-submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 32px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #ea3c3c 0%, #cf3434 100%);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(234,60,60,.28);
+            transition: opacity .18s, transform .18s;
+          }
+          .at-submit-btn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+          .at-submit-btn:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; }
         `}</style>
         <div
           className={`add-tour-page dashboard ${
@@ -677,42 +739,50 @@ export default function AddTour() {
             <Header setSideBarOpen={setSideBarOpen} />
 
             <div className='dashboard__content_content'>
-              <h1 className='text-30'>Add Tour</h1>
-              <p className=''>
-                Create a new tour experience for your customers.
-              </p>
-              <p className='text-14 add-tour-helper-text mt-10'>
-                After each successful save, this form clears and brings you
-                back to the first field so you can add the next tour right
-                away.
-              </p>
+
+              {/* Page header */}
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, flexWrap:"wrap", marginBottom:32 }}>
+                <div>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, fontSize:12, fontWeight:600, color:"#ea3c3c", textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>
+                    <i className='icon-add-button' style={{ fontSize:14 }}></i>
+                    Dashboard
+                  </div>
+                  <h1 style={{ fontSize:28, fontWeight:800, color:"#1f2557", margin:"0 0 6px", letterSpacing:"-0.4px" }}>
+                    Add New Tour
+                  </h1>
+                  <p style={{ fontSize:14, color:"#64748b", margin:0, lineHeight:1.6 }}>
+                    Fill in the details across all tabs, then hit <strong>Create Tour</strong>. The form resets automatically so you can add the next one straight away.
+                  </p>
+                </div>
+                <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 14px", borderRadius:999, background:"#f8fafc", border:"1px solid #e9edf5", fontSize:13, color:"#64748b", fontWeight:500, whiteSpace:"nowrap" }}>
+                  <i className='icon-info' style={{ fontSize:14 }}></i>
+                  {images.filter(i => i).length}/10 images
+                </div>
+              </div>
 
               {message && (
-                <div
-                  className='alert mt-20 p-20 rounded-12 bg-red-100 text-red-800'>
+                <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 18px", borderRadius:12, background:"#fff1f2", border:"1px solid #fecaca", color:"#b91c1c", fontSize:14, marginBottom:24 }}>
+                  <i className='icon-close-circle' style={{ fontSize:18, flexShrink:0 }}></i>
                   {message}
                 </div>
               )}
 
               <form onSubmit={handleSubmit}>
-                <div className='rounded-12 bg-white shadow-2 px-40 pt-40 pb-30 mt-60'>
-                  <div className='tabs -underline-2 js-tabs'>
-                    <div className='tabs__controls row x-gap-40 y-gap-10 lg:x-gap-20 js-tabs-controls'>
-                      {tabs.map((elm, i) => (
-                        <div
-                          onClick={() => setActiveTab(elm)}
-                          key={i}
-                          className='col-auto'>
-                          <button
-                            type='button'
-                            className={`tabs__button text-20 lh-12 fw-500 pb-15 lg:pb-0 js-tabs-button ${
-                              activeTab == elm ? "is-tab-el-active" : ""
-                            }`}>
-                            {i + 1}. {elm}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                <div style={{ background:"#fff", borderRadius:20, boxShadow:"0 4px 24px rgba(15,23,42,.07)", border:"1px solid #e9edf5", padding:"32px 40px 30px", marginTop:8 }}>
+
+                  {/* Pill tab nav */}
+                  <div className='at-tab-nav' style={{ marginBottom:32 }}>
+                    {tabs.map((elm, i) => (
+                      <button
+                        key={elm}
+                        type='button'
+                        onClick={() => setActiveTab(elm)}
+                        className={`at-tab-btn ${activeTab === elm ? "active" : ""}`}>
+                        <span className='at-tab-num'>{i + 1}</span>
+                        {elm}
+                      </button>
+                    ))}
+                  </div>
 
                     <div className='row pt-40'>
                       <div className='col-xl-9 col-lg-10'>
@@ -1721,22 +1791,29 @@ export default function AddTour() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Submit Button */}
-                <div className='text-center mt-30'>
-                  <div className='text-14 add-tour-helper-text mb-15'>
-                    Click once to save this tour. As soon as it is saved, the
-                    form will reset so you can enter the next one.
+                  {/* Sticky submit footer */}
+                  <div className='at-submit-footer'>
+                    <p style={{ fontSize:13, color:"#94a3b8", margin:0 }}>
+                      Saves and resets the form automatically.
+                    </p>
+                    <button type='submit' disabled={loading} className='at-submit-btn'>
+                      {loading ? (
+                        <>
+                          <svg width='16' height='16' viewBox='0 0 16 16' fill='none' style={{ animation:"spin 1s linear infinite" }}>
+                            <circle cx='8' cy='8' r='6' stroke='rgba(255,255,255,.3)' strokeWidth='2'/>
+                            <path d='M8 2a6 6 0 0 1 6 6' stroke='#fff' strokeWidth='2' strokeLinecap='round'/>
+                          </svg>
+                          Saving…
+                        </>
+                      ) : (
+                        <>
+                          Create Tour
+                          <i className='icon-arrow-top-right' style={{ fontSize:14 }}></i>
+                        </>
+                      )}
+                    </button>
                   </div>
-                  <button
-                    type='submit'
-                    disabled={loading}
-                    className='button -md -dark-1 bg-accent-1 text-white'>
-                    {loading ? "Creating Tour..." : "Create Tour"}
-                    <i className='icon-arrow-top-right text-16 ml-10'></i>
-                  </button>
                 </div>
               </form>
 

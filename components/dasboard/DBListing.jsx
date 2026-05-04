@@ -9,6 +9,7 @@ import Image from "next/image";
 import tourService from "@/app/store/services/tourService";
 import PriceText from "../common/PriceText";
 import EditTourModal from "../../components/modals/EditTourModal";
+import AddTourModal from "./AddTourModal";
 import ProtectedRoute from "../../components/auth/ProtectedRoute";
 
 export default function DBListing() {
@@ -29,6 +30,9 @@ export default function DBListing() {
   const [tourToDelete, setTourToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addedTourTitle, setAddedTourTitle] = useState("");
+  const [showAddedToast, setShowAddedToast] = useState(false);
 
   // Fetch tours from database
   const fetchTours = async () => {
@@ -167,8 +171,33 @@ export default function DBListing() {
           />
 
           <div className='dashboard__content_content'>
-            <h1 className='text-30'>My Listings</h1>
-            <p className=''>Manage and edit your tour listings</p>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, flexWrap:"wrap", marginBottom:8 }}>
+              <div>
+                <h1 className='text-30' style={{ margin:0 }}>My Listings</h1>
+                <p style={{ margin:"4px 0 0", color:"#64748b", fontSize:14 }}>Manage and edit your tour listings</p>
+              </div>
+              <button
+                onClick={() => setShowAddModal(true)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "11px 22px",
+                  borderRadius: 12,
+                  border: "none",
+                  background: "linear-gradient(135deg,#ea3c3c 0%,#cf3434 100%)",
+                  color: "#fff",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 6px 20px rgba(234,60,60,.28)",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}>
+                <i className='icon-add-button' style={{ fontSize:16 }}></i>
+                Create Tour
+              </button>
+            </div>
 
             <div className='rounded-12 bg-white shadow-2 px-40 pt-40 pb-30 md:px-20 md:pt-20 md:pb-20 mt-60 md:mt-30'>
               {loading ? (
@@ -645,6 +674,69 @@ export default function DBListing() {
               }
             }
           `}</style>
+        </div>
+      )}
+      <AddTourModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={(title) => {
+          fetchTours();
+          setShowAddModal(false);
+          setAddedTourTitle(title || "New tour");
+          setShowAddedToast(true);
+          setTimeout(() => setShowAddedToast(false), 5000);
+        }}
+      />
+
+      {/* Success toast */}
+      {showAddedToast && (
+        <div style={{
+          position: "fixed", bottom: 28, right: 28, zIndex: 9999,
+          animation: "dbToastIn .4s cubic-bezier(.22,1,.36,1) both",
+        }}>
+          <style jsx>{`
+            @keyframes dbToastIn {
+              from { opacity:0; transform:translateY(20px) scale(.96); }
+              to   { opacity:1; transform:translateY(0)    scale(1);   }
+            }
+          `}</style>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 14,
+            padding: "16px 20px",
+            background: "#1f2557",
+            borderRadius: 14,
+            boxShadow: "0 16px 48px rgba(15,23,42,.22)",
+            minWidth: 320, maxWidth: 440,
+          }}>
+            {/* Icon */}
+            <div style={{
+              width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+              background: "rgba(74,222,128,.18)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+
+            {/* Text */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 2 }}>
+                Tour added successfully!
+              </div>
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,.65)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                "{addedTourTitle}" is now live in your listings.
+              </div>
+            </div>
+
+            {/* Close */}
+            <button
+              onClick={() => setShowAddedToast(false)}
+              style={{ background: "transparent", border: "none", color: "rgba(255,255,255,.5)", cursor: "pointer", fontSize: 18, lineHeight: 1, flexShrink: 0, padding: 4 }}>
+              ×
+            </button>
+          </div>
         </div>
       )}
     </ProtectedRoute>
