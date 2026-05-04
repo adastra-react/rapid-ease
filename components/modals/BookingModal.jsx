@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import bookingService from "@/app/store/services/bookingService";
+import BookingNotification from "./BookingNotification";
 
 export default function BookingModal({
   isOpen,
@@ -21,6 +22,7 @@ export default function BookingModal({
   });
   const [errors, setErrors] = useState({});
   const [paypalLoaded, setPaypalLoaded] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
 
   const tourData = {
     id: tour?.id || tour?.tourId || 39,
@@ -167,7 +169,7 @@ export default function BookingModal({
 
     if (!clientId || clientId === "test") {
       console.error("PayPal Client ID not configured!");
-      setError("Payment system not configured. Please contact support.");
+      setPaymentError("Payment system not configured. Please contact support.");
       return;
     }
 
@@ -184,7 +186,7 @@ export default function BookingModal({
 
     script.onerror = () => {
       console.error("Failed to load PayPal SDK");
-      setError("Failed to load payment system. Please refresh the page.");
+      setPaymentError("Failed to load payment system. Please refresh the page.");
     };
 
     document.body.appendChild(script);
@@ -287,6 +289,7 @@ export default function BookingModal({
 
   const handleContinueToPayment = () => {
     if (!validateBooking()) return;
+    setPaymentError("");
     setStep("payment");
   };
 
@@ -301,6 +304,7 @@ export default function BookingModal({
       specialRequests: "",
     });
     setErrors({});
+    setPaymentError("");
     onClose();
   };
 
@@ -580,87 +584,23 @@ export default function BookingModal({
 
         {/* Success State */}
         {step === "success" && (
-          <div style={styles.loadingBox}>
-            <div style={{ fontSize: "48px", marginBottom: "20px" }}>🎉</div>
-            <h3 style={styles.stateTitle}>Booking Confirmed!</h3>
-            <p style={styles.stateText}>
-              Your Jamaica tour has been successfully booked and paid for.
-            </p>
-            <div style={{ ...styles.summaryCard, textAlign: "left" }}>
-              <h4>Booking Details</h4>
-              <p>
-                <strong>Tour:</strong> {tourData.title}
-              </p>
-              <p>
-                <strong>Trip Type:</strong>{" "}
-                {bookingData.tripType === "round-trip"
-                  ? "Round Trip"
-                  : "One Way"}
-              </p>
-              <p>
-                <strong>Pick Up:</strong>{" "}
-                {formatDateForDisplay(bookingData.selectedDate)}
-              </p>
-              {bookingData.tripType === "round-trip" &&
-                bookingData.returnDate && (
-                  <p>
-                    <strong>Return:</strong>{" "}
-                    {formatDateForDisplay(bookingData.returnDate)}
-                  </p>
-                )}
-              <p>
-                <strong>Pick Up Time:</strong> {bookingData.selectedTime}
-              </p>
-              {bookingData.tripType === "round-trip" &&
-                bookingData.returnTime && (
-                  <p>
-                    <strong>Return Time:</strong> {bookingData.returnTime}
-                  </p>
-                )}
-              <p>
-                <strong>Total Paid:</strong> ${pricing.totalAmount?.toFixed(2)}{" "}
-                USD
-              </p>
-            </div>
-            <p
-              style={{
-                fontSize: "13px",
-                color: palette.textMuted,
-                marginBottom: "20px",
-              }}>
-              A confirmation email has been sent to {customerInfo.email}
-            </p>
-            <button onClick={handleClose} style={buttonStyle(true)}>
-              Complete
-            </button>
-          </div>
+          <BookingNotification
+            type="success"
+            bookingData={bookingData}
+            tourData={tourData}
+            pricing={pricing}
+            customerEmail={customerInfo.email}
+            onClose={handleClose}
+          />
         )}
 
         {/* Failed State */}
         {step === "failed" && (
-          <div style={styles.loadingBox}>
-            <div style={{ fontSize: "48px", marginBottom: "20px" }}>❌</div>
-            <h3 style={styles.stateTitle}>Booking Failed</h3>
-            <p style={styles.stateText}>
-              There was an issue processing your booking. Please check the
-              details and try again.
-            </p>
-            <div
-              style={{
-                display: "flex",
-                gap: "15px",
-                justifyContent: "center",
-              }}>
-              <button
-                onClick={() => setStep("booking")}
-                style={buttonStyle(true)}>
-                Fix Details
-              </button>
-              <button onClick={handleClose} style={buttonStyle()}>
-                Cancel
-              </button>
-            </div>
-          </div>
+          <BookingNotification
+            type="failed"
+            onClose={handleClose}
+            onRetry={() => setStep("booking")}
+          />
         )}
 
         {/* Booking Form */}
@@ -933,15 +873,21 @@ export default function BookingModal({
             {/* PayPal Payment */}
             <div style={{ marginBottom: "20px" }}>
               <h4 style={{ marginBottom: "15px" }}>Payment Method</h4>
+              {paymentError && (
+                <div style={styles.callout}>
+                  {paymentError}
+                </div>
+              )}
               {paypalLoaded &&
               typeof window !== "undefined" &&
               window.paypal ? (
-                <div id='paypal-button-container'>
+                <div>
                   <PayPalButtons
                     tourData={tourData}
                     bookingData={bookingData}
                     totalAmount={pricing.totalAmount}
                     onSuccess={(paymentData) => {
+                      setPaymentError("");
                       setStep("processing");
                       setLoading(true);
                       createBooking(paymentData)
@@ -956,11 +902,21 @@ export default function BookingModal({
                         })
                         .catch((error) => {
                           console.error("Booking creation failed:", error);
+                          setPaymentError(
+                            error?.message ||
+                              "Booking could not be created after payment."
+                          );
                           setLoading(false);
                           setStep("failed");
                         });
                     }}
-                    onError={() => setStep("failed")}
+                    onError={(error) => {
+                      setPaymentError(
+                        error?.message ||
+                          "PayPal could not complete the payment. Please try again."
+                      );
+                      setStep("failed");
+                    }}
                   />
                 </div>
               ) : (
@@ -1018,10 +974,16 @@ function PayPalButtons({
   const selectedDate = bookingData?.selectedDate;
   const tourId = tourData?.id;
   const tourTitle = tourData?.title;
+  const containerRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.paypal) return;
-    const container = document.getElementById("paypal-button-container");
+    if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
+      onError(new Error("Invalid booking total for PayPal checkout."));
+      return;
+    }
+
+    const container = containerRef.current;
     if (container) {
       container.innerHTML = "";
 
@@ -1075,7 +1037,7 @@ function PayPalButtons({
             label: "paypal",
           },
         })
-        .render("#paypal-button-container");
+        .render(container);
     }
   }, [totalAmount, selectedDate, tourId, tourTitle, onSuccess, onError]);
 
@@ -1090,5 +1052,5 @@ function PayPalButtons({
     });
   }
 
-  return <div id='paypal-button-container'></div>;
+  return <div ref={containerRef}></div>;
 }

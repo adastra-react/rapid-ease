@@ -641,24 +641,6 @@ export default function TourList1({ searchParams = {} }) {
     return words.slice(0, maxWords).join(" ") + "...";
   };
 
-  const getCurrentPrice = (tour) => {
-    const candidates = [tour?.price, tour?.pricing?.basePrice, tour?.fromPrice];
-    const numericPrice = candidates.find(
-      (value) => Number.isFinite(Number(value)) && Number(value) > 0
-    );
-
-    return Number(numericPrice || 0);
-  };
-
-  const getOriginalPrice = (tour, currentPrice) => {
-    const fromPrice = Number(tour?.fromPrice);
-
-    if (!Number.isFinite(fromPrice) || fromPrice <= currentPrice) {
-      return null;
-    }
-
-    return fromPrice;
-  };
 
   useEffect(() => {
     const handleClick = (event) => {
@@ -843,143 +825,98 @@ export default function TourList1({ searchParams = {} }) {
                   <div
                     className='col-12'
                     key={tour.id || tour._id || `tour-${i}`}>
-                    {(() => {
-                      const currentPrice = getCurrentPrice(tour);
-                      const originalPrice = getOriginalPrice(
-                        tour,
-                        currentPrice
-                      );
-                      const visibleFeatures = (tour.features || [])
-                        .filter((feature) => feature?.name?.trim())
-                        .slice(0, 3);
-
-                      return (
-                    <div style={listStyles.card}>
-                      <div style={listStyles.imageWrap}>
-                        <div style={listStyles.imageInner}>
-                          <Image
-                            fill
-                            src={tour.imageSrc || "/img/tours/default.jpg"}
-                            alt={tour.title || "Tour image"}
-                            priority={i < 3}
-                            style={{ objectFit: "cover" }}
-                          />
-                        </div>
+                    <div className='tourCard -type-2'>
+                      <div className='tourCard__image tourCard__List__image'>
+                        <Image
+                          width={280}
+                          height={260}
+                          src={tour.imageSrc || "/img/tours/default.jpg"}
+                          alt={tour.title || "Tour image"}
+                          priority={i < 3}
+                        />
 
                         {tour.badgeText && (
-                          <div style={listStyles.badgeWrap}>
-                            <div style={listStyles.subtleBadge}>
+                          <div className='tourCard__badge'>
+                            <div className='bg-accent-1 rounded-12 text-white lh-11 text-13 px-15 py-10'>
                               {tour.badgeText}
                             </div>
                           </div>
                         )}
 
                         {tour.featured && (
-                          <div
-                            style={
-                              tour.badgeText
-                                ? {
-                                    ...listStyles.badgeWrap,
-                                    top: "56px",
-                                  }
-                                : listStyles.badgeWrap
-                            }>
-                            <div style={listStyles.featuredBadge}>
+                          <div className='tourCard__badge'>
+                            <div className='bg-accent-2 rounded-12 text-white lh-11 text-13 px-15 py-10'>
                               FEATURED
                             </div>
                           </div>
                         )}
 
-                        <div style={listStyles.favoriteWrap}>
+                        <div className='tourCard__favorite'>
                           <button className='button -accent-1 size-35 bg-white rounded-full flex-center'>
                             <i className='icon-heart text-15'></i>
                           </button>
                         </div>
                       </div>
 
-                      <div style={listStyles.content}>
-                        <div style={listStyles.locationRow}>
+                      <div className='tourCard__content'>
+                        <div className='tourCard__location'>
                           <i className='icon-pin'></i>
                           {tour.location}
                         </div>
 
-                        <h3 style={listStyles.title}>
+                        <h3 className='tourCard__title mt-5'>
                           <span>{tour.title}</span>
                         </h3>
 
-                        <div style={listStyles.ratingRow}>
+                        <div className='d-flex items-center mt-5'>
                           <div className='d-flex items-center x-gap-5'>
                             <Stars star={tour.rating} font={12} />
                           </div>
-
-                          <div className='text-14' style={listStyles.ratingMeta}>
-                            <span className='fw-500'>{tour.rating}</span> (
-                            {tour.ratingCount})
+                          <div className='text-14 ml-10'>
+                            <span className='fw-500'>{tour.rating}</span> ({tour.ratingCount})
                           </div>
                         </div>
 
-                        <p style={listStyles.description}>
-                          {truncateDescription(
-                            tour.description || tour.overview,
-                            15
-                          )}
+                        <p className='tourCard__text mt-5'>
+                          {truncateDescription(tour.description || tour.overview, 15)}
                         </p>
 
-                        <div style={listStyles.featuresRow}>
-                          {visibleFeatures.map((feature, i2) => (
-                            <div
-                              key={`${tour.id || tour._id}-feature-${i2}`}
-                              style={listStyles.featureChip}>
-                              {feature.icon ? (
-                                <i className={feature.icon}></i>
-                              ) : null}
-                              <span>{feature.name}</span>
+                        <div className='row x-gap-20 y-gap-5 pt-30'>
+                          {tour.features?.map((feature, i2) => (
+                            <div key={i2} className='col-auto'>
+                              <div className='text-14 text-accent-1'>
+                                <i className={`${feature.icon} mr-10`}></i>
+                                {feature.name}
+                              </div>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      <div style={listStyles.sidePanel}>
-                        <div style={listStyles.durationChip}>
-                          <i className='icon-clock'></i>
-                          {tour.duration}
-                        </div>
-
-                        <div style={listStyles.priceBox}>
-                          <div style={listStyles.priceLabel}>
-                            {originalPrice ? "Starting from" : "Price"}
+                      <div className='tourCard__info'>
+                        <div>
+                          <div className='d-flex items-center text-14'>
+                            <i className='icon-clock mr-10'></i>
+                            {tour.duration}
                           </div>
-                          {originalPrice ? (
-                            <div style={listStyles.strikePrice}>
-                              <PriceText as='span' amount={originalPrice} />
+                          <div className='tourCard__price'>
+                            <div className='d-flex items-center'>
+                              From{" "}
+                              <span className='text-20 fw-500 ml-5'>
+                                <PriceText amount={tour?.price || tour?.pricing?.basePrice || 0} />
+                              </span>
                             </div>
-                          ) : (
-                            <div
-                              style={{
-                                height: "18px",
-                                marginBottom: "2px",
-                              }}
-                            />
-                          )}
-
-                          <div style={listStyles.fromRow}>
-                            <span>{originalPrice ? "From" : ""}</span>
-                            <PriceText
-                              className='text-20 fw-700'
-                              amount={currentPrice}
-                            />
                           </div>
-
-                          <Link
-                            href={`/tour-single-1/${tour.id || tour._id}`}
-                            style={listStyles.buttonLink}>
-                            View Details
-                          </Link>
                         </div>
+
+                        <Link
+                          href={`/tour-single-1/${tour.id || tour._id}`}
+                          className='button -outline-accent-1 text-accent-1'>
+                          View Details
+                          <i className='icon-arrow-top-right ml-10'></i>
+                        </Link>
                       </div>
                     </div>
-                      );
-                    })()}
                   </div>
                 ))
               ) : (

@@ -120,6 +120,11 @@ export default function AddTour() {
   const getInputWrapperClass = (value) =>
     `form-input${String(value ?? "").trim() ? " is-filled" : ""}`;
 
+  const ratingValue = Math.min(
+    5,
+    Math.max(0, Number.parseFloat(formData.rating) || 0)
+  );
+
   const focusTitleField = () => {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -146,6 +151,22 @@ export default function AddTour() {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleRatingChange = (value) => {
+    if (value === "") {
+      handleInputChange("rating", "");
+      return;
+    }
+
+    const parsedValue = Number.parseFloat(value);
+
+    if (Number.isNaN(parsedValue)) {
+      return;
+    }
+
+    const normalizedValue = Math.min(5, Math.max(0, parsedValue));
+    handleInputChange("rating", normalizedValue.toString());
   };
 
   // Handle nested object changes (like mapLocation)
@@ -344,7 +365,7 @@ export default function AddTour() {
       duration: parseInt(formData.duration) || 1,
       groupSize: parseInt(formData.groupSize) || 10,
       languages: formData.languages,
-      rating: formData.rating,
+      rating: parseFloat(formData.rating) || 0,
       ratingCount: 0,
       bookingCount: formData.bookingCount,
       pricing: {
@@ -609,6 +630,42 @@ export default function AddTour() {
           .add-tour-page :global(.tabs__button.is-tab-el-active) {
             color: #0f172a;
           }
+
+          .rating-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 0 16px;
+            border: 1px solid #d7deea;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #334155;
+            transition:
+              border-color 0.2s ease,
+              background-color 0.2s ease,
+              color 0.2s ease,
+              transform 0.2s ease;
+          }
+
+          .rating-chip:hover {
+            border-color: #f87171;
+            color: #dc2626;
+            transform: translateY(-1px);
+          }
+
+          .rating-chip.is-active {
+            border-color: #ef4444;
+            background: #fff1f2;
+            color: #b91c1c;
+          }
+
+          .rating-chip.is-clear:hover,
+          .rating-chip.is-clear.is-active {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+            color: #475569;
+          }
         `}</style>
         <div
           className={`add-tour-page dashboard ${
@@ -869,6 +926,85 @@ export default function AddTour() {
                                   <label className='lh-1 text-16 text-light-1'>
                                     Max Group Size
                                   </label>
+                                </div>
+                              </div>
+
+                              <div className='col-12'>
+                                <div className='rounded-12 border-light p-20'>
+                                  <div className='text-18 fw-500 text-dark-1'>
+                                    Star Rating
+                                  </div>
+                                  <div className='text-14 add-tour-helper-text mt-10'>
+                                    Click a star level or type a number from 0
+                                    to 5. This controls the rating shown on the
+                                    tour card.
+                                  </div>
+
+                                  <div className='row y-gap-20 items-end mt-20'>
+                                    <div className='col-xl-8'>
+                                      <div className='d-flex flex-wrap gap-10'>
+                                        {Array.from({ length: 5 }, (_, index) => {
+                                          const starCount = index + 1;
+                                          const isActive =
+                                            Math.round(ratingValue) ===
+                                            starCount;
+
+                                          return (
+                                            <button
+                                              key={starCount}
+                                              type='button'
+                                              className={`rating-chip ${
+                                                isActive ? "is-active" : ""
+                                              }`}
+                                              onClick={() =>
+                                                handleRatingChange(starCount)
+                                              }>
+                                              <i className='icon-star text-14 text-yellow-2'></i>
+                                              <span className='fw-500'>
+                                                {starCount} Star
+                                                {starCount > 1 ? "s" : ""}
+                                              </span>
+                                            </button>
+                                          );
+                                        })}
+
+                                        <button
+                                          type='button'
+                                          className={`rating-chip is-clear ${
+                                            ratingValue === 0 ? "is-active" : ""
+                                          }`}
+                                          onClick={() => handleRatingChange(0)}>
+                                          No Stars Yet
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    <div className='col-xl-4'>
+                                      <div
+                                        className={getInputWrapperClass(
+                                          formData.rating
+                                        )}>
+                                        <input
+                                          type='number'
+                                          min='0'
+                                          max='5'
+                                          step='0.1'
+                                          placeholder=' '
+                                          value={formData.rating}
+                                          onChange={(e) =>
+                                            handleRatingChange(e.target.value)
+                                          }
+                                        />
+                                        <label className='lh-1 text-16 text-light-1'>
+                                          Manual Star Rating
+                                        </label>
+                                      </div>
+                                      <div className='text-14 add-tour-helper-text mt-10'>
+                                        Current rating: {ratingValue.toFixed(1)}
+                                        /5
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
 

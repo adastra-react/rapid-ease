@@ -11,7 +11,6 @@ export default function Tour1() {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [hoveredId, setHoveredId] = useState(null);
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -140,183 +139,59 @@ export default function Tour1() {
           {Array.isArray(tours) && tours.length > 0 ? (
             tours.map((tour, i) => {
               const cardKey = tour.id || i;
-              const isHovered = hoveredId === cardKey;
 
               return (
                 <div key={cardKey} className="col-lg-3 col-md-6">
                   <Link
                     href={`/tour-single-1/${tour.id}`}
-                    onMouseEnter={() => setHoveredId(cardKey)}
-                    onMouseLeave={() => setHoveredId(null)}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                      borderRadius: "18px",
-                      background: "#fff",
-                      border: "1px solid rgba(0,0,0,0.07)",
-                      overflow: "hidden",
-                      textDecoration: "none",
-                      boxShadow: isHovered
-                        ? "0 20px 52px rgba(0,0,0,0.15)"
-                        : "0 2px 14px rgba(0,0,0,0.07)",
-                      transform: isHovered ? "translateY(-6px)" : "translateY(0)",
-                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                    }}
+                    className="tourCard -type-1 py-10 px-10 border-1 rounded-12 bg-white -hover-shadow"
                   >
-                    {/* ── Image block ── */}
-                    <div style={{ position: "relative", overflow: "hidden", aspectRatio: "4/3" }}>
-                      <Image
-                        width={421}
-                        height={316}
-                        src={getImageUrl(tour)}
-                        alt={tour.title || "Tour image"}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          transform: isHovered ? "scale(1.08)" : "scale(1)",
-                          transition: "transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                          display: "block",
-                        }}
-                        onError={(e) => {
-                          e.target.src = "/img/placeholder-tour.jpg";
-                        }}
-                      />
-
-                      {/* Gradient overlay */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background:
-                            "linear-gradient(to top, rgba(8,10,38,0.75) 0%, rgba(8,10,38,0.12) 52%, transparent 100%)",
-                          pointerEvents: "none",
-                        }}
-                      />
-
-                      {/* Location badge — bottom left of image */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: "13px",
-                          left: "14px",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          color: "rgba(255,255,255,0.92)",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        <i className="icon-pin" style={{ fontSize: "13px" }} />
-                        {tour.location || "Location not specified"}
+                    <div className="tourCard__header">
+                      <div className="tourCard__image ratio ratio-28:20">
+                        <Image
+                          width={421}
+                          height={301}
+                          src={getImageUrl(tour)}
+                          alt={tour.title || "Tour image"}
+                          className="img-ratio rounded-12"
+                          onError={(e) => { e.target.src = "/img/placeholder-tour.jpg"; }}
+                        />
                       </div>
-
-                      {/* Glassmorphism heart button */}
-                      <button
-                        onClick={(e) => e.preventDefault()}
-                        style={{
-                          position: "absolute",
-                          top: "12px",
-                          right: "12px",
-                          width: "34px",
-                          height: "34px",
-                          borderRadius: "50%",
-                          background: "rgba(255,255,255,0.88)",
-                          backdropFilter: "blur(8px)",
-                          WebkitBackdropFilter: "blur(8px)",
-                          border: "none",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          color: "#555",
-                          boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
-                          zIndex: 2,
-                        }}
-                      >
-                        <i className="icon-heart" style={{ fontSize: "13px" }} />
+                      <button className="tourCard__favorite" onClick={(e) => e.preventDefault()}>
+                        <i className="icon-heart"></i>
                       </button>
                     </div>
 
-                    {/* ── Text content ── */}
-                    <div
-                      style={{
-                        padding: "14px 16px 15px",
-                        display: "flex",
-                        flexDirection: "column",
-                        flexGrow: 1,
-                        gap: "7px",
-                      }}
-                    >
-                      {/* Title */}
-                      <h3
-                        style={{
-                          fontSize: "14.5px",
-                          fontWeight: 700,
-                          lineHeight: 1.42,
-                          color: isHovered ? "var(--color-accent-1, #e63946)" : "#0f1117",
-                          margin: 0,
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          transition: "color 0.25s ease",
-                        }}
-                      >
-                        {tour.title}
+                    <div className="tourCard__content px-10 pt-10">
+                      <div className="tourCard__location d-flex items-center text-13 text-light-2">
+                        <i className="icon-pin d-flex text-16 text-light-2 mr-5"></i>
+                        {tour.location || "Location not specified"}
+                      </div>
+
+                      <h3 className="tourCard__title text-16 fw-500 mt-5">
+                        <span>{tour.title}</span>
                       </h3>
 
-                      {/* Stars + rating count */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <div style={{ display: "flex", gap: "2px" }}>
+                      <div className="tourCard__rating d-flex items-center text-13 mt-5">
+                        <div className="d-flex x-gap-5">
                           <Stars star={tour.rating || 5} />
                         </div>
-                        <span style={{ fontSize: "12px", color: "#a0a0a8", lineHeight: 1 }}>
+                        <span className="text-dark-1 ml-10">
                           {tour.rating || 5} ({tour.ratingCount || 0})
                         </span>
                       </div>
 
-                      {/* Duration + price footer */}
-                      <div
-                        style={{
-                          marginTop: "auto",
-                          paddingTop: "11px",
-                          borderTop: "1px solid rgba(0,0,0,0.07)",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "5px",
-                            fontSize: "12px",
-                            color: "#a0a0a8",
-                          }}
-                        >
-                          <i className="icon-clock" style={{ fontSize: "13px" }} />
+                      <div className="d-flex justify-between items-center border-1-top text-13 text-dark-1 pt-10 mt-10">
+                        <div className="d-flex items-center">
+                          <i className="icon-clock text-16 mr-5"></i>
                           {tour.duration || "N/A"}
                         </div>
-
                         <div>
-                          <span style={{ fontSize: "11px", color: "#a0a0a8" }}>From </span>
-                          <span
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: 800,
-                              color: "#0f1117",
-                              letterSpacing: "-0.01em",
-                            }}
-                          >
-                            <PriceText
-                              className=""
-                              amount={tour?.price || tour?.pricing?.basePrice || 0}
-                            />
-                          </span>
+                          From{" "}
+                          <PriceText
+                            className="text-16 fw-500"
+                            amount={tour?.price || tour?.pricing?.basePrice || 0}
+                          />
                         </div>
                       </div>
                     </div>
