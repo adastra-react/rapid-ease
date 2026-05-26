@@ -5,6 +5,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import tourService from "../services/tourService";
 
+const getErrorMessage = (error, fallbackMessage) => {
+  const payload = error?.response?.data;
+
+  if (typeof payload === "string" && payload.trim()) {
+    return payload;
+  }
+
+  if (typeof payload?.message === "string" && payload.message.trim()) {
+    return payload.message;
+  }
+
+  if (typeof error?.message === "string" && error.message.trim()) {
+    return error.message;
+  }
+
+  return fallbackMessage;
+};
+
 // Async thunks
 export const fetchTours = createAsyncThunk(
   "tours/fetchTours",
@@ -43,7 +61,9 @@ export const fetchTours = createAsyncThunk(
       });
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch tours")
+      );
     }
   }
 );
@@ -55,7 +75,9 @@ export const fetchTourById = createAsyncThunk(
       const response = await tourService.getTourById(id);
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch tour")
+      );
     }
   }
 );
@@ -67,7 +89,9 @@ export const fetchSingleTour = createAsyncThunk(
       const response = await tourService.getSingleTour(id);
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch single tour")
+      );
     }
   }
 );
@@ -79,7 +103,9 @@ export const fetchTourStats = createAsyncThunk(
       const response = await tourService.getTourStats();
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch tour stats")
+      );
     }
   }
 );
@@ -93,7 +119,7 @@ export const defaultTourFilters = {
   maxRating: null,
   location: "",
   tourTypes: [],
-  sort: "-createdAt",
+  sort: "-id",
 };
 
 // Initial state

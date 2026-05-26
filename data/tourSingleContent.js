@@ -75,28 +75,36 @@ export const roadmapData2 = [
   },
 ];
 
-export const faqData = [
-  {
-    question: "Can I get the refund?",
-    answer:
-      "Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat cancellation policy: For a full refund, cancel at least 24 hours in advance of the start date of the experience. Discover and book Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat",
-  },
-  {
-    question: "Can I change the travel date?",
-    answer:
-      "Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat cancellation policy: For a full refund, cancel at least 24 hours in advance of the start date of the experience. Discover and book Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat",
-  },
-  {
-    question: "When and where does the tour end?",
-    answer:
-      "Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat cancellation policy: For a full refund, cancel at least 24 hours in advance of the start date of the experience. Discover and book Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat",
-  },
-  {
-    question: "Do you arrange airport transfers?",
-    answer:
-      "Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat cancellation policy: For a full refund, cancel at least 24 hours in advance of the start date of the experience. Discover and book Phang Nga Bay Sea Cave Canoeing & James Bond Island w/ Buffet Lunch by Big Boat",
-  },
-];
+export const getFaqData = (tour) => {
+  const tourName = tour?.title || "this experience";
+  const location = tour?.location || "the listed destination";
+  const duration = tour?.duration || "the time shown on the page";
+
+  return [
+    {
+      question: "What information is included on each tour page?",
+      answer: `Every Rapid Ease tour page is designed to help you book with confidence. For ${tourName}, you can review the overview, location, duration, pricing, photos, and the main inclusions before making your booking.`,
+    },
+    {
+      question: "What is usually included with this tour?",
+      answer: `Inclusions can vary by experience, so we recommend checking the "What's included" section on the page for ${tourName}. That section highlights what is covered in your booking and helps you see if anything extra should be planned for in advance.`,
+    },
+    {
+      question: "Do you offer pickup, drop-off, or airport transfers?",
+      answer: `Many Rapid Ease experiences can be paired with pickup, drop-off, or airport transfer support depending on the tour and your plans in ${location}. If you need transportation arranged around ${tourName}, contact us and we can confirm the best option for you.`,
+    },
+    {
+      question: "What if I do not see the exact tour or service I need on the website?",
+      answer: `If the website does not show exactly what you are looking for, reach out to the Rapid Ease team directly. We can help with custom requests, private rides, special schedules, and recommendations related to ${tourName} or other experiences that may not be listed online yet.`,
+    },
+    {
+      question: "Can I ask questions before I book?",
+      answer: `Yes. If you want help deciding whether ${tourName} is the right fit, or need clarification about timing, meeting details, or availability, just contact us before booking. We are happy to guide you based on your travel plans and the listed duration of ${duration}.`,
+    },
+  ];
+};
+
+export const faqData = getFaqData();
 
 export const overallRatingData = [
   {

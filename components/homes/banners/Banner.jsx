@@ -12,7 +12,7 @@ export default function Banner() {
           <Image
             width={750}
             height={600}
-            src='/img/cta/2/discount.jpg'
+            src='/img/cta/2/river.webp'
             alt='image'
           />
           <Image
@@ -38,15 +38,15 @@ export default function Banner() {
                 data-aos='fade-up'
                 data-aos-delay=''
                 className='text-40 md:text-30  lh-13'>
-                Grab up to <span className='text-accent-1'>35% off</span>
+                Discover <span className='text-accent-1'>Trusted Rides</span>
                 <br className='lg:d-none' />
-                on your favorite
+                & Memorable
                 <br className='lg:d-none' />
-                Destination
+                Island Experiences
               </h2>
 
               <p data-aos='fade-up' data-aos-delay='' className='mt-10'>
-                Limited time offer, don't miss the opportunity
+                Plan airport transfers, tours, and local travel with ease.
               </p>
 
               <div className='mt-30 md:mt-20'>
@@ -55,7 +55,7 @@ export default function Banner() {
                   data-aos-delay=''
                   className='button -md -dark-1 bg-accent-1 text-white'>
                   <Link href='/tour-list-1'>
-                    Book Now
+                    Explore Options
                     <i className='icon-arrow-top-right ml-10 text-16'></i>
                   </Link>
                 </button>

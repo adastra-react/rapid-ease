@@ -697,8 +697,6 @@ import React, { useEffect, useState } from "react";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import Calender from "../common/dropdownSearch/Calender";
 import { times } from "@/data/tourSingleContent";
-import Image from "next/image";
-
 // Import the BookingModal component
 import BookingModal from "../../components/modals/BookingModal";
 
@@ -712,16 +710,12 @@ export default function TourSingleSidebar({ tour }) {
   const pricing = {
     groupBasePrice: tour?.pricing?.basePrice || 85 || 85, // Base price for 1-4 people
     perPersonRate: tour?.pricing?.perPersonRate || 25 || 25, // Rate per additional person over 4
-    extraService: 40,
-    servicePerPerson: 40,
   };
 
   // Start all quantities at 0
   const [adultNumber, setAdultNumber] = useState(0);
   const [youthNumber, setYouthNumber] = useState(0);
   const [childrenNumber, setChildrenNumber] = useState(0);
-  const [isExtraService, setisExtraService] = useState(false);
-  const [isServicePerPerson, setIsServicePerPerson] = useState(false);
 
   // Modal state
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -776,7 +770,7 @@ export default function TourSingleSidebar({ tour }) {
     }
   };
 
-  // Calculate total with all factors (trip type, extras)
+  // Calculate total with trip type applied
   const calculateTotal = () => {
     let baseTotal = calculateBaseTourPrice();
 
@@ -785,16 +779,7 @@ export default function TourSingleSidebar({ tour }) {
       baseTotal *= 2;
     }
 
-    // Add extra services
-    let extraCharges = 0;
-    if (isExtraService) {
-      extraCharges += pricing.extraService;
-    }
-    if (isServicePerPerson) {
-      extraCharges += pricing.servicePerPerson;
-    }
-
-    return baseTotal + extraCharges;
+    return baseTotal;
   };
 
   const totalAmount = calculateTotal();
@@ -985,10 +970,6 @@ export default function TourSingleSidebar({ tour }) {
       backgroundColor: "#fff4f4",
       border: "1px solid rgba(234, 60, 60, 0.14)",
     },
-    extrasCard: {
-      padding: "14px 0",
-      borderBottom: "1px solid #edf1f6",
-    },
     totalBar: {
       marginTop: "18px",
       paddingTop: "18px",
@@ -1029,8 +1010,6 @@ export default function TourSingleSidebar({ tour }) {
       adults: adultNumber,
       youth: youthNumber,
       children: childrenNumber,
-      isExtraService,
-      isServicePerPerson,
       totalAmount,
       selectedTime,
       selectedDate,
@@ -1092,8 +1071,6 @@ export default function TourSingleSidebar({ tour }) {
         setAdultNumber(0);
         setYouthNumber(0);
         setChildrenNumber(0);
-        setisExtraService(false);
-        setIsServicePerPerson(false);
         setSelectedTime("");
         setSelectedDate(null);
         setReturnDate(null);
@@ -1592,67 +1569,6 @@ export default function TourSingleSidebar({ tour }) {
             </div>
           </div>
         )}
-
-        <h5 style={{ ...sidebarStyles.sectionTitle, marginTop: "20px" }}>
-          Add Extra
-        </h5>
-
-        <div className='d-flex items-center justify-between' style={sidebarStyles.extrasCard}>
-          <div className='d-flex items-center'>
-            <div className='form-checkbox'>
-              <input
-                checked={isExtraService ? true : false}
-                onChange={() => setisExtraService((pre) => !pre)}
-                type='checkbox'
-              />
-              <div className='form-checkbox__mark'>
-                <div className='form-checkbox__icon'>
-                  <Image
-                    width='10'
-                    height='8'
-                    src='/img/icons/check.svg'
-                    alt='icon'
-                  />
-                </div>
-              </div>
-            </div>
-            <div className='ml-10'>Add Service per booking</div>
-          </div>
-
-          <div className='text-14'>{formatPrice(pricing.extraService)}</div>
-        </div>
-
-        <div className='d-flex justify-between' style={sidebarStyles.extrasCard}>
-          <div className='d-flex'>
-            <div className='form-checkbox mt-5'>
-              <input
-                checked={isServicePerPerson ? true : false}
-                onChange={() => setIsServicePerPerson((pre) => !pre)}
-                type='checkbox'
-              />
-              <div className='form-checkbox__mark'>
-                <div className='form-checkbox__icon'>
-                  <Image
-                    width='10'
-                    height='8'
-                    src='/img/icons/check.svg'
-                    alt='icon'
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className='ml-10'>
-              Add Service per person
-              <div className='lh-16'>
-                Adult: <span className='fw-500'>{formatPrice(17)}</span> -
-                Youth: <span className='fw-500'>{formatPrice(14)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className='text-14'>{formatPrice(pricing.servicePerPerson)}</div>
-        </div>
 
         <div style={sidebarStyles.totalBar}>
           <div className='text-18 fw-700' style={{ color: "#1f2557" }}>

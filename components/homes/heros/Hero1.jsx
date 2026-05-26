@@ -76,15 +76,15 @@ export default function Hero1() {
                 data-aos={"fade-up"}
                 data-aos-delay='100'
                 className='hero__title'>
-                Your world of joy
+                Rapid Ease Gets You There
               </h1>
 
               <p
                 data-aos={"fade-up"}
                 data-aos-delay='300'
                 className='hero__text'>
-                From local escapes to far-flung adventures, find what makes you
-                happy anytime, anywhere
+                Book reliable airport transfers, island tours, and local rides
+                with one trusted travel partner.
               </p>
 
               <div
@@ -99,7 +99,7 @@ export default function Hero1() {
                         className='searchFormItem__button'
                         onClick={() =>
                           setCurrentActiveDD((pre) =>
-                            pre == "location" ? "" : "location"
+                            pre == "location" ? "" : "location",
                           )
                         }>
                         <div className='searchFormItem__icon size-50 rounded-12 border-1 flex-center'>
@@ -124,7 +124,7 @@ export default function Hero1() {
                         className='searchFormItem__button'
                         onClick={() =>
                           setCurrentActiveDD((pre) =>
-                            pre == "calender" ? "" : "calender"
+                            pre == "calender" ? "" : "calender",
                           )
                         }>
                         <div className='searchFormItem__icon size-50 rounded-12 border-1 flex-center'>
@@ -150,7 +150,7 @@ export default function Hero1() {
                         className='searchFormItem__button'
                         onClick={() =>
                           setCurrentActiveDD((pre) =>
-                            pre == "tourType" ? "" : "tourType"
+                            pre == "tourType" ? "" : "tourType",
                           )
                         }>
                         <div className='searchFormItem__icon size-50 rounded-12 border-1 flex-center'>

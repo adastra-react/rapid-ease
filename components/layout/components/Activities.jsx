@@ -192,7 +192,7 @@ export default function Activities() {
                         <div className='tabsMenu-list__content'>
                           <div className='tabsMenu-list__item'>
                             <Link
-                              href='/tour-list-1?search=header&sort=-createdAt'
+                              href='/tour-list-1?search=header&sort=-id'
                               onClick={() => setCurrentdd("")}>
                               View latest tours
                             </Link>

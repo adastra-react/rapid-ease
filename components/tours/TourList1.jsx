@@ -626,6 +626,10 @@ export default function TourList1({ searchParams = {} }) {
   const displayedTotalTours = hasExactRatingFilter
     ? displayedTours.length
     : totalTours || 0;
+  const errorMessage =
+    typeof error === "string"
+      ? error
+      : error?.message || "Unable to load tours right now.";
 
   // Function to truncate description to 15 words with ellipses
   const truncateDescription = (text, maxWords = 15) => {
@@ -706,7 +710,7 @@ export default function TourList1({ searchParams = {} }) {
             ? "-ratingCount"
             : option === "Top Rated"
             ? "-rating"
-            : "-createdAt",
+            : "-id",
       })
     );
   };
@@ -817,7 +821,7 @@ export default function TourList1({ searchParams = {} }) {
               ) : error ? (
                 <div className='col-12 text-center'>
                   <div className='alert alert-danger' role='alert'>
-                    {error}
+                    {errorMessage}
                   </div>
                 </div>
               ) : displayedTours && displayedTours.length > 0 ? (

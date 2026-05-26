@@ -105,7 +105,7 @@ export default function Tour1() {
                 letterSpacing: "-0.02em",
               }}
             >
-              Find Popular airport dropoff locations
+              Find Popular Destinations
             </h2>
           </div>
 

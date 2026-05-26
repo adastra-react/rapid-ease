@@ -17,10 +17,10 @@ export default function Home() {
     <main style={{ display: "flex", flexDirection: "column", gap: "80px" }}>
       <Header1 />
       <Hero1 />
-      <FeaturesOne />
+      {/* <FeaturesOne /> */}
+      <Banner />
       {/* <DestinationsOne /> */}
       <Tour1 />
-      <Banner />
       {/* <TourTypeOne /> */}
       <TourSlderOne />
       <BannerOne />

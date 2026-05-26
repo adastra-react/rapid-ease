@@ -1,13 +1,14 @@
 "use client";
 
-import { faqData } from "@/data/tourSingleContent";
+import { faqData, getFaqData } from "@/data/tourSingleContent";
 import React, { useState } from "react";
 
-export default function Faq() {
+export default function Faq({ tour = null }) {
   const [currentActiveFaq, setCurrentActiveFaq] = useState(0);
+  const items = tour ? getFaqData(tour) : faqData;
   return (
     <>
-      {faqData.map((elm, i) => (
+      {items.map((elm, i) => (
         <div key={i} className='col-12'>
           <div
             className={`accordion__item px-20 py-15 border-1 rounded-12 ${
@@ -26,7 +27,7 @@ export default function Faq() {
 
             <div
               className='accordion__content'
-              style={currentActiveFaq == i ? { maxHeight: "150px" } : {}}>
+              style={currentActiveFaq == i ? { maxHeight: "500px" } : {}}>
               <div className='pt-20'>
                 <p>{elm.answer}</p>
               </div>

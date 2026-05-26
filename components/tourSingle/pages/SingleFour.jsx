@@ -188,7 +188,7 @@ export default function SingleFour({ tour }) {
                     >
                       <div className="pt-20">
                         <div className="accordion -simple row y-gap-20 js-accordion">
-                          <Faq />
+                          <Faq tour={tour} />
                         </div>
                       </div>
                     </div>

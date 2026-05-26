@@ -129,7 +129,7 @@ export default function SingleThree({ tour }) {
             <h2 className='text-30'>FAQ</h2>
 
             <div className='accordion -simple row y-gap-20 mt-30 js-accordion'>
-              <Faq />
+              <Faq tour={tour} />
             </div>
 
             <div className='line mt-60 mb-60'></div>

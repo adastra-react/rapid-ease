@@ -40,7 +40,7 @@ export default function DBListing() {
       setLoading(true);
       setError(null);
 
-      const response = await tourService.getAllTours();
+      const response = await tourService.getAllTours({ limit: 1000 });
 
       if (response.data && response.data.tours) {
         setTours(response.data.tours);

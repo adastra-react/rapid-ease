@@ -19,22 +19,6 @@ export default function Features6() {
       <div className='container'>
         <div className='aboutSection -type-1'>
           <div className='row'>
-            <div className='col-xl offset-xl-5 col-lg-7 offset-lg-5'>
-              <div className='aboutSection__text'>
-                <h2
-                  data-aos='fade-up'
-                  data-aos-delay=''
-                  className='text-30 md:text-24 fw-700'>
-                  Why choose Tourz
-                </h2>
-                <p data-aos='fade-up' data-aos-delay=''>
-                  Most viewed and all-time top-selling services
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className='row'>
             <div className='col-xl offset-xl-2 col-lg-7 offset-lg-5'>
               <div
                 data-aos='fade-up'

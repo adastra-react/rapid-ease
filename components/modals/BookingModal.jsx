@@ -94,31 +94,6 @@ export default function BookingModal({
       }));
     }
 
-    // Add additional services
-    let additionalServices = 0;
-    if (bookingData.isExtraService) {
-      additionalServices += 40;
-      priceBreakdown.push({
-        description: "Extra Service",
-        quantity: 1,
-        rate: 40,
-        amount: 40,
-      });
-    }
-
-    if (bookingData.isServicePerPerson) {
-      const serviceAmount = totalPeople * 40;
-      additionalServices += serviceAmount;
-      priceBreakdown.push({
-        description: "Per Person Service",
-        quantity: totalPeople,
-        rate: 40,
-        amount: serviceAmount,
-      });
-    }
-
-    totalAmount += additionalServices;
-
     return {
       totalAmount,
       priceBreakdown,
@@ -264,8 +239,6 @@ export default function BookingModal({
         groupBasePrice: bookingData.groupBasePrice,
         perPersonRate: bookingData.perPersonRate,
         pricingType: bookingData.pricingType,
-        isExtraService: bookingData.isExtraService || false,
-        isServicePerPerson: bookingData.isServicePerPerson || false,
         totalAmount: pricing.totalAmount,
         currency: "USD",
         paymentData: {

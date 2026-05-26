@@ -189,9 +189,27 @@ opacity: 1;
     }
   }
 
-  .activeMenu{
+.activeMenu{
     color: var(--color-accent-1) !important;
   }
+
+.hero.-type-1 .hero__bg {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 1530px;
+    max-width: calc(100% - 120px);
+}
+
+@media (max-width: 991px) {
+  .hero.-type-1 .hero__bg {
+    left: 20px;
+    right: 20px;
+    transform: none;
+    width: auto;
+    max-width: none;
+  }
+}
 
 
   .rmdp-range{

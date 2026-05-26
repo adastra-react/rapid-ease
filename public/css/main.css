@@ -2370,7 +2370,8 @@ h6 {
   height: 90px;
 }
 
-.header__search .headerSearchRecent__item:hover {
+.header__search .headerSearchRecent__item:hover,
+.header__search .headerSearchRecent__item.is-highlighted {
   background-color: var(--bg-1, #f5f5f5);
 }
 
