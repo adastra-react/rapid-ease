@@ -119,8 +119,29 @@ export default function Messages() {
     (message) => message.status === "unread"
   ).length;
 
-  const handleSelectMessage = (messageId) => {
-    setSelectedMessageId(messageId);
+  const handleSelectMessage = async (message) => {
+    if (!message?._id) return;
+
+    setSelectedMessageId(message._id);
+
+    if (message.status !== "unread") {
+      return;
+    }
+
+    const optimisticMessage = { ...message, status: "read" };
+    updateMessageInState(optimisticMessage);
+
+    try {
+      const response = await contactMessageService.updateMessage(message._id, {
+        status: "read",
+      });
+      updateMessageInState(response.data.contactMessage);
+      setError("");
+    } catch (updateError) {
+      console.error("Failed to mark message as read:", updateError);
+      updateMessageInState(message);
+      setError("Unable to update this message right now.");
+    }
   };
 
   const updateMessageInState = (updatedMessage) => {
@@ -240,7 +261,14 @@ export default function Messages() {
                       Loading messages...
                     </div>
                   ) : filteredMessages.length ? (
-                    <div className='row y-gap-15 pt-10'>
+                    <div
+                      className='row y-gap-15 pt-10'
+                      style={{
+                        maxHeight: "720px",
+                        overflowY: "auto",
+                        paddingRight: "6px",
+                      }}
+                    >
                       {filteredMessages.map((message) => {
                         const isActive = selectedMessage?._id === message._id;
 
@@ -248,9 +276,11 @@ export default function Messages() {
                           <div key={message._id} className='col-12'>
                             <button
                               type='button'
-                              onClick={() => handleSelectMessage(message._id)}
+                              onClick={() => handleSelectMessage(message)}
                               className='w-100 text-start rounded-12 px-20 py-15'
                               style={{
+                                height: "112px",
+                                overflow: "hidden",
                                 border: isActive
                                   ? "1px solid rgba(234,60,60,0.35)"
                                   : "1px solid #eaedf3",
@@ -259,56 +289,112 @@ export default function Messages() {
                                   : "#ffffff",
                               }}
                             >
-                              <div className='d-flex items-start justify-between x-gap-10'>
-                                <div className='d-flex items-center'>
-                                  <div
-                                    className='size-50 rounded-full flex-center text-14 fw-600 text-white'
+                              <div
+                                style={{
+                                  height: "100%",
+                                  display: "grid",
+                                  gridTemplateColumns: "50px minmax(0, 1fr) 56px",
+                                  columnGap: "10px",
+                                  alignItems: "center",
+                                  overflow: "hidden",
+                                }}
+                              >
+                                <div
+                                  className='size-50 rounded-full flex-center text-14 fw-600 text-white'
+                                  style={{
+                                    background:
+                                      message.status === "unread"
+                                        ? "#ea3c3c"
+                                        : "#526071",
+                                  }}
+                                >
+                                  {getInitials(message.name) || "RE"}
+                                </div>
+
+                                <div
+                                  className='d-grid'
+                                  style={{
+                                    minWidth: 0,
+                                    height: "100%",
+                                    gridTemplateRows: "20px 18px 20px",
+                                    alignContent: "center",
+                                    rowGap: "8px",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  <h5
+                                    className='text-15 fw-500'
                                     style={{
-                                      background:
-                                        message.status === "unread"
-                                          ? "#ea3c3c"
-                                          : "#526071",
+                                      color: colors.heading,
+                                      lineHeight: "20px",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      margin: 0,
                                     }}
                                   >
-                                    {getInitials(message.name) || "RE"}
+                                    {message.name}
+                                  </h5>
+                                  <div
+                                    className='text-13'
+                                    style={{
+                                      color: colors.muted,
+                                      lineHeight: "18px",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                    }}
+                                  >
+                                    {message.email}
                                   </div>
-
-                                  <div className='ml-10'>
-                                    <h5
-                                      className='text-15 lh-16 fw-500 mb-5'
-                                      style={{ color: colors.heading }}
-                                    >
-                                      {message.name}
-                                    </h5>
-                                    <div
-                                      className='text-13 lh-16'
-                                      style={{ color: colors.muted }}
-                                    >
-                                      {message.email}
-                                    </div>
-                                    <div
-                                      className='text-14 lh-16 mt-5'
-                                      style={{ color: colors.body }}
-                                    >
-                                      {message.message.length > 58
-                                        ? `${message.message.slice(0, 58)}...`
-                                        : message.message}
-                                    </div>
+                                  <div
+                                    className='text-14'
+                                    style={{
+                                      color: colors.body,
+                                      lineHeight: "20px",
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    {message.message}
                                   </div>
                                 </div>
 
-                                <div className='text-right'>
+                                <div
+                                  className='d-flex flex-column items-end justify-between text-right'
+                                  style={{
+                                    height: "100%",
+                                    minWidth: "56px",
+                                    maxWidth: "56px",
+                                  }}
+                                >
                                   <div
                                     className='text-13'
-                                    style={{ color: colors.muted }}
+                                    style={{
+                                      color: colors.muted,
+                                      lineHeight: "18px",
+                                      whiteSpace: "nowrap",
+                                    }}
                                   >
                                     {formatShortTimestamp(message.createdAt)}
                                   </div>
-                                  {message.status === "unread" && (
-                                    <div className='mt-10 d-inline-flex size-16 rounded-full bg-accent-1 text-8 text-white flex-center'>
-                                      1
-                                    </div>
-                                  )}
+                                  <div
+                                    className='d-inline-flex size-16 rounded-full text-8 text-white flex-center'
+                                    style={{
+                                      backgroundColor:
+                                        message.status === "unread"
+                                          ? "#ea3c3c"
+                                          : "transparent",
+                                      visibility:
+                                        message.status === "unread"
+                                          ? "visible"
+                                          : "hidden",
+                                    }}
+                                  >
+                                    1
+                                  </div>
                                 </div>
                               </div>
                             </button>
