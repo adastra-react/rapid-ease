@@ -7,26 +7,22 @@ import MainInformation from "../MainInformation";
 import OthersInformation from "../OthersInformation";
 import Overview from "../Overview";
 import Included from "../Included";
-import Map from "@/components/tours/Map";
 import Faq from "../Faq";
 import Rating from "../Rating";
-import Reviews from "../Reviews";
 import TourSingleSidebar from "../TourSingleSidebar";
 import Gallery1 from "../Galleries/Gallery1";
-import DateCalender from "../DateCalender";
-import RoadMap2 from "../Roadmap2";
-import CommentBox from "../CommentBox";
-import Head from "next/head";
 
 export default function SingleOne({ tour: initialTour = null }) {
   const [tour, setTour] = useState(initialTour);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialTour);
   const params = useParams();
 
   useEffect(() => {
     const fetchTourData = async () => {
       try {
-        setLoading(true);
+        if (!initialTour) {
+          setLoading(true);
+        }
         const tourId = params.id;
         const response = await tourService.getSingleTour(tourId);
         const apiTour = response?.data?.tour;

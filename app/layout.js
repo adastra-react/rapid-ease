@@ -5,8 +5,13 @@ import { DM_Sans } from "next/font/google";
 import ScrollTopBehaviour from "@/components/common/ScrollTopBehavier";
 import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
 import Wrapper from "@/components/layout/Wrapper";
+import JsonLd from "@/components/seo/JsonLd";
 import { ReduxProvider } from "./provider";
-import { siteConfig } from "./lib/seo";
+import {
+  buildOrganizationSchema,
+  buildWebsiteSchema,
+  siteConfig,
+} from "./lib/seo";
 
 const dmsans = DM_Sans({
   weight: ["400", "500", "700"],
@@ -81,6 +86,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang='en'>
       <body className={dmsans.className}>
+        <JsonLd data={buildOrganizationSchema()} />
+        <JsonLd data={buildWebsiteSchema()} />
         <ReduxProvider>
           <CurrencyProvider>
             <Wrapper>

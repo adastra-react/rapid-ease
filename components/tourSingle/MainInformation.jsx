@@ -19,9 +19,9 @@ export default function MainInformation({ tour }) {
             </div>
           </div>
 
-          <h2 className='text-40 sm:text-30 lh-14 mt-20'>
+          <h1 className='text-40 sm:text-30 lh-14 mt-20'>
             {tour?.title || "Untitled Tour"}
-          </h2>
+          </h1>
 
           <div className='row x-gap-20 y-gap-20 items-center pt-20'>
             <div className='col-auto'>
@@ -51,15 +51,19 @@ export default function MainInformation({ tour }) {
 
         <div className='col-auto'>
           <div className='d-flex x-gap-30 y-gap-10'>
-            <a href='#' className='d-flex items-center'>
+            <button
+              type='button'
+              className='d-flex items-center bg-transparent border-0 p-0'>
               <i className='icon-share flex-center text-16 mr-10'></i>
               Share
-            </a>
+            </button>
 
-            <a href='#' className='d-flex items-center'>
+            <button
+              type='button'
+              className='d-flex items-center bg-transparent border-0 p-0'>
               <i className='icon-heart flex-center text-16 mr-10'></i>
               Wishlist
-            </a>
+            </button>
           </div>
         </div>
       </div>

@@ -336,10 +336,14 @@ import {
   setFilters,
   setCurrentPage,
 } from "../../app/store/slices/toursSlice";
+import {
+  buildInitialTourFilters,
+  normalizeTourSearchParams,
+} from "@/app/lib/tours";
 
 const PAGE_SIZE = 10;
 
-export default function TourList1({ searchParams = {} }) {
+export default function TourList1({ searchParams = {}, initialData = null }) {
   const listStyles = {
     toolbarSummary: {
       fontSize: "14px",
@@ -602,13 +606,25 @@ export default function TourList1({ searchParams = {} }) {
   const [sidebarActive, setSidebarActive] = useState(false);
   const dropDownContainer = useRef();
   const appliedSearchRef = useRef("");
+  const normalizedSearchParams = normalizeTourSearchParams(searchParams);
+  const initialFilters = buildInitialTourFilters(searchParams);
+  const initialPage = Number(normalizedSearchParams.page || 1);
+  const skipInitialFetchRef = useRef(Boolean(initialData));
   const travelDate = searchParams.date || "";
-  const searchLocation = searchParams.location || "";
-  const searchTourType = searchParams.tourType || "";
+  const searchLocation = normalizedSearchParams.location || "";
+  const searchTourType =
+    normalizedSearchParams.tourTypes?.[0] || searchParams.tourType || "";
+  const serverTours = initialData?.data?.tours || [];
+  const serverTotalTours = initialData?.totalTours || 0;
+  const serverTotalPages = initialData?.totalPages || 1;
+  const hasClientResults = tours.length > 0 || loading || error;
+  const activeTours = hasClientResults ? tours : serverTours;
+  const activeTotalTours = hasClientResults ? totalTours || 0 : serverTotalTours;
+  const activeTotalPages = hasClientResults ? totalPages || 1 : serverTotalPages;
   const hasExactRatingFilter =
     filters.minRating !== null && filters.maxRating !== null;
   const displayedTours = hasExactRatingFilter
-    ? tours.filter((tour) => {
+    ? activeTours.filter((tour) => {
         const tourRating = Number(tour.rating);
 
         if (Number.isNaN(tourRating)) {
@@ -625,7 +641,7 @@ export default function TourList1({ searchParams = {} }) {
     : tours;
   const displayedTotalTours = hasExactRatingFilter
     ? displayedTours.length
-    : totalTours || 0;
+    : activeTotalTours;
   const errorMessage =
     typeof error === "string"
       ? error
@@ -664,26 +680,35 @@ export default function TourList1({ searchParams = {} }) {
   }, []);
 
   useEffect(() => {
-    const searchSource = searchParams.search;
-    const searchSignature = JSON.stringify(searchParams);
+    const hasAppliedFilters = Object.values(initialFilters).some((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== "" && value !== null && value !== 0 && value !== 100000;
+    });
+    const searchSignature = JSON.stringify({
+      filters: initialFilters,
+      page: initialPage,
+      sort: normalizedSearchParams.sort || "",
+    });
 
-    if (searchSource !== "hero" || appliedSearchRef.current === searchSignature) {
+    if (!hasAppliedFilters && initialPage === 1 && !normalizedSearchParams.sort) {
+      return;
+    }
+
+    if (appliedSearchRef.current === searchSignature) {
       return;
     }
 
     appliedSearchRef.current = searchSignature;
-
-    dispatch(
-      setFilters({
-        ...defaultTourFilters,
-        location: searchLocation || "",
-        tourTypes: searchTourType ? [searchTourType] : [],
-      })
-    );
-    dispatch(setCurrentPage(1));
-  }, [dispatch, searchLocation, searchParams, searchTourType]);
+    dispatch(setFilters({ ...defaultTourFilters, ...initialFilters }));
+    dispatch(setCurrentPage(initialPage));
+  }, [dispatch, initialFilters, initialPage, normalizedSearchParams.sort]);
 
   useEffect(() => {
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false;
+      return;
+    }
+
     dispatch(
       fetchTours({
         page: currentPage,
@@ -935,7 +960,7 @@ export default function TourList1({ searchParams = {} }) {
             <div className='d-flex justify-center flex-column mt-60'>
               <Pagination
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={activeTotalPages}
                 onPageChange={handlePageChange}
               />
 
