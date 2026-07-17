@@ -22,6 +22,7 @@ export const pages = [
       { id: 512, title: "Dashboard booking", href: "/db-booking" },
       { id: 513, title: "Dashboard listings", href: "/db-listing" },
       { id: 514, title: "Dashboard add tour", href: "/db-add-tour" },
+      { id: 515, title: "Dashboard messages", href: "/db-messages" },
     ],
   },
   { id: 53, title: "Destinations", href: "/destinations" },

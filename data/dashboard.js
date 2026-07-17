@@ -23,12 +23,12 @@ export const sidebarItems = [
   //   iconClass: "icon-heart text-26",
   //   label: "My Favorites",
   // },
-  // {
-  //   id: 6,
-  //   href: "/db-messages",
-  //   iconClass: "icon-message text-26",
-  //   label: "Messages",
-  // },
+  {
+    id: 6,
+    href: "/db-messages",
+    iconClass: "icon-message text-26",
+    label: "Messages",
+  },
   // {
   //   id: 7,
   //   href: "/db-profile",

@@ -7,16 +7,64 @@ const API_URL =
     ? "https://rapid-ease-server.vercel.app/api"
     : "http://localhost:5000/api");
 
+const TOKEN_KEYS = ["token", "authToken"];
+
+const getStoredToken = () => {
+  if (typeof window === "undefined") return null;
+
+  for (const key of TOKEN_KEYS) {
+    const value = localStorage.getItem(key);
+    if (value) {
+      TOKEN_KEYS.forEach((targetKey) => {
+        if (!localStorage.getItem(targetKey)) {
+          localStorage.setItem(targetKey, value);
+        }
+      });
+      return value;
+    }
+  }
+
+  return null;
+};
+
+const getAlternateToken = (currentToken) => {
+  if (typeof window === "undefined") return null;
+
+  for (const key of TOKEN_KEYS) {
+    const value = localStorage.getItem(key);
+    if (value && value !== currentToken) {
+      return value;
+    }
+  }
+
+  return null;
+};
+
+const persistToken = (token) => {
+  if (typeof window === "undefined") return;
+
+  TOKEN_KEYS.forEach((key) => {
+    localStorage.setItem(key, token);
+  });
+};
+
+const clearStoredTokens = () => {
+  if (typeof window === "undefined") return;
+
+  TOKEN_KEYS.forEach((key) => {
+    localStorage.removeItem(key);
+  });
+};
+
 // Check if user is logged in
 export const isAuthenticated = () => {
   if (typeof window === "undefined") return false;
-  return !!localStorage.getItem("authToken");
+  return !!getStoredToken();
 };
 
 // Get current token
 export const getToken = () => {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("authToken");
+  return getStoredToken();
 };
 
 // Login function
@@ -30,7 +78,7 @@ export const login = async (email, password) => {
     const { token, data } = response.data;
 
     // Save to localStorage
-    localStorage.setItem("authToken", token);
+    persistToken(token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
     return { success: true, user: data.user };
@@ -44,7 +92,7 @@ export const login = async (email, password) => {
 
 // Logout function
 export const logout = () => {
-  localStorage.removeItem("authToken");
+  clearStoredTokens();
   localStorage.removeItem("user");
   window.location.href = "/";
 };
@@ -58,17 +106,33 @@ export const getCurrentUser = () => {
 
 // API call with auth token
 export const apiCall = async (endpoint, options = {}) => {
+  const makeRequest = async (token) =>
+    axios({
+      url: `${API_URL}${endpoint}`,
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      },
+    });
+
   const token = getToken();
 
-  const response = await axios({
-    url: `${API_URL}${endpoint}`,
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
-  });
+  try {
+    const response = await makeRequest(token);
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      const alternateToken = getAlternateToken(token);
 
-  return response.data;
+      if (alternateToken) {
+        persistToken(alternateToken);
+        const retryResponse = await makeRequest(alternateToken);
+        return retryResponse.data;
+      }
+    }
+
+    throw error;
+  }
 };

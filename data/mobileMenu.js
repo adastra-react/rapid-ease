@@ -46,7 +46,7 @@ export const menuData = [
       { id: 33, label: "Listing", href: "/db-listing" },
       { id: 34, label: "Add tour", href: "/db-add-tour" },
       // { id: 35, label: "Favorites", href: "/db-favorites" },
-      // { id: 36, label: "Messages", href: "/db-messages" },
+      { id: 36, label: "Messages", href: "/db-messages" },
       // { id: 37, label: "Profile", href: "/db-profile" },
     ],
   },
