@@ -1,11 +1,12 @@
 import DbBooking from "@/components/dasboard/DbBooking";
 import React from "react";
+import { buildNoIndexMetadata } from "@/app/lib/seo";
 
-export const metadata = {
-  title:
-    "Dashboard-booking || Rapid Ease - Travel & Tour React NextJS Template",
-  description: "Rapid Ease - Travel & Tour React NextJS Template",
-};
+export const metadata = buildNoIndexMetadata({
+  title: "My Bookings",
+  description: "Review and manage your RapidEase876 bookings.",
+  path: "/db-booking",
+});
 
 export default function page() {
   return (

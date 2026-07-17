@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import HeaderSerch from "../components/HeaderSerch";
-import Destinations from "../components/Destinations";
 import Activities from "../components/Activities";
 import Currency from "../components/Currency";
 import MobileMenu from "../components/MobileMenu";

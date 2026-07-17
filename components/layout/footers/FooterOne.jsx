@@ -55,10 +55,10 @@ export default function FooterOne() {
                 <h4 className='text-20 fw-500'>Contact</h4>
 
                 <div className='y-gap-10 mt-20'>
-                  <a className='d-block' href='#'>
+                  <div className='d-block'>
                     Montego Bay, Jamaica
-                  </a>
-                  <a className='d-block' href='#'>
+                  </div>
+                  <a className='d-block' href='mailto:rapidease876@gmail.com'>
                     rapidease876@gmail.com
                   </a>
                 </div>

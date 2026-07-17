@@ -10,8 +10,8 @@ const sections = [
   {
     title: "Support",
     links: [
-      { id: 9, text: "Get in Touch", href: "#" },
-      { id: 10, text: "Help center", href: "/help-center" },
+      { id: 9, text: "Get in Touch", href: "/contact" },
+      { id: 10, text: "Browse Tours", href: "/tour-list-1" },
     ],
   },
 ];

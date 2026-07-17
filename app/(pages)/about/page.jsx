@@ -5,16 +5,17 @@ import FeturesTwo from "@/components/homes/features/FeturesTwo";
 import TestimonialOne from "@/components/homes/testimonials/TestimonialOne";
 import FooterOne from "@/components/layout/footers/FooterOne";
 import Header1 from "@/components/layout/header/Header1";
-import Banner from "@/components/pages/about/Banner";
 import Hero from "@/components/pages/about/Hero";
 import Information from "@/components/pages/about/Information";
-import Team from "@/components/pages/about/Team";
 import React from "react";
+import { buildMetadata } from "@/app/lib/seo";
 
-export const metadata = {
-  title: "About || Rapid Ease - Travel & Tour React NextJS Template",
-  description: "Rapid Ease - Travel & Tour React NextJS Template",
-};
+export const metadata = buildMetadata({
+  title: "About RapidEase876",
+  description:
+    "Learn more about RapidEase876 and our mission to make Jamaica tours, transportation, and travel planning simpler for every guest.",
+  path: "/about",
+});
 
 export default function page() {
   return (

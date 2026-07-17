@@ -1,4 +1,3 @@
-import ArticlesOne from "@/components/homes/articles/ArticlesOne";
 import SpacialOffer from "@/components/homes/others/SpacialOffer";
 import TestimonialOne from "@/components/homes/testimonials/TestimonialOne";
 import FooterOne from "@/components/layout/footers/FooterOne";
@@ -8,11 +7,14 @@ import Information from "@/components/pages/destinations/Information";
 import TourList1 from "@/components/pages/destinations/TourList";
 import TourSlider from "@/components/pages/destinations/TourSlider";
 import React from "react";
+import { buildMetadata } from "@/app/lib/seo";
 
-export const metadata = {
-  title: "Destinations || Rapid Ease - Travel & Tour React NextJS Template",
-  description: "Rapid Ease - Travel & Tour React NextJS Template",
-};
+export const metadata = buildMetadata({
+  title: "Jamaica Destinations",
+  description:
+    "Browse featured Jamaica destinations, top excursions, and travel ideas across Montego Bay, Kingston, Negril, and beyond.",
+  path: "/destinations",
+});
 
 export default function page() {
   return (
@@ -25,7 +27,6 @@ export default function page() {
         <TourList1 />
         <TestimonialOne />
         <Information />
-        <ArticlesOne />
         <FooterOne />
       </main>
     </>
